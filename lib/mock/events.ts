@@ -1,64 +1,45 @@
-export type EventCategory = "construction" | "fundraising" | "community" | "life_event";
-
 export type MockEvent = {
   id: string;
   day: string;
   title: string;
+  description?: string;
   timePlace: string;
-  category: EventCategory;
-  qualifier: string;
-  pending?: boolean;
 };
-
-export const CATEGORY_LABEL: Record<EventCategory, string> = {
-  construction: "Construction",
-  fundraising: "Fundraising",
-  community: "Community",
-  life_event: "Life event",
-};
-
-export const FILTER_CHIPS = ["All", "Community", "Fundraising", "Life events", "Construction"] as const;
 
 export const mockEvents: MockEvent[] = [
   {
     id: "1",
     day: "Sat Sep 12",
     title: "Phase 2 walkthrough & Q&A",
-    timePlace: "10:00 AM · Main hall",
-    category: "construction",
-    qualifier: "Open to all · 42 going",
+    description: "Tour the construction progress and ask the team questions.",
+    timePlace: "10:00 AM – 11:30 AM · Main hall",
   },
   {
     id: "2",
     day: "Sat Sep 12",
     title: "Nikah — Haddad & Aziz",
-    timePlace: "4:00 PM · Annex",
-    category: "life_event",
-    qualifier: "Private · family only",
+    description: "Private ceremony for family and invited guests.",
+    timePlace: "4:00 PM – 6:00 PM · Annex",
   },
   {
     id: "3",
     day: "Sun Sep 13",
     title: "Renovation fund dinner",
-    timePlace: "6:30 PM · Courtyard",
-    category: "fundraising",
-    qualifier: "$40 · 118 tickets left",
+    description: "Community dinner supporting the renovation fund.",
+    timePlace: "6:30 PM – 9:00 PM · Courtyard",
   },
   {
     id: "4",
     day: "Sun Sep 13",
-    title: "Janazah request — Siddiqui family",
-    timePlace: "Time to be confirmed · Prayer hall",
-    category: "community",
-    qualifier: "Needs a hall confirmation",
-    pending: true,
+    title: "Janazah — Siddiqui family",
+    description: "Funeral prayer for the Siddiqui family.",
+    timePlace: "11:00 AM – 12:00 PM · Prayer hall",
   },
   {
     id: "5",
     day: "Wed Sep 16",
     title: "Board meeting — expense review",
-    timePlace: "7:00 PM · Office",
-    category: "community",
-    qualifier: "Board only · 7 items queued",
+    description: "Monthly board review of queued expenses.",
+    timePlace: "7:00 PM – 8:30 PM · Office",
   },
 ];

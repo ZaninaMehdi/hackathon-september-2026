@@ -33,7 +33,7 @@ export function AppShell({ email, roles, children }: AppShellProps) {
       {/* Sidebar — hidden below 900px (bottom tab bar takes over), icon-only
           from 900-1199px, full width with labels from 1200px up. Persistent
           across every route in this (app) group. */}
-      <aside className="hidden w-[60px] shrink-0 flex-col gap-[22px] border-r border-hairline bg-surface-sunken px-2 py-4.5 min-[900px]:flex min-[1200px]:w-[216px] min-[1200px]:px-3.5">
+      <aside className="sticky top-0 hidden h-svh w-[60px] shrink-0 flex-col gap-[22px] overflow-y-auto border-r border-hairline bg-surface-sunken px-2 py-4.5 min-[900px]:flex min-[1200px]:w-[216px] min-[1200px]:px-3.5">
         <div className="flex justify-center px-1.5 min-[1200px]:justify-start">
           <div className="min-[1200px]:hidden">
             <Mark size={22} />
@@ -91,7 +91,7 @@ export function AppShell({ email, roles, children }: AppShellProps) {
       <main className="min-w-0 flex-1 pb-16 min-[900px]:pb-0">{children}</main>
 
       {/* Bottom tab bar — below 900px only */}
-      <nav className="fixed bottom-0 left-0 right-0 flex justify-around border-t border-hairline bg-surface-raised py-2 min-[900px]:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-20 flex justify-around border-t border-hairline bg-surface-raised py-2 min-[900px]:hidden">
         {NAV_ITEMS.map(({ label, icon: Icon, href }) => {
           const active = href ? isActive(href) : false;
           return href ? (
