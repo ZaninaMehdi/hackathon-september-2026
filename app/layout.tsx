@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Libre_Franklin, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
+import { Libre_Franklin, IBM_Plex_Mono, Source_Serif_4, Amiri } from "next/font/google";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -23,6 +23,16 @@ const sourceSerif = Source_Serif_4({
   weight: ["600", "700"],
 });
 
+// The wordmark only, nothing else. Amiri is a revival of the Bulaq Press
+// Naskh type and the house face of Arabic and Islamic publishing; its Latin
+// companion lets the logotype carry that lineage without resorting to
+// pseudo-Arabic lettering. Ships 400 and 700 only, hence font-bold in Logo.
+const amiri = Amiri({
+  variable: "--font-amiri",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Amanah",
   description: "Every dollar, accounted for.",
@@ -39,7 +49,7 @@ export default function RootLayout({
     // intentionally differs from what the client finds.
     <html
       lang="en"
-      className={`${libreFranklin.variable} ${ibmPlexMono.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${libreFranklin.variable} ${ibmPlexMono.variable} ${sourceSerif.variable} ${amiri.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

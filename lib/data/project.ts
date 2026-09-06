@@ -111,9 +111,10 @@ export type PublicOrgDirectoryItem = {
   orgType: string | null;
   description: string | null;
   logoUrl: string | null;
-  /** The org's own cover if it has one, otherwise its newest campaign photo.
-   *  Falling back keeps a card from looking empty just because nobody has
-   *  uploaded an org-level image yet. */
+  /** The org's own uploaded cover photo, or null. Never a campaign photo —
+   *  a campaign image answers "what are we fundraising for", not "what is
+   *  this organization", so the two must not be interchangeable. When null,
+   *  OrgCard renders a branded placeholder instead. */
   coverImageUrl: string | null;
   activeCampaigns: number;
   totalRaised: number;
@@ -156,22 +157,14 @@ export const getPublicOrganizations = cache(async function getPublicOrganization
       .order("name"),
     supabase
       .from("projects")
-      .select("org_id, status, cover_image_url")
-      .neq("status", "archived")
-      .order("created_at", { ascending: false }),
+      .select("org_id, status")
+      .eq("status", "active"),
     supabase.from("donations").select("org_id, amount"),
   ]);
 
   const activeByOrg = new Map<string, number>();
-  const campaignPhotoByOrg = new Map<string, string>();
   for (const project of projects ?? []) {
-    if (project.status === "active") {
-      activeByOrg.set(project.org_id, (activeByOrg.get(project.org_id) ?? 0) + 1);
-    }
-    // Ordered newest-first above, so the first photo seen per org is the newest.
-    if (project.cover_image_url && !campaignPhotoByOrg.has(project.org_id)) {
-      campaignPhotoByOrg.set(project.org_id, project.cover_image_url);
-    }
+    activeByOrg.set(project.org_id, (activeByOrg.get(project.org_id) ?? 0) + 1);
   }
 
   const raisedByOrg = new Map<string, number>();
@@ -186,10 +179,152 @@ export const getPublicOrganizations = cache(async function getPublicOrganization
     orgType: org.org_type ?? null,
     description: org.description ?? null,
     logoUrl: org.logo_url ?? null,
-    coverImageUrl: org.cover_image_url ?? campaignPhotoByOrg.get(org.id) ?? null,
+    coverImageUrl: org.cover_image_url ?? null,
     activeCampaigns: activeByOrg.get(org.id) ?? 0,
     totalRaised: raisedByOrg.get(org.id) ?? 0,
   }));
+});
+
+export type FeaturedCampaignExpense = {
+  id: string;
+  title: string;
+  amount: number;
+  hasReceipt: boolean;
+};
+
+export type FeaturedCampaign = {
+  orgName: string;
+  orgSlug: string;
+  title: string;
+  slug: string;
+  raised: number;
+  goal: number;
+  phaseIndex: number;
+  phaseCount: number;
+  donorCount: number;
+  expenses: FeaturedCampaignExpense[];
+};
+
+type FeaturedOrgJoin = { name: string; slug: string };
+
+function unwrapOrg(org: FeaturedOrgJoin | FeaturedOrgJoin[] | null): FeaturedOrgJoin | null {
+  if (!org) return null;
+  return Array.isArray(org) ? (org[0] ?? null) : org;
+}
+
+/** The most-raised active campaign, for the landing hero card. */
+export const getFeaturedPublicCampaign = cache(async function getFeaturedPublicCampaign(): Promise<
+  FeaturedCampaign | null
+> {
+  const supabase = await createClient();
+
+  const { data: projects } = await supabase
+    .from("projects")
+    .select("id, slug, title, org_id, organizations(name, slug)")
+    .eq("status", "active");
+
+  if (!projects?.length) return null;
+
+  const ids = projects.map((project) => project.id);
+  const [{ data: donations }, { data: phases }, { data: expenses }] = await Promise.all([
+    supabase.from("donations").select("project_id, amount, phase_id").in("project_id", ids),
+    supabase
+      .from("phases")
+      .select("id, project_id, title, budget_target, sort_order")
+      .in("project_id", ids)
+      .order("sort_order", { ascending: true }),
+    supabase
+      .from("expenses")
+      .select("id, project_id, description, amount, receipt_url, created_at")
+      .in("project_id", ids)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const raisedByProject = new Map<string, number>();
+  const donorsByProject = new Map<string, number>();
+  const raisedByPhase = new Map<string, number>();
+  for (const donation of donations ?? []) {
+    raisedByProject.set(
+      donation.project_id,
+      (raisedByProject.get(donation.project_id) ?? 0) + Number(donation.amount),
+    );
+    donorsByProject.set(donation.project_id, (donorsByProject.get(donation.project_id) ?? 0) + 1);
+    if (donation.phase_id) {
+      raisedByPhase.set(
+        donation.phase_id,
+        (raisedByPhase.get(donation.phase_id) ?? 0) + Number(donation.amount),
+      );
+    }
+  }
+
+  const goalByProject = new Map<string, number>();
+  const expenseCountByProject = new Map<string, number>();
+  for (const phase of phases ?? []) {
+    goalByProject.set(
+      phase.project_id,
+      (goalByProject.get(phase.project_id) ?? 0) + Number(phase.budget_target),
+    );
+  }
+  for (const expense of expenses ?? []) {
+    expenseCountByProject.set(
+      expense.project_id,
+      (expenseCountByProject.get(expense.project_id) ?? 0) + 1,
+    );
+  }
+
+  // Prefer a campaign that still looks like a live fundraise. A stray test
+  // donation of millions against a $372k goal would otherwise win on raw
+  // raised and make the hero card read as broken.
+  function score(projectId: string): number {
+    const raised = raisedByProject.get(projectId) ?? 0;
+    const goal = goalByProject.get(projectId) ?? 0;
+    const expenses = expenseCountByProject.get(projectId) ?? 0;
+    const outlier = goal > 0 && raised > goal * 2;
+    if (outlier) return raised / 1_000_000;
+    return raised + (expenses > 0 ? 1_000_000 : 0) + (goal > 0 ? 100_000 : 0);
+  }
+
+  const pick = [...projects].sort((a, b) => score(b.id) - score(a.id))[0];
+  const org = unwrapOrg(pick.organizations as FeaturedOrgJoin | FeaturedOrgJoin[] | null);
+  if (!org) return null;
+
+  const projectPhases = (phases ?? []).filter((phase) => phase.project_id === pick.id);
+  const active = resolveActivePhase(projectPhases, raisedByPhase);
+  const activeIndex = active
+    ? projectPhases.findIndex((phase) => phase.id === active.id) + 1
+    : projectPhases.length;
+
+  return {
+    orgName: org.name,
+    orgSlug: org.slug,
+    title: pick.title,
+    slug: pick.slug,
+    raised: raisedByProject.get(pick.id) ?? 0,
+    goal: projectPhases.reduce((sum, phase) => sum + Number(phase.budget_target), 0),
+    phaseIndex: Math.max(activeIndex, 1),
+    phaseCount: projectPhases.length,
+    donorCount: donorsByProject.get(pick.id) ?? 0,
+    expenses: (expenses ?? [])
+      .filter((expense) => expense.project_id === pick.id)
+      .slice(0, 3)
+      .map((expense) => ({
+        id: expense.id,
+        title: expense.description ?? "Expense",
+        amount: Number(expense.amount),
+        hasReceipt: Boolean(expense.receipt_url),
+      })),
+  };
+});
+
+export const getPublicReceiptCoverage = cache(async function getPublicReceiptCoverage(): Promise<
+  number
+> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("expenses").select("receipt_url");
+  if (!data?.length) return 100;
+  const withReceipt = data.filter((row) => Boolean(row.receipt_url)).length;
+  return Math.round((withReceipt / data.length) * 100);
 });
 
 export const getPublicOrgHome = cache(async function getPublicOrgHome(

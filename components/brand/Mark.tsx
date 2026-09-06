@@ -3,28 +3,45 @@ type MarkProps = {
   className?: string;
 };
 
-// Amanah mark: a seal — something entrusted, verified, held to account.
-// Deliberately non-religious geometry (circle + checkmark), echoing the
-// product's own "approved" status dot so the identity mark and the core
-// trust mechanic read as the same idea.
+// Amanah mark: a shield held in two open hands, framed by an eight-point
+// khatam star. The name means a trust — something handed over for
+// safekeeping — and the three parts say that in order: what is entrusted,
+// who holds it, and the community it is held on behalf of.
+//
+// Traced from the source artwork into flat polygons, so it stays sharp from
+// the 22px sidebar mark up to an app icon. Fills are theme tokens rather than
+// literal greens: the artwork's own colours are near-black against the dark
+// palette, and --color-accent already lightens there.
 export function Mark({ size = 24, className }: MarkProps) {
   return (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 1024 1024"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="12" className="fill-accent" />
       <path
-        d="M7 12.5L10.3 16L17 8.5"
-        className="stroke-on-accent"
-        strokeWidth="2.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M0,0 L4,1 L31,28 L34,30 L34,32 L38,34 L40,38 L44,40 L49,45 L98,94 L105,100 L112,108 L119,114 L119,116 L123,118 L125,122 L129,124 L130,127 L132,127 L138,134 L146,141 L162,157 L323,158 L324,161 L324,316 L325,328 L352,355 L357,360 L370,372 L370,374 L372,374 L379,382 L387,389 L393,396 L401,403 L458,460 L456,465 L427,494 L420,502 L418,502 L418,504 L416,504 L414,508 L375,547 L368,555 L346,577 L343,581 L341,581 L341,583 L338,584 L338,496 L345,488 L351,481 L353,481 L355,477 L369,463 L367,458 L358,449 L356,448 L356,446 L354,446 L347,438 L333,425 L328,420 L320,412 L320,410 L316,408 L311,402 L303,395 L295,387 L295,385 L291,383 L279,371 L274,366 L263,355 L262,353 L262,219 L134,219 L130,216 L130,214 L128,214 L125,211 L125,209 L123,209 L118,204 L109,194 L104,190 L98,183 L93,179 L93,177 L89,175 L84,170 L82,166 L78,164 L78,162 L76,162 L71,157 L66,151 L59,145 L55,140 L48,134 L41,126 L35,121 L30,116 L26,111 L21,106 L14,99 L9,94 L3,88 L0,87 L-2,91 L-82,171 L-84,171 L-86,175 L-129,218 L-131,219 L-258,219 L-258,352 L-265,360 L-343,438 L-345,438 L-347,442 L-360,455 L-365,460 L-365,464 L-336,493 L-335,495 L-335,584 L-342,578 L-369,551 L-369,549 L-371,549 L-378,541 L-404,515 L-411,507 L-446,472 L-451,467 L-455,462 L-453,458 L-447,452 L-445,452 L-445,450 L-441,446 L-439,446 L-437,442 L-428,433 L-426,433 L-426,431 L-421,426 L-417,424 L-415,420 L-411,418 L-409,414 L-402,408 L-396,401 L-388,394 L-365,371 L-364,369 L-362,369 L-362,367 L-354,360 L-321,327 L-320,159 L-319,158 L-158,157 L-151,150 L-146,145 L-82,81 L-80,81 L-78,77 L-75,74 L-73,74 L-71,70 L-60,60 L-55,55 L-11,11 L-9,11 L-7,7 L-1,2 Z "
+        transform="translate(511,65)"
+        className="fill-accent"
+      />
+      <path
+        d="M0,0 L4,1 L31,16 L60,31 L82,41 L97,47 L130,58 L146,62 L149,64 L149,160 L146,189 L141,212 L133,233 L125,249 L117,263 L107,277 L99,287 L87,301 L67,321 L59,328 L43,341 L30,351 L20,358 L4,369 L-2,368 L-13,360 L-25,352 L-37,343 L-48,334 L-58,325 L-66,318 L-72,313 L-77,307 L-84,301 L-92,291 L-101,281 L-115,261 L-124,245 L-132,228 L-140,202 L-144,179 L-145,167 L-145,63 L-131,59 L-120,56 L-99,49 L-84,43 L-65,35 L-49,27 L-32,18 L-20,12 L-3,2 Z "
+        transform="translate(511,336)"
+        className="fill-accent-bright"
+      />
+      <path
+        d="M0,0 L10,0 L26,4 L40,11 L49,18 L59,27 L70,42 L78,57 L85,77 L85,99 L81,120 L81,142 L84,154 L88,160 L108,180 L116,187 L129,200 L137,207 L152,221 L163,230 L171,230 L175,227 L176,220 L172,214 L165,207 L160,203 L160,201 L156,199 L108,151 L101,139 L99,131 L99,117 L103,108 L108,104 L111,103 L121,103 L129,106 L139,113 L149,121 L165,134 L176,143 L190,155 L203,165 L203,167 L207,169 L220,180 L231,189 L242,198 L259,212 L274,227 L282,240 L287,250 L291,263 L293,279 L293,421 L289,419 L272,407 L258,398 L241,388 L225,380 L210,373 L189,365 L173,360 L168,357 L158,348 L139,329 L137,328 L137,326 L133,324 L131,320 L127,318 L96,287 L96,285 L92,283 L88,278 L86,277 L86,275 L82,273 L77,267 L75,266 L75,264 L73,264 L66,256 L33,223 L33,221 L30,220 L30,218 L26,216 L21,211 L21,209 L19,209 L10,198 L2,182 L-1,167 L-1,1 Z "
+        transform="translate(205,540)"
+        className="fill-accent"
+      />
+      <path
+        d="M0,0 L8,0 L9,1 L9,170 L5,186 L-2,199 L-13,211 L-17,213 L-19,217 L-52,250 L-59,258 L-129,328 L-131,328 L-133,332 L-141,339 L-146,344 L-160,358 L-192,369 L-213,378 L-229,386 L-255,401 L-273,414 L-283,421 L-285,421 L-285,338 L-284,271 L-281,257 L-276,244 L-270,234 L-262,223 L-252,213 L-244,206 L-230,195 L-222,188 L-211,179 L-199,169 L-188,160 L-175,149 L-158,135 L-141,121 L-131,113 L-119,105 L-113,103 L-102,103 L-96,106 L-92,113 L-90,121 L-91,134 L-95,144 L-102,153 L-107,158 L-167,218 L-167,226 L-163,230 L-155,230 L-144,221 L-135,212 L-127,205 L-111,190 L-107,188 L-107,186 L-99,179 L-86,166 L-81,161 L-77,156 L-73,146 L-73,117 L-77,96 L-77,80 L-74,68 L-66,50 L-57,35 L-48,25 L-43,20 L-35,13 L-19,5 L-11,2 Z "
+        transform="translate(812,540)"
+        className="fill-accent"
       />
     </svg>
   );

@@ -3,6 +3,7 @@ import { Logo } from "@/components/brand/Logo";
 import { Mark } from "@/components/brand/Mark";
 import { GuestBackLink } from "@/components/public/GuestBackLink";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { buttonClasses } from "@/components/ui/Button";
 
 type PublicHeaderProps = {
   title?: string;
@@ -13,6 +14,8 @@ type PublicHeaderProps = {
   showVerified?: boolean;
   backHref?: string;
   backLabel?: string;
+  links?: { href: string; label: string }[];
+  staffVariant?: "text" | "button";
 };
 
 export function PublicHeader({
@@ -24,6 +27,8 @@ export function PublicHeader({
   showVerified = false,
   backHref,
   backLabel,
+  links,
+  staffVariant = "text",
 }: PublicHeaderProps) {
   return (
     <header className="flex flex-col gap-2 border-b border-hairline px-[18px] py-3.5 min-[900px]:px-8">
@@ -45,7 +50,7 @@ export function PublicHeader({
           )}
         </Link>
 
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2 min-[720px]:gap-3">
           {showVerified && (
             <Link
               href="/verified"
@@ -54,9 +59,22 @@ export function PublicHeader({
               Verified books
             </Link>
           )}
+          {links?.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="hidden font-sans text-[13px] font-semibold text-body transition-colors hover:text-ink min-[720px]:inline"
+            >
+              {link.label}
+            </Link>
+          ))}
           <Link
             href={staffHref}
-            className="font-sans text-[12.5px] font-semibold text-body transition-colors hover:text-ink"
+            className={
+              staffVariant === "button"
+                ? buttonClasses({ size: "sm", variant: "secondary" })
+                : "font-sans text-[12.5px] font-semibold text-body transition-colors hover:text-ink"
+            }
           >
             {staffLabel}
           </Link>

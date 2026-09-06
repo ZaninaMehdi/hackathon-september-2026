@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useId } from "react";
 import { formatUsd } from "@/lib/mock/project";
 import type { PublicOrgDirectoryItem } from "@/lib/data/project";
 
@@ -14,123 +13,69 @@ function initials(name: string): string {
   return `${words[0][0]}${words[words.length - 1][0]}`.toUpperCase();
 }
 
-/* Stands in for a photo the org hasn't uploaded. Arches rather than a flat
-   swatch so a card without an image still looks composed next to one with a
-   real photo. Carries no lettering — the logo tile below it already shows the
-   org's mark or monogram, and repeating it reads as a broken image. */
-function CoverFallback() {
-  const patternId = useId();
-
-  return (
-    <div
-      aria-hidden="true"
-      className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent-wash via-accent-tint to-surface-sunken"
-    >
-      <svg className="absolute inset-0 h-full w-full text-accent/[0.08]" aria-hidden="true">
-        <defs>
-          <pattern id={patternId} width="46" height="54" patternUnits="userSpaceOnUse">
-            <path
-              d="M23 6c7.7 0 14 6.3 14 14v30H9V20C9 12.3 15.3 6 23 6Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#${patternId})`} />
-      </svg>
-    </div>
-  );
-}
-
-/* Cards sit in a 1-to-2 column grid inside a 1080px container, so a card is
-   roughly full width on phones and just under half the viewport above 720px. */
-const COVER_SIZES = "(min-width: 1140px) 520px, (min-width: 720px) 46vw, 92vw";
-
 export function OrgCard({ org }: { org: PublicOrgDirectoryItem }) {
-  const hasCampaigns = org.activeCampaigns > 0;
+  const avatarUrl = org.logoUrl ?? org.coverImageUrl ?? null;
+  const meta = org.orgType;
 
   return (
     <Link
       href={`/${org.slug}`}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-xl border border-hairline bg-surface-raised shadow-card outline-none transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lift focus-visible:ring-2 focus-visible:ring-accent"
+      aria-label={`View campaigns for ${org.name}`}
+      className="group flex h-full w-full min-w-0 flex-col gap-3 rounded-xl border border-hairline bg-surface-raised p-4 shadow-card outline-none transition duration-150 hover:border-border hover:shadow-lift focus-visible:ring-2 focus-visible:ring-accent"
     >
-      <div className="relative aspect-16/10 overflow-hidden bg-accent-tint">
-        {org.coverImageUrl ? (
-          <Image
-            src={org.coverImageUrl}
-            alt=""
-            fill
-            sizes={COVER_SIZES}
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-          />
-        ) : (
-          <CoverFallback />
-        )}
-      </div>
-
-      <div className="flex flex-1 flex-col gap-2.5 px-4 pb-4">
-        {/* Pulled up over the cover, with a ring in the card colour so the mark
-            reads as punched through the photo's bottom edge. */}
-        <div className="relative -mt-8 h-16 w-16 overflow-hidden rounded-xl bg-surface-raised ring-4 ring-surface-raised">
-          {org.logoUrl ? (
-            <Image src={org.logoUrl} alt="" fill sizes="64px" className="object-cover" />
+      <div className="flex items-start gap-3">
+        <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-md bg-accent-wash">
+          {avatarUrl ? (
+            <Image src={avatarUrl} alt="" fill sizes="44px" className="object-cover" />
           ) : (
             <span
               aria-hidden="true"
-              className="flex h-full w-full items-center justify-center rounded-xl bg-accent-wash font-display text-subhead font-bold text-accent"
+              className="flex h-full w-full items-center justify-center font-sans text-meta font-bold text-accent"
             >
               {initials(org.name)}
             </span>
           )}
         </div>
-
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <h3 className="font-display text-subhead font-bold tracking-[-0.01em] text-ink">
-            {org.name}
-          </h3>
-          {org.orgType && (
-            <span className="rounded-pill bg-accent-wash px-2 py-[3px] font-mono text-[10px] font-medium uppercase tracking-[0.05em] text-accent">
-              {org.orgType}
-            </span>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-sans text-copy font-semibold text-ink">{org.name}</h3>
+          {meta && (
+            <p className="truncate font-mono text-[10px] font-medium tracking-[0.06em] text-muted uppercase">
+              {meta}
+            </p>
           )}
         </div>
+      </div>
 
-        {org.description && (
-          <p className="line-clamp-2 text-meta leading-[1.55] text-body">{org.description}</p>
-        )}
+      {/* Always two lines so a missing description doesn't shrink the card
+          relative to its neighbor. */}
+      <p className="line-clamp-2 h-[3.1em] text-meta leading-[1.55] text-body">
+        {org.description || "\u00a0"}
+      </p>
 
-        <div className="mt-auto flex items-center gap-2 border-t border-hairline-soft pt-3">
-          <div className="flex min-w-0 flex-col">
-            <span className="text-meta font-semibold text-ink">
-              {hasCampaigns
-                ? `${org.activeCampaigns} open campaign${org.activeCampaigns === 1 ? "" : "s"}`
-                : "No open campaigns"}
-            </span>
-            {/* Always rendered, so the footer is the same height on every card
-                and the dividers line up across the grid. */}
-            <span className="font-mono text-micro text-muted">
-              {org.totalRaised > 0 ? `${formatUsd(org.totalRaised)} raised` : "No donations yet"}
-            </span>
-          </div>
-          <span className="ml-auto flex shrink-0 items-center gap-1 text-meta font-semibold text-accent">
-            View
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-              className="transition-transform duration-200 group-hover:translate-x-0.5"
-            >
-              <path d="M3 7h8M7.5 3.5 11 7l-3.5 3.5" />
-            </svg>
-          </span>
-        </div>
+      <div className="mt-auto flex items-center gap-2 border-t border-hairline-soft pt-3">
+        <span className="min-w-0 truncate text-meta text-body">
+          {org.totalRaised > 0 ? `${formatUsd(org.totalRaised)} raised` : "No donations yet"}
+          {org.activeCampaigns > 0
+            ? ` · ${org.activeCampaigns} campaign${org.activeCampaigns === 1 ? "" : "s"}`
+            : ""}
+        </span>
+        <span className="ml-auto flex shrink-0 items-center gap-1 text-meta font-semibold text-accent">
+          View
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="transition-transform duration-200 group-hover:translate-x-0.5"
+          >
+            <path d="M3 7h8M7.5 3.5 11 7l-3.5 3.5" />
+          </svg>
+        </span>
       </div>
     </Link>
   );

@@ -90,6 +90,9 @@
   --font-sans: var(--font-libre-franklin);
   --font-mono: var(--font-ibm-plex-mono);
   --font-display: var(--font-source-serif);
+  /* Logotype only. Kept separate from --font-display so the wordmark can carry
+     its own voice while page headings stay on the text serif. */
+  --font-brand: var(--font-amiri);
 }
 
 /* Declared so browsers with "force dark mode" enabled leave the palette alone
