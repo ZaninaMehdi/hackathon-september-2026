@@ -6,26 +6,32 @@ import { Logo } from "@/components/brand/Logo";
 import { Mark } from "@/components/brand/Mark";
 import { Avatar } from "@/components/ui/Avatar";
 import { BookingsIcon, EventsIcon, GivingIcon, OverviewIcon, ProjectsIcon } from "@/components/dashboard/NavIcons";
+import { PendingCountBadge } from "@/components/services/PendingCountBadge";
 
 const NAV_ITEMS = [
   { label: "Overview", icon: OverviewIcon, href: "/dashboard" },
   { label: "Projects", icon: ProjectsIcon, href: "/dashboard/projects" },
   { label: "Giving", icon: GivingIcon, href: null },
   { label: "Events", icon: EventsIcon, href: "/events" },
-  { label: "Bookings", icon: BookingsIcon, href: null },
+  { label: "Bookings", icon: BookingsIcon, href: "/services" },
 ] as const;
 
 type AppShellProps = {
   email: string | null;
   roles: string[];
+  pendingCount?: number;
   children: React.ReactNode;
 };
 
-export function AppShell({ email, roles, children }: AppShellProps) {
+export function AppShell({ email, roles, pendingCount = 0, children }: AppShellProps) {
   const pathname = usePathname();
 
   function isActive(href: string) {
-    return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+    if (href === "/dashboard") return pathname === "/dashboard";
+    if (href === "/services") {
+      return pathname.startsWith("/services") || pathname.startsWith("/dashboard/officiant");
+    }
+    return pathname.startsWith(href);
   }
 
   return (
@@ -61,6 +67,11 @@ export function AppShell({ email, roles, children }: AppShellProps) {
                 >
                   {label}
                 </span>
+                {href === "/services" && (
+                  <span className="hidden min-[1200px]:ml-auto min-[1200px]:inline">
+                    <PendingCountBadge count={pendingCount} />
+                  </span>
+                )}
               </Link>
             ) : (
               <div
@@ -95,8 +106,13 @@ export function AppShell({ email, roles, children }: AppShellProps) {
         {NAV_ITEMS.map(({ label, icon: Icon, href }) => {
           const active = href ? isActive(href) : false;
           return href ? (
-            <Link key={label} href={href} className="flex flex-col items-center gap-1 px-2">
+            <Link key={label} href={href} className="relative flex flex-col items-center gap-1 px-2">
               <Icon className={active ? "text-accent" : "text-body"} />
+              {href === "/services" && pendingCount > 0 && (
+                <span className="absolute right-0 top-[-4px]">
+                  <PendingCountBadge count={pendingCount} />
+                </span>
+              )}
               <span className={`text-[10px] ${active ? "font-semibold text-accent" : "text-body"}`}>
                 {label}
               </span>

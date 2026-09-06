@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { OrgEvent } from "@/lib/data/events";
 import { createEvent, deleteEvent, updateEvent } from "@/lib/actions/event";
 import type { RecurrenceFrequency, SeriesScope } from "@/lib/events/recurrence";
@@ -161,15 +162,25 @@ export function EventsListClient({
         </div>
       )}
 
-      {canManage && !formOpen && (
+      {!formOpen && (
         <footer className="sticky bottom-16 z-10 mt-auto w-full border-t border-hairline bg-surface/95 px-[18px] py-3.5 backdrop-blur-sm min-[900px]:bottom-0">
-          <button
-            type="button"
-            onClick={() => setFormMode({ kind: "create" })}
-            className="mx-auto block w-full rounded-lg bg-accent py-3.5 text-center text-[15px] font-semibold text-white transition-colors hover:bg-accent-hover"
-          >
-            Add event
-          </button>
+          <div className="mx-auto flex w-full max-w-[390px] gap-2">
+            <Link
+              href="/services"
+              className="flex flex-1 items-center justify-center rounded-lg border border-border bg-white py-3.5 text-center text-[15px] font-semibold text-ink"
+            >
+              Book a service
+            </Link>
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => setFormMode({ kind: "create" })}
+                className="flex-1 rounded-lg bg-accent py-3.5 text-center text-[15px] font-semibold text-white transition-colors hover:bg-accent-hover"
+              >
+                Add event
+              </button>
+            )}
+          </div>
         </footer>
       )}
     </div>
