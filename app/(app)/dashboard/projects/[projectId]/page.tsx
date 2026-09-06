@@ -88,6 +88,9 @@ export default async function ProjectDetailPage({
           {canManage && (
             <ProjectManageMenu
               projectId={project.id}
+              title={project.title}
+              description={project.description ?? ""}
+              coverImageUrl={project.coverImageUrl}
               status={project.status}
               hasFinancialActivity={stats.raised.amount > 0 || stats.spent.amount > 0}
               isZakatEligible={project.isZakatEligible}
@@ -95,6 +98,15 @@ export default async function ProjectDetailPage({
           )}
         </div>
       </div>
+
+      {project.coverImageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={project.coverImageUrl}
+          alt=""
+          className="h-[160px] w-full object-cover min-[900px]:h-[220px]"
+        />
+      )}
 
       <div className="flex flex-col gap-5 p-4 min-[900px]:p-6">
         <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-3">

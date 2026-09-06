@@ -51,6 +51,7 @@ export default async function OrgHomePage({
       <PublicHeader
         title={data.org.name}
         titleHref={`/${orgSlug}`}
+        logoUrl={data.org.logoUrl}
         staffHref={staff.href}
         staffLabel={staff.label}
         showVerified
@@ -58,10 +59,18 @@ export default async function OrgHomePage({
         backLabel="All organizations"
       />
 
+      {data.org.coverImageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={data.org.coverImageUrl} alt="" className="h-[160px] w-full object-cover" />
+      )}
+
       <section className="flex flex-col gap-4 px-[18px] py-[22px]">
         <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
           Give to {data.org.name}
         </h1>
+        {data.org.description && (
+          <p className="font-sans text-copy leading-[1.6] text-body">{data.org.description}</p>
+        )}
         <p className="font-sans text-sm leading-[1.6] text-body">
           {openCount} open campaign{openCount === 1 ? "" : "s"} · {formatUsd(data.totalRaised)}{" "}
           raised so far. Select a campaign below to donate — no account needed.

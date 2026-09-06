@@ -35,6 +35,7 @@ export default async function PublicEventsPage({
       <PublicHeader
         title={org.name}
         titleHref={`/${orgSlug}`}
+        logoUrl={org.logoUrl}
         staffHref={staff.href}
         staffLabel={staff.label}
         showVerified

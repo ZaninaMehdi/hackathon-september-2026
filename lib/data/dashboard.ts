@@ -5,10 +5,12 @@ export type OrgProject = {
   id: string;
   slug: string;
   title: string;
+  description: string | null;
   status: ProjectStatus;
   totalGoal: number;
   phaseCount: number;
   isZakatEligible: boolean;
+  coverImageUrl: string | null;
 };
 
 export async function getOrgProjects(
@@ -23,13 +25,14 @@ export async function getOrgProjects(
     totalGoal: number;
     createdAt: string;
     isZakatEligible: boolean;
+    coverImageUrl: string | null;
   }[]
 > {
   const supabase = await createClient();
 
   let query = supabase
     .from("projects")
-    .select("id, slug, title, status, created_at, is_zakat_eligible")
+    .select("id, slug, title, status, created_at, is_zakat_eligible, cover_image_url")
     .eq("org_id", orgId);
 
   if (!includeArchived) {
@@ -57,6 +60,7 @@ export async function getOrgProjects(
     totalGoal: goalByProject.get(p.id) ?? 0,
     createdAt: p.created_at,
     isZakatEligible: p.is_zakat_eligible,
+    coverImageUrl: p.cover_image_url,
   }));
 }
 
@@ -68,7 +72,7 @@ export async function getLatestOrgProject(
 
   const query = supabase
     .from("projects")
-    .select("id, slug, title, status, is_zakat_eligible")
+    .select("id, slug, title, description, status, is_zakat_eligible, cover_image_url")
     .eq("org_id", orgId);
 
   const { data: project } = projectId
@@ -86,10 +90,12 @@ export async function getLatestOrgProject(
     id: project.id,
     slug: project.slug,
     title: project.title,
+    description: project.description,
     status: project.status as ProjectStatus,
     totalGoal: (phases ?? []).reduce((sum, p) => sum + Number(p.budget_target), 0),
     phaseCount: phases?.length ?? 0,
     isZakatEligible: project.is_zakat_eligible,
+    coverImageUrl: project.cover_image_url,
   };
 }
 
@@ -187,6 +193,7 @@ export type ProjectSummary = {
   spent: number;
   phaseCount: number;
   isZakatEligible: boolean;
+  coverImageUrl: string | null;
 };
 
 export type OrgOverviewStat = {
@@ -239,7 +246,7 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
     await Promise.all([
       supabase
         .from("projects")
-        .select("id, title, status, is_zakat_eligible")
+        .select("id, title, status, is_zakat_eligible, cover_image_url")
         .eq("org_id", orgId)
         .neq("status", "archived"),
       supabase.from("phases").select("id, project_id, budget_target").eq("org_id", orgId),
@@ -291,6 +298,7 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
     spent: spentByProject.get(p.id) ?? 0,
     phaseCount: phaseCountByProject.get(p.id) ?? 0,
     isZakatEligible: p.is_zakat_eligible,
+    coverImageUrl: p.cover_image_url,
   }));
 
   const totalRaised = allDonations.reduce((sum, d) => sum + Number(d.amount), 0);

@@ -118,6 +118,14 @@ export default async function DashboardOverviewPage() {
                   href={`/dashboard/projects/${project.id}`}
                   className="flex flex-col gap-2.5 rounded-lg border border-hairline bg-surface-raised p-4 shadow-card transition-shadow duration-150 hover:shadow-lift"
                 >
+                  {project.coverImageUrl && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={project.coverImageUrl}
+                      alt=""
+                      className="-mx-4 -mt-4 h-28 w-[calc(100%+2rem)] rounded-t-lg object-cover"
+                    />
+                  )}
                   <div className="flex items-center gap-2">
                     <span className="truncate text-copy font-semibold text-ink">{project.title}</span>
                     {project.status === "closed" && (

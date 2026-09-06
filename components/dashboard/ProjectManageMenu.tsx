@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { EditCampaignModal } from "@/components/dashboard/EditCampaignModal";
 import {
   setProjectStatus,
   setProjectZakatEligible,
@@ -11,6 +12,9 @@ import {
 
 type ProjectManageMenuProps = {
   projectId: string;
+  title: string;
+  description: string;
+  coverImageUrl: string | null;
   status: ProjectStatus;
   hasFinancialActivity: boolean;
   isZakatEligible: boolean;
@@ -18,11 +22,15 @@ type ProjectManageMenuProps = {
 
 export function ProjectManageMenu({
   projectId,
+  title,
+  description,
+  coverImageUrl,
   status,
   hasFinancialActivity,
   isZakatEligible,
 }: ProjectManageMenuProps) {
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,6 +108,14 @@ export function ProjectManageMenu({
             className="fixed inset-0 z-40 cursor-default"
           />
           <div className="absolute right-0 top-[calc(100%+6px)] z-50 flex w-[220px] flex-col overflow-hidden rounded-lg border border-hairline bg-surface shadow-lg">
+            <MenuItem
+              onClick={() => {
+                setEditing(true);
+                setOpen(false);
+              }}
+            >
+              Edit campaign
+            </MenuItem>
             <MenuItem onClick={handleToggleZakat}>
               {isZakatEligible ? "Unmark Zakat-eligible" : "Mark Zakat-eligible"}
             </MenuItem>
@@ -149,6 +165,16 @@ export function ProjectManageMenu({
         <p className="absolute right-0 top-[calc(100%+6px)] z-50 w-[220px] rounded-lg border border-hairline bg-surface p-3 text-meta text-danger shadow-lg">
           {error}
         </p>
+      )}
+
+      {editing && (
+        <EditCampaignModal
+          projectId={projectId}
+          title={title}
+          description={description}
+          coverImageUrl={coverImageUrl}
+          onClose={() => setEditing(false)}
+        />
       )}
     </div>
   );

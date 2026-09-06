@@ -4,13 +4,23 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireAdminContext } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { generateUniqueSlug } from "@/lib/utils/slug";
+
+async function uploadCoverImage(pathPrefix: string, file: File): Promise<string> {
+  const admin = createAdminClient();
+  const path = `${pathPrefix}/${Date.now()}-${file.name}`;
+  const { error } = await admin.storage.from("media").upload(path, file);
+  if (error) throw new Error(error.message);
+  return admin.storage.from("media").getPublicUrl(path).data.publicUrl;
+}
 
 export type CreateProjectInput = {
   title: string;
   description: string;
   phases: { name: string; budget: number }[];
   isZakatEligible: boolean;
+  coverImageFile: File | null;
 };
 
 export async function createProject(input: CreateProjectInput) {
@@ -27,6 +37,10 @@ export async function createProject(input: CreateProjectInput) {
     return Boolean(data);
   });
 
+  const coverImageUrl = input.coverImageFile
+    ? await uploadCoverImage(`campaigns/${context.orgId}`, input.coverImageFile)
+    : null;
+
   const { data: project, error: projectError } = await supabase
     .from("projects")
     .insert({
@@ -36,6 +50,7 @@ export async function createProject(input: CreateProjectInput) {
       description: input.description || null,
       created_by: context.memberId,
       is_zakat_eligible: input.isZakatEligible,
+      cover_image_url: coverImageUrl,
     })
     .select("id")
     .single();
@@ -91,6 +106,46 @@ export async function setProjectStatus(projectId: string, status: ProjectStatus)
   if (error) throw new Error(error.message);
 
   revalidatePath(`/dashboard/projects/${projectId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/projects");
+}
+
+export type UpdateProjectInput = {
+  projectId: string;
+  title: string;
+  description: string;
+  coverImageFile: File | null;
+  removeCoverImage: boolean;
+};
+
+export async function updateProject(input: UpdateProjectInput) {
+  const context = await requireAdminContext();
+  const supabase = await createClient();
+
+  await assertOwnsProject(supabase, context.orgId, input.projectId);
+
+  let coverImageUrl: string | undefined;
+  if (input.coverImageFile) {
+    coverImageUrl = await uploadCoverImage(
+      `campaigns/${context.orgId}`,
+      input.coverImageFile
+    );
+  } else if (input.removeCoverImage) {
+    coverImageUrl = null as unknown as string;
+  }
+
+  const { error } = await supabase
+    .from("projects")
+    .update({
+      title: input.title,
+      description: input.description || null,
+      ...(coverImageUrl !== undefined ? { cover_image_url: coverImageUrl } : {}),
+    })
+    .eq("id", input.projectId);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/projects/${input.projectId}`);
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/projects");
 }

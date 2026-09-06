@@ -50,12 +50,20 @@ export default async function PublicProjectPage({
 
   const reassurance = `${data.phases.length} phase${data.phases.length === 1 ? "" : "s"}. Every approved expense is posted here with its receipt.`;
   const isAcceptingDonations = data.project.status === "active";
+  const donatablePhases = data.phases.map((phase) => ({
+    id: phase.id,
+    label: phase.name,
+    raised: phase.raised,
+    target: phase.target,
+    isComplete: phase.status === "complete",
+  }));
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface pb-[110px] min-[900px]:max-w-[980px] min-[900px]:pb-10">
       <PublicHeader
         title={data.org.name}
         titleHref={`/${orgSlug}`}
+        logoUrl={data.org.logoUrl}
         staffHref={staff.href}
         staffLabel={staff.label}
         showVerified
@@ -67,6 +75,15 @@ export default async function PublicProjectPage({
         <div className="border-b border-hairline bg-neutral-wash px-[18px] py-2.5 text-center font-mono text-[11px] font-medium uppercase tracking-[0.04em] text-body">
           {data.project.status === "closed" ? "Campaign closed" : "Campaign archived"}
         </div>
+      )}
+
+      {data.project.coverImageUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={data.project.coverImageUrl}
+          alt=""
+          className="h-[180px] w-full object-cover min-[900px]:h-[260px]"
+        />
       )}
 
       <div className="min-[900px]:grid min-[900px]:grid-cols-[minmax(0,1fr)_320px] min-[900px]:items-start min-[900px]:gap-10 min-[900px]:px-8 min-[900px]:pt-2">
@@ -211,6 +228,7 @@ export default async function PublicProjectPage({
           phaseId={data.activePhaseId}
           phaseLabel={data.activePhaseLabel}
           isAcceptingDonations={isAcceptingDonations}
+          phases={donatablePhases}
         />
       </div>
 
@@ -222,6 +240,7 @@ export default async function PublicProjectPage({
         phaseId={data.activePhaseId}
         phaseLabel={data.activePhaseLabel}
         isAcceptingDonations={isAcceptingDonations}
+        phases={donatablePhases}
       />
     </div>
   );

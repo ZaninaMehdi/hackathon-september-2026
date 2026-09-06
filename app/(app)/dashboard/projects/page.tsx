@@ -44,6 +44,16 @@ export default async function ProjectsListPage() {
               href={`/dashboard/projects/${project.id}`}
               className="flex items-center gap-3 rounded-lg border border-hairline bg-surface-raised p-4 hover:bg-surface-sunken"
             >
+              {project.coverImageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={project.coverImageUrl}
+                  alt=""
+                  className="h-12 w-12 shrink-0 rounded-md object-cover"
+                />
+              ) : (
+                <div className="h-12 w-12 shrink-0 rounded-md bg-surface-sunken" />
+              )}
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-copy font-semibold text-ink">{project.title}</span>

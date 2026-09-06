@@ -55,3 +55,16 @@ export function BookingsIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function SettingsIcon({ className }: IconProps) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" className={className} aria-hidden="true">
+      <circle cx="7" cy="7" r="2.25" stroke="currentColor" {...STROKE} />
+      <path
+        d="M7 1.5v1.4M7 11.1v1.4M12.5 7h-1.4M2.9 7H1.5M10.7 3.3l-1 1M4.3 9.7l-1 1M10.7 10.7l-1-1M4.3 4.3l-1-1"
+        stroke="currentColor"
+        {...STROKE}
+      />
+    </svg>
+  );
+}

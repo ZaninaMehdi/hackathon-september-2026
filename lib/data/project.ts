@@ -10,13 +10,20 @@ export const getPublicOrgBySlug = cache(async function getPublicOrgBySlug(orgSlu
 
   const { data: org } = await supabase
     .from("organizations")
-    .select("id, name, slug")
+    .select("id, name, slug, description, logo_url, cover_image_url")
     .eq("slug", orgSlug)
     .maybeSingle();
 
   if (!org) notFound();
 
-  return org;
+  return {
+    id: org.id,
+    name: org.name,
+    slug: org.slug,
+    description: org.description,
+    logoUrl: org.logo_url,
+    coverImageUrl: org.cover_image_url,
+  };
 });
 
 export type PublicPhase = {
@@ -39,7 +46,7 @@ export type PublicExpense = {
 };
 
 export type PublicProjectData = {
-  org: { id: string; name: string; slug: string };
+  org: { id: string; name: string; slug: string; logoUrl: string | null };
   project: {
     id: string;
     slug: string;
@@ -47,6 +54,7 @@ export type PublicProjectData = {
     description: string | null;
     status: ProjectStatus;
     isZakatEligible: boolean;
+    coverImageUrl: string | null;
   };
   raised: number;
   goal: number;
@@ -56,6 +64,14 @@ export type PublicProjectData = {
   phases: PublicPhase[];
   expenses: PublicExpense[];
   expensesTotal: number;
+};
+
+export type DonatablePhase = {
+  id: string;
+  label: string;
+  raised: number;
+  target: number;
+  isComplete: boolean;
 };
 
 export type PublicProjectSummary = {
@@ -68,12 +84,21 @@ export type PublicProjectSummary = {
   goal: number;
   phaseCount: number;
   isZakatEligible: boolean;
+  coverImageUrl: string | null;
   activePhaseId: string | null;
   activePhaseLabel: string;
+  phases: DonatablePhase[];
 };
 
 export type PublicOrgHome = {
-  org: { id: string; name: string; slug: string };
+  org: {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    logoUrl: string | null;
+    coverImageUrl: string | null;
+  };
   projects: PublicProjectSummary[];
   totalRaised: number;
   totalGoal: number;
@@ -152,7 +177,7 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
 
   const { data: org } = await supabase
     .from("organizations")
-    .select("id, name, slug")
+    .select("id, name, slug, description, logo_url, cover_image_url")
     .eq("slug", orgSlug)
     .maybeSingle();
 
@@ -161,7 +186,7 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
   const [{ data: projects }, { data: phases }, { data: donations }] = await Promise.all([
     supabase
       .from("projects")
-      .select("id, slug, title, description, status, is_zakat_eligible")
+      .select("id, slug, title, description, status, is_zakat_eligible, cover_image_url")
       .eq("org_id", org.id)
       .neq("status", "archived")
       .order("created_at", { ascending: false }),
@@ -203,6 +228,17 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
   const projectSummaries: PublicProjectSummary[] = (projects ?? []).map((project) => {
     const projectPhases = phasesByProject.get(project.id) ?? [];
     const activePhase = resolveActivePhase(projectPhases, raisedByPhase);
+    const donatablePhases: DonatablePhase[] = projectPhases.map((phase) => {
+      const raised = raisedByPhase.get(phase.id) ?? 0;
+      const target = Number(phase.budget_target);
+      return {
+        id: phase.id,
+        label: phase.title,
+        raised,
+        target,
+        isComplete: target > 0 && raised >= target,
+      };
+    });
 
     return {
       id: project.id,
@@ -214,13 +250,22 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
       goal: goalByProject.get(project.id) ?? 0,
       phaseCount: projectPhases.length,
       isZakatEligible: project.is_zakat_eligible,
+      coverImageUrl: project.cover_image_url,
       activePhaseId: activePhase?.id ?? null,
       activePhaseLabel: activePhase?.label ?? "",
+      phases: donatablePhases,
     };
   });
 
   return {
-    org: { id: org.id, name: org.name, slug: org.slug },
+    org: {
+      id: org.id,
+      name: org.name,
+      slug: org.slug,
+      description: org.description,
+      logoUrl: org.logo_url,
+      coverImageUrl: org.cover_image_url,
+    },
     projects: projectSummaries,
     totalRaised: projectSummaries.reduce((sum, p) => sum + p.raised, 0),
     totalGoal: projectSummaries.reduce((sum, p) => sum + p.goal, 0),
@@ -235,7 +280,7 @@ export const getPublicProject = cache(async function getPublicProject(
 
   const { data: org } = await supabase
     .from("organizations")
-    .select("id, name, slug")
+    .select("id, name, slug, logo_url")
     .eq("slug", orgSlug)
     .maybeSingle();
 
@@ -243,7 +288,7 @@ export const getPublicProject = cache(async function getPublicProject(
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, slug, title, description, status, org_id, is_zakat_eligible")
+    .select("id, slug, title, description, status, org_id, is_zakat_eligible, cover_image_url")
     .eq("slug", projectSlug)
     .eq("org_id", org.id)
     .maybeSingle();
@@ -321,7 +366,7 @@ export const getPublicProject = cache(async function getPublicProject(
   }));
 
   return {
-    org: { id: org.id, name: org.name, slug: org.slug },
+    org: { id: org.id, name: org.name, slug: org.slug, logoUrl: org.logo_url },
     project: {
       id: project.id,
       slug: project.slug,
@@ -329,6 +374,7 @@ export const getPublicProject = cache(async function getPublicProject(
       description: project.description,
       status: project.status as ProjectStatus,
       isZakatEligible: project.is_zakat_eligible,
+      coverImageUrl: project.cover_image_url,
     },
     raised: totalRaised,
     goal: totalGoal,

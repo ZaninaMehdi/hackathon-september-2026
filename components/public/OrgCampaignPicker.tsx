@@ -60,13 +60,22 @@ export function OrgCampaignPicker({ orgSlug, projects }: OrgCampaignPickerProps)
                 className="flex flex-col gap-2 text-left outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <div className="flex items-center gap-3">
-                  <span
-                    className={`inline-block h-[18px] w-[18px] shrink-0 rounded-full ${
-                      selectedCard
-                        ? "border-[5px] border-accent bg-surface-raised"
-                        : "border-[1.5px] border-border-strong bg-surface-raised"
-                    }`}
-                  />
+                  {project.coverImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={project.coverImageUrl}
+                      alt=""
+                      className="h-9 w-9 shrink-0 rounded-md object-cover"
+                    />
+                  ) : (
+                    <span
+                      className={`inline-block h-[18px] w-[18px] shrink-0 rounded-full ${
+                        selectedCard
+                          ? "border-[5px] border-accent bg-surface-raised"
+                          : "border-[1.5px] border-border-strong bg-surface-raised"
+                      }`}
+                    />
+                  )}
                   <span className="min-w-0 truncate font-sans text-copy font-semibold text-ink">
                     {project.title}
                   </span>
@@ -112,6 +121,7 @@ export function OrgCampaignPicker({ orgSlug, projects }: OrgCampaignPickerProps)
                         ? `Donate to ${project.activePhaseLabel}`
                         : "Donate"
                     }
+                    phases={project.phases}
                   />
                   <Link
                     href={`/${orgSlug}/${project.slug}`}

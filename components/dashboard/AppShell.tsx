@@ -5,7 +5,14 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { Mark } from "@/components/brand/Mark";
 import { Avatar } from "@/components/ui/Avatar";
-import { BookingsIcon, EventsIcon, OverviewIcon, ProjectsIcon, TasksIcon } from "@/components/dashboard/NavIcons";
+import {
+  BookingsIcon,
+  EventsIcon,
+  OverviewIcon,
+  ProjectsIcon,
+  SettingsIcon,
+  TasksIcon,
+} from "@/components/dashboard/NavIcons";
 import { PendingCountBadge } from "@/components/services/PendingCountBadge";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -15,17 +22,26 @@ const NAV_ITEMS = [
   { label: "Tasks", icon: TasksIcon, href: "/dashboard/tasks" },
   { label: "Events", icon: EventsIcon, href: "/events" },
   { label: "Services", icon: BookingsIcon, href: "/services" },
+  { label: "Settings", icon: SettingsIcon, href: "/dashboard/settings" },
 ] as const;
 
 type AppShellProps = {
   orgName: string;
+  orgLogoUrl?: string | null;
   email: string | null;
   roles: string[];
   pendingCount?: number;
   children: React.ReactNode;
 };
 
-export function AppShell({ orgName, email, roles, pendingCount = 0, children }: AppShellProps) {
+export function AppShell({
+  orgName,
+  orgLogoUrl,
+  email,
+  roles,
+  pendingCount = 0,
+  children,
+}: AppShellProps) {
   const pathname = usePathname();
 
   function isActive(href: string) {
@@ -43,12 +59,23 @@ export function AppShell({ orgName, email, roles, pendingCount = 0, children }: 
           across every route in this (app) group. */}
       <aside className="sticky top-0 hidden h-svh w-[60px] shrink-0 flex-col gap-[22px] overflow-y-auto border-r border-hairline bg-surface-sunken px-2 py-4.5 min-[900px]:flex min-[1200px]:w-[216px] min-[1200px]:px-3.5">
         <div className="flex flex-col items-center gap-2 px-1.5 min-[1200px]:items-start">
-          <div className="min-[1200px]:hidden">
-            <Mark size={22} />
-          </div>
-          <div className="hidden min-[1200px]:block">
-            <Logo size="sm" />
-          </div>
+          {orgLogoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={orgLogoUrl}
+              alt=""
+              className="h-[22px] w-[22px] shrink-0 rounded-full object-cover min-[1200px]:h-7 min-[1200px]:w-7"
+            />
+          ) : (
+            <>
+              <div className="min-[1200px]:hidden">
+                <Mark size={22} />
+              </div>
+              <div className="hidden min-[1200px]:block">
+                <Logo size="sm" />
+              </div>
+            </>
+          )}
           {orgName && (
             <p className="hidden min-w-0 font-sans text-[13px] font-semibold leading-snug text-ink min-[1200px]:block">
               {orgName}

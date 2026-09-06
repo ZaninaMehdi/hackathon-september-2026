@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 type PublicHeaderProps = {
   title?: string;
   titleHref?: string;
+  logoUrl?: string | null;
   staffHref: string;
   staffLabel: string;
   showVerified?: boolean;
@@ -17,6 +18,7 @@ type PublicHeaderProps = {
 export function PublicHeader({
   title,
   titleHref = "/",
+  logoUrl,
   staffHref,
   staffLabel,
   showVerified = false,
@@ -30,7 +32,12 @@ export function PublicHeader({
         <Link href={titleHref} className="flex min-w-0 items-center gap-2.5">
           {title ? (
             <>
-              <Mark size={26} />
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="" className="h-[26px] w-[26px] shrink-0 rounded-full object-cover" />
+              ) : (
+                <Mark size={26} />
+              )}
               <span className="truncate font-sans text-copy font-semibold text-ink">{title}</span>
             </>
           ) : (

@@ -1,6 +1,7 @@
 "use client";
 
 import { DonateForm } from "@/components/public/DonateForm";
+import type { DonatablePhase } from "@/lib/data/project";
 
 type DonateFooterProps = {
   orgSlug: string;
@@ -12,6 +13,7 @@ type DonateFooterProps = {
   /** "bar" pins to the viewport bottom (mobile); "card" sits in the desktop sidebar. */
   variant?: "bar" | "card";
   className?: string;
+  phases?: DonatablePhase[];
 };
 
 export function DonateFooter({
@@ -23,6 +25,7 @@ export function DonateFooter({
   isAcceptingDonations,
   variant = "bar",
   className = "",
+  phases,
 }: DonateFooterProps) {
   const body = (
     <>
@@ -39,6 +42,7 @@ export function DonateFooter({
         phaseId={phaseId}
         phaseLabel={phaseLabel}
         isAcceptingDonations={isAcceptingDonations}
+        phases={phases}
       />
 
       <p className="mt-2.5 text-center text-micro leading-[1.5] text-body">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ImageUploadField } from "@/components/ui/ImageUploadField";
 import { createProject } from "@/lib/actions/project";
 
 type Phase = { name: string; budget: number };
@@ -10,6 +11,7 @@ export function NewProjectForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isZakatEligible, setIsZakatEligible] = useState(false);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [phases, setPhases] = useState<Phase[]>([{ name: "Phase 1", budget: 0 }]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,6 +39,7 @@ export function NewProjectForm() {
         description: description.trim(),
         phases,
         isZakatEligible,
+        coverImageFile,
       });
     } catch (err) {
       const digest = (err as { digest?: string })?.digest;
@@ -69,6 +72,12 @@ export function NewProjectForm() {
           className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
+
+      <ImageUploadField
+        label="Cover photo (optional)"
+        onChange={setCoverImageFile}
+        aspectHint="Shown at the top of the campaign's public page and on campaign cards."
+      />
 
       <label className="flex items-center gap-2.5 rounded-lg border border-hairline bg-surface-raised px-3.5 py-3">
         <input
