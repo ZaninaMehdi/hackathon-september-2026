@@ -1,6 +1,7 @@
 import { ReceiptThumb } from "@/components/ui/ReceiptThumb";
 import { Badge } from "@/components/ui/Badge";
 import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicPage } from "@/components/public/PublicPage";
 import { formatUsd } from "@/lib/mock/project";
 import { getStaffNav } from "@/lib/auth/session";
 import { getProjectLedger } from "@/lib/data/project";
@@ -17,7 +18,7 @@ export default async function ProjectLedgerPage({
   ]);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface">
+    <PublicPage>
       <PublicHeader
         title={org.name}
         titleHref={`/${orgSlug}`}
@@ -28,9 +29,11 @@ export default async function ProjectLedgerPage({
         backLabel={`Back to ${project.title}`}
       />
 
-      <div className="flex flex-col gap-4 px-[18px] py-6">
+      <div className="flex flex-col gap-4 px-[18px] py-6 min-[900px]:px-8 min-[900px]:py-10">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-bold tracking-[-0.02em] text-ink">Approved expenses</h1>
+          <h1 className="text-xl font-bold tracking-[-0.02em] text-ink min-[900px]:font-display min-[900px]:text-display">
+            Approved expenses
+          </h1>
           <p className="text-sm text-body">
             {org.name} · {entries.length} total
           </p>
@@ -40,7 +43,7 @@ export default async function ProjectLedgerPage({
           <p className="text-sm text-body">No approved expenses yet.</p>
         )}
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 min-[720px]:grid min-[720px]:grid-cols-2">
           {entries.map((expense) => (
             <div
               key={expense.id}
@@ -65,6 +68,6 @@ export default async function ProjectLedgerPage({
           ))}
         </div>
       </div>
-    </div>
+    </PublicPage>
   );
 }

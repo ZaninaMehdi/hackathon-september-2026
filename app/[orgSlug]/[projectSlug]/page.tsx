@@ -7,6 +7,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ReceiptThumb } from "@/components/ui/ReceiptThumb";
 import { DonateFooter } from "@/components/public/DonateFooter";
 import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicPage } from "@/components/public/PublicPage";
 import { formatUsd } from "@/lib/mock/project";
 import { getStaffNav } from "@/lib/auth/session";
 import { getPublicProject, getPublicProjectSafe } from "@/lib/data/project";
@@ -59,7 +60,7 @@ export default async function PublicProjectPage({
   }));
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface pb-[110px] min-[900px]:max-w-[980px] min-[900px]:pb-10">
+    <PublicPage className="pb-[110px] min-[900px]:pb-10">
       <PublicHeader
         title={data.org.name}
         titleHref={`/${orgSlug}`}
@@ -242,6 +243,6 @@ export default async function PublicProjectPage({
         isAcceptingDonations={isAcceptingDonations}
         phases={donatablePhases}
       />
-    </div>
+    </PublicPage>
   );
 }
