@@ -16,28 +16,29 @@ function initials(name: string): string {
 
 /* Stands in for a photo the org hasn't uploaded. Arches rather than a flat
    swatch so a card without an image still looks composed next to one with a
-   real photo. */
-function CoverFallback({ name }: { name: string }) {
+   real photo. Carries no lettering — the logo tile below it already shows the
+   org's mark or monogram, and repeating it reads as a broken image. */
+function CoverFallback() {
   const patternId = useId();
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent-wash via-accent-tint to-surface-sunken">
-      <svg className="absolute inset-0 h-full w-full text-accent/[0.09]" aria-hidden="true">
+    <div
+      aria-hidden="true"
+      className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-accent-wash via-accent-tint to-surface-sunken"
+    >
+      <svg className="absolute inset-0 h-full w-full text-accent/[0.08]" aria-hidden="true">
         <defs>
-          <pattern id={patternId} width="30" height="36" patternUnits="userSpaceOnUse">
+          <pattern id={patternId} width="46" height="54" patternUnits="userSpaceOnUse">
             <path
-              d="M15 4c5.2 0 9.5 4.3 9.5 9.5V33h-19V13.5C5.5 8.3 9.8 4 15 4Z"
+              d="M23 6c7.7 0 14 6.3 14 14v30H9V20C9 12.3 15.3 6 23 6Z"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.25"
+              strokeWidth="1.5"
             />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill={`url(#${patternId})`} />
       </svg>
-      <span className="relative font-display text-[42px] font-bold tracking-[0.02em] text-accent/30">
-        {initials(name)}
-      </span>
     </div>
   );
 }
@@ -52,7 +53,7 @@ export function OrgCard({ org }: { org: PublicOrgDirectoryItem }) {
   return (
     <Link
       href={`/${org.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-hairline bg-surface-raised shadow-card outline-none transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lift focus-visible:ring-2 focus-visible:ring-accent"
+      className="group flex h-full w-full flex-col overflow-hidden rounded-xl border border-hairline bg-surface-raised shadow-card outline-none transition duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-lift focus-visible:ring-2 focus-visible:ring-accent"
     >
       <div className="relative aspect-16/10 overflow-hidden bg-accent-tint">
         {org.coverImageUrl ? (
@@ -64,7 +65,7 @@ export function OrgCard({ org }: { org: PublicOrgDirectoryItem }) {
             className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         ) : (
-          <CoverFallback name={org.name} />
+          <CoverFallback />
         )}
       </div>
 
@@ -75,7 +76,10 @@ export function OrgCard({ org }: { org: PublicOrgDirectoryItem }) {
           {org.logoUrl ? (
             <Image src={org.logoUrl} alt="" fill sizes="64px" className="object-cover" />
           ) : (
-            <span className="flex h-full w-full items-center justify-center rounded-xl bg-accent-wash font-display text-subhead font-bold text-accent">
+            <span
+              aria-hidden="true"
+              className="flex h-full w-full items-center justify-center rounded-xl bg-accent-wash font-display text-subhead font-bold text-accent"
+            >
               {initials(org.name)}
             </span>
           )}
@@ -103,11 +107,11 @@ export function OrgCard({ org }: { org: PublicOrgDirectoryItem }) {
                 ? `${org.activeCampaigns} open campaign${org.activeCampaigns === 1 ? "" : "s"}`
                 : "No open campaigns"}
             </span>
-            {org.totalRaised > 0 && (
-              <span className="font-mono text-micro text-muted">
-                {formatUsd(org.totalRaised)} raised
-              </span>
-            )}
+            {/* Always rendered, so the footer is the same height on every card
+                and the dividers line up across the grid. */}
+            <span className="font-mono text-micro text-muted">
+              {org.totalRaised > 0 ? `${formatUsd(org.totalRaised)} raised` : "No donations yet"}
+            </span>
           </div>
           <span className="ml-auto flex shrink-0 items-center gap-1 text-meta font-semibold text-accent">
             View

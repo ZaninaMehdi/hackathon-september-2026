@@ -16,6 +16,12 @@ const nextConfig: NextConfig = {
           },
         ]
       : [],
+    // Next refuses to optimize an upstream image whose host resolves to a
+    // private address. On a NAT64 network the public Supabase host resolves to
+    // 64:ff9b::/96, which trips that guard and leaves every photo broken in
+    // local dev. Deployed DNS returns ordinary public addresses, so the guard
+    // stays on where it actually protects against SSRF.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
   },
 
   // `next build` wipes and rewrites its output directory. If that's the same

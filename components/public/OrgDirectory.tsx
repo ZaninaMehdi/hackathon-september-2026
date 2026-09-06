@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
-import { buttonClasses } from "@/components/ui/Button";
-import { formatUsd } from "@/lib/mock/project";
+import { OrgCard } from "@/components/public/OrgCard";
 import type { PublicOrgDirectoryItem } from "@/lib/data/project";
 
 export function OrgDirectory({ orgs }: { orgs: PublicOrgDirectoryItem[] }) {
@@ -13,65 +11,73 @@ export function OrgDirectory({ orgs }: { orgs: PublicOrgDirectoryItem[] }) {
     const needle = query.trim().toLowerCase();
     if (!needle) return orgs;
     return orgs.filter((org) => {
-      const haystack = `${org.name} ${org.slug} ${org.orgType ?? ""}`.toLowerCase();
+      const haystack =
+        `${org.name} ${org.slug} ${org.orgType ?? ""} ${org.description ?? ""}`.toLowerCase();
       return haystack.includes(needle);
     });
   }, [orgs, query]);
 
   return (
-    <section className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <h2 className="font-sans text-subhead font-semibold text-ink">Choose an organization</h2>
-        <p className="text-meta text-body">No account. Pick a mosque, then pick a campaign.</p>
-      </div>
+    <section id="organizations" className="flex flex-col gap-5 scroll-mt-6">
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+        <div className="flex flex-col gap-1">
+          <h2 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
+            Choose an organization
+          </h2>
+          <p className="text-meta text-body">
+            Pick a masjid or community center, then pick a campaign. No account needed.
+          </p>
+        </div>
 
-      <label htmlFor="org-search" className="sr-only">
-        Search organizations
-      </label>
-      <input
-        id="org-search"
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by name"
-        className="rounded-md border border-border bg-surface-raised px-3.5 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
-      />
-
-      {filtered.length === 0 && (
-        <p className="text-sm text-body">
-          {orgs.length === 0
-            ? "No organizations have published a public page yet."
-            : "No organizations match that search."}
-        </p>
-      )}
-
-      <div className="flex flex-col gap-2.5">
-        {filtered.map((org) => (
-          <Link
-            key={org.id}
-            href={`/${org.slug}`}
-            className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface-raised p-3.5 shadow-card transition-shadow hover:shadow-lift"
+        <div className="relative w-full min-[560px]:w-[260px]">
+          <label htmlFor="org-search" className="sr-only">
+            Search organizations
+          </label>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"
           >
-            <div className="flex items-start gap-2">
-              <div className="flex min-w-0 flex-col">
-                <span className="truncate font-sans text-copy font-semibold text-ink">{org.name}</span>
-                {org.orgType && (
-                  <span className="font-mono text-micro uppercase tracking-[0.04em] text-muted">
-                    {org.orgType}
-                  </span>
-                )}
-              </div>
-              <span className={`${buttonClasses({ size: "sm", variant: "secondary" })} ml-auto shrink-0`}>
-                View campaigns
-              </span>
-            </div>
-            <p className="font-mono text-micro text-muted">
-              {org.activeCampaigns} open campaign{org.activeCampaigns === 1 ? "" : "s"}
-              {org.totalRaised > 0 ? ` · ${formatUsd(org.totalRaised)} raised` : ""}
-            </p>
-          </Link>
-        ))}
+            <circle cx="7.2" cy="7.2" r="4.6" />
+            <path d="m10.6 10.6 3 3" />
+          </svg>
+          <input
+            id="org-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name"
+            className="w-full rounded-md border border-border bg-surface-raised py-2.5 pr-3 pl-9 text-copy text-ink outline-none transition-colors placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/20"
+          />
+        </div>
       </div>
+
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center gap-1 rounded-lg border border-dashed border-border bg-surface-sunken px-6 py-10 text-center">
+          <p className="text-copy font-semibold text-ink">
+            {orgs.length === 0 ? "No organizations yet" : "No matches"}
+          </p>
+          <p className="text-meta text-body">
+            {orgs.length === 0
+              ? "No organizations have published a public page yet."
+              : `Nothing matches “${query.trim()}”. Try a different name.`}
+          </p>
+        </div>
+      ) : (
+        <ul className="grid list-none grid-cols-1 gap-4 min-[720px]:grid-cols-2">
+          {filtered.map((org) => (
+            <li key={org.id} className="flex">
+              <OrgCard org={org} />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
