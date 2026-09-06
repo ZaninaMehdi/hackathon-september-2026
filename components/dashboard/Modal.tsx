@@ -26,7 +26,7 @@ export function Modal({ title, onClose, children }: ModalProps) {
         onClick={onClose}
         className="fixed inset-0 cursor-default"
       />
-      <div className="relative flex w-full max-w-[460px] flex-col rounded-xl bg-surface shadow-modal">
+      <div className="relative flex w-full max-w-[460px] flex-col rounded-xl bg-surface-overlay shadow-modal">
         <div className="flex items-center gap-3 border-b border-hairline px-5 py-4">
           <h2 className="text-[15px] font-bold text-ink">{title}</h2>
           <button

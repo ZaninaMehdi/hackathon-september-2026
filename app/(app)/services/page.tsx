@@ -25,7 +25,7 @@ export default async function ServicesHubPage() {
       <div className="grid grid-cols-1 gap-3 min-[700px]:grid-cols-2">
         <Link
           href="/services/nikah"
-          className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-4"
+          className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface-raised p-4"
         >
           <span className="text-copy font-semibold text-ink">Nikah</span>
           <NikahFee amount={nikahPrice} compact />
@@ -35,7 +35,7 @@ export default async function ServicesHubPage() {
         </Link>
         <Link
           href="/services/janaza"
-          className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-4"
+          className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface-raised p-4"
         >
           <span className="text-copy font-semibold text-ink">Janaza</span>
           <ServicePrice price={JANAZA_PRICE} compact />
@@ -47,7 +47,7 @@ export default async function ServicesHubPage() {
 
       <Link
         href="/events"
-        className="flex flex-col gap-1 rounded-lg border border-hairline bg-white px-4 py-3.5"
+        className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-raised px-4 py-3.5"
       >
         <span className="text-copy font-semibold text-ink">Events</span>
         <span className="text-meta text-body">
@@ -57,7 +57,7 @@ export default async function ServicesHubPage() {
 
       <Link
         href="/dashboard/officiant"
-        className="flex items-center gap-2 rounded-lg border border-hairline bg-white px-4 py-3.5"
+        className="flex items-center gap-2 rounded-lg border border-hairline bg-surface-raised px-4 py-3.5"
       >
         <div className="flex flex-col">
           <span className="text-copy font-semibold text-ink">Officiant desk</span>

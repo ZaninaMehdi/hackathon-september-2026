@@ -21,7 +21,7 @@ export function Mark({ size = 24, className }: MarkProps) {
       <circle cx="12" cy="12" r="12" className="fill-accent" />
       <path
         d="M7 12.5L10.3 16L17 8.5"
-        stroke="white"
+        className="stroke-on-accent"
         strokeWidth="2.25"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -72,7 +72,7 @@ export function PhaseFormModal({ projectId, phase, onClose }: PhaseFormModalProp
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
@@ -85,7 +85,7 @@ export function PhaseFormModal({ projectId, phase, onClose }: PhaseFormModalProp
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
             placeholder="What does this phase cover?"
-            className="w-full resize-none rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full resize-none rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
@@ -96,7 +96,7 @@ export function PhaseFormModal({ projectId, phase, onClose }: PhaseFormModalProp
             inputMode="decimal"
             value={budget}
             onChange={(e) => setBudget(e.target.value.replace(/[^0-9]/g, ""))}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 font-mono text-[15px] text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 font-mono text-[15px] text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Mark } from "@/components/brand/Mark";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { OrgSections } from "@/components/public/OrgSections";
 import { formatUsd } from "@/lib/mock/project";
 import { getPublicOrgHome } from "@/lib/data/project";
@@ -53,6 +54,7 @@ export default async function OrgHomePage({
         >
           Verified books
         </Link>
+        <ThemeToggle className="-mr-1 shrink-0" />
       </header>
 
       <section className="flex flex-col gap-4 px-[18px] py-[22px]">

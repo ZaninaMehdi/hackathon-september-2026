@@ -54,7 +54,7 @@ export function NewProjectForm() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
@@ -66,11 +66,11 @@ export function NewProjectForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
-      <label className="flex items-center gap-2.5 rounded-lg border border-hairline bg-white px-3.5 py-3">
+      <label className="flex items-center gap-2.5 rounded-lg border border-hairline bg-surface-raised px-3.5 py-3">
         <input
           type="checkbox"
           checked={isZakatEligible}
@@ -88,7 +88,7 @@ export function NewProjectForm() {
               type="text"
               value={phase.name}
               onChange={(e) => updatePhase(i, "name", e.target.value)}
-              className="flex-1 rounded-lg border border-border bg-white px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="flex-1 rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
             <input
               type="text"
@@ -96,7 +96,7 @@ export function NewProjectForm() {
               value={phase.budget || ""}
               placeholder="Budget"
               onChange={(e) => updatePhase(i, "budget", e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-32 rounded-lg border border-border bg-white px-3 py-2.5 font-mono text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="w-32 rounded-lg border border-border bg-surface-raised px-3 py-2.5 font-mono text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
         ))}

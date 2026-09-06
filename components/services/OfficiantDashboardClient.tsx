@@ -86,7 +86,7 @@ function RegisterPanel({ title, submitLabel, onSubmit }: { title: string; submit
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
       <h2 className="text-sm font-bold text-ink">{title}</h2>
       <ServiceChecks value={services} onChange={setServices} />
       {error && <p className="text-meta text-danger">{error}</p>}
@@ -128,7 +128,7 @@ function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
       <select
         value={memberId}
         onChange={(e) => setMemberId(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       >
         {eligible.map((member) => (
           <option key={member.id} value={member.id}>
@@ -174,7 +174,7 @@ function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
   return (
     <div className="flex flex-col gap-2">
       {requests.map((request) => (
-        <div key={request.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-3.5">
+        <div key={request.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface-raised p-3.5">
           <div className="flex items-center gap-2">
             <Badge variant="pending">Pending</Badge>
             <span className="text-meta font-medium text-ink">{request.requesterName}</span>
@@ -238,7 +238,7 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
       {tasks.map((task) => {
         const covered = task.status !== "open";
         return (
-          <div key={task.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-3.5">
+          <div key={task.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface-raised p-3.5">
             <div className="flex items-center gap-2">
               <Badge variant={task.status === "confirmed" ? "confirmed" : "pending"}>{task.role}</Badge>
               <span className="text-meta font-medium text-ink">{task.requesterName}</span>

@@ -114,7 +114,7 @@ export function NikahRequestClient({
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             placeholder="Names, venue, or notes for the officiant"
-            className="min-h-[96px] rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="min-h-[96px] rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
           {message && <p className="text-meta text-accent">{message}</p>}
           {error && <p className="text-meta text-danger">{error}</p>}
@@ -128,7 +128,7 @@ export function NikahRequestClient({
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-bold text-ink">Your requests</h2>
           {nikahRequests.map((request) => (
-            <div key={request.id} className="flex flex-col gap-1 rounded-lg border border-hairline bg-white p-3.5">
+            <div key={request.id} className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-raised p-3.5">
               <div className="flex items-center gap-2">
                 <Badge variant={request.status}>{request.status}</Badge>
                 <span className="text-meta font-medium text-ink">

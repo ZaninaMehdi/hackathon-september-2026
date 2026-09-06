@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import type { TaskStatus } from "@/lib/data/tasks";
 
 export type PhaseOption = { id: string; label: string; remaining: number };
 
@@ -32,7 +33,7 @@ export async function getPhaseOptionsForProject(projectId: string): Promise<Phas
   }));
 }
 
-export type PhaseTask = { id: string; title: string; done: boolean; sortOrder: number };
+export type PhaseTask = { id: string; title: string; status: TaskStatus; sortOrder: number };
 
 export type ProjectPhaseDetail = {
   id: string;
@@ -67,7 +68,7 @@ export async function getProjectPhaseDetails(projectId: string): Promise<Project
   const { data: taskRows } = phaseIds.length
     ? await supabase
         .from("phase_tasks")
-        .select("id, phase_id, title, done, sort_order")
+        .select("id, phase_id, title, status, sort_order")
         .in("phase_id", phaseIds)
         .order("sort_order", { ascending: true })
     : { data: [] };
@@ -75,7 +76,12 @@ export async function getProjectPhaseDetails(projectId: string): Promise<Project
   const tasksByPhase = new Map<string, PhaseTask[]>();
   for (const t of taskRows ?? []) {
     const list = tasksByPhase.get(t.phase_id) ?? [];
-    list.push({ id: t.id, title: t.title, done: t.done, sortOrder: t.sort_order });
+    list.push({
+      id: t.id,
+      title: t.title,
+      status: t.status as TaskStatus,
+      sortOrder: t.sort_order,
+    });
     tasksByPhase.set(t.phase_id, list);
   }
 

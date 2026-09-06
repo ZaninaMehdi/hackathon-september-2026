@@ -93,7 +93,7 @@ export function PhaseManager({ projectId, phases, canManage }: PhaseManagerProps
                     }
                     className="self-start"
                   >
-                    {phase.tasks.filter((t) => t.done).length}/{phase.tasks.length} tasks{" "}
+                    {phase.tasks.filter((t) => t.status === "done").length}/{phase.tasks.length} tasks{" "}
                     {expandedPhaseId === phase.id ? "▲" : "▼"}
                   </Button>
                   {expandedPhaseId === phase.id && (

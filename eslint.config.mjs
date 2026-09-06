@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Output of `npm run build:verify`, which builds to a separate dir so it
+    // doesn't clobber the .next/ a running dev server is serving from.
+    ".next-verify/**",
   ]),
 ]);
 

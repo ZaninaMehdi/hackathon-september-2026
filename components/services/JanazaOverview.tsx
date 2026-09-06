@@ -122,25 +122,25 @@ function CoordinationFields({ task }: { task: JanazaTask }) {
         value={contactName}
         onChange={(e) => setContactName(e.target.value)}
         placeholder="Contact name"
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <input
         type="tel"
         value={contactPhone}
         onChange={(e) => setContactPhone(e.target.value)}
         placeholder="Contact phone"
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Notes from the call"
-        className="min-h-[72px] rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="min-h-[72px] rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value as JanazaTaskStatus)}
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       >
         <option value="open">Open</option>
         <option value="claimed">Claimed</option>
@@ -222,7 +222,7 @@ export function JanazaOverviewClient({
           const copy = ROLE_COPY[task.role];
           const claimable = task.role === "salat" || task.role === "ghusl";
           return (
-            <li key={task.id} className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
+            <li key={task.id} className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
               <div className="flex items-start gap-3">
                 <StatusDot status={taskDotStatus(task.status)} />
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">

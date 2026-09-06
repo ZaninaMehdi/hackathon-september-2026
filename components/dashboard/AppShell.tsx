@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { Mark } from "@/components/brand/Mark";
 import { Avatar } from "@/components/ui/Avatar";
-import { BookingsIcon, EventsIcon, GivingIcon, OverviewIcon, ProjectsIcon } from "@/components/dashboard/NavIcons";
+import { BookingsIcon, EventsIcon, GivingIcon, OverviewIcon, ProjectsIcon, TasksIcon } from "@/components/dashboard/NavIcons";
 import { PendingCountBadge } from "@/components/services/PendingCountBadge";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const NAV_ITEMS = [
   { label: "Overview", icon: OverviewIcon, href: "/dashboard" },
   { label: "Projects", icon: ProjectsIcon, href: "/dashboard/projects" },
+  { label: "Tasks", icon: TasksIcon, href: "/dashboard/tasks" },
   { label: "Giving", icon: GivingIcon, href: null },
   { label: "Events", icon: EventsIcon, href: "/events" },
   { label: "Bookings", icon: BookingsIcon, href: "/services" },
@@ -89,11 +91,16 @@ export function AppShell({ email, roles, pendingCount = 0, children }: AppShellP
           })}
         </nav>
 
-        <div className="mt-auto flex items-center justify-center gap-2.5 border-t border-hairline pt-3.5 min-[1200px]:justify-start">
-          <Avatar initials={(email ?? "?").slice(0, 2).toUpperCase()} size={26} />
-          <div className="hidden flex-col min-[1200px]:flex">
-            <span className="text-[12.5px] font-semibold text-ink">{email}</span>
-            <span className="text-[11px] text-muted">{roles.join(", ") || "Member"}</span>
+        <div className="mt-auto flex flex-col gap-1.5 border-t border-hairline pt-3.5">
+          <div className="flex justify-center min-[1200px]:justify-start">
+            <ThemeToggle showLabel labelClassName="hidden min-[1200px]:inline" />
+          </div>
+          <div className="flex items-center justify-center gap-2.5 min-[1200px]:justify-start">
+            <Avatar initials={(email ?? "?").slice(0, 2).toUpperCase()} size={26} />
+            <div className="hidden min-w-0 flex-col min-[1200px]:flex">
+              <span className="truncate text-[12.5px] font-semibold text-ink">{email}</span>
+              <span className="text-[11px] text-muted">{roles.join(", ") || "Member"}</span>
+            </div>
           </div>
         </div>
       </aside>

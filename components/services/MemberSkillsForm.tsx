@@ -17,7 +17,7 @@ export function MemberSkillsForm({ initialSkills }: { initialSkills: JanazaSkill
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
       <div>
         <h2 className="text-sm font-bold text-ink">Your janaza skills</h2>
         <p className="text-meta text-body">

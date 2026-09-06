@@ -5,6 +5,7 @@ import { requireMemberContext } from "@/lib/auth/session";
 import { getOrgOverview } from "@/lib/data/dashboard";
 import { getPhaseOptionsForOrg } from "@/lib/data/phases";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
+import { ExternalLinkIcon } from "@/components/dashboard/NavIcons";
 import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 import { buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -20,18 +21,30 @@ export default async function DashboardOverviewPage() {
   return (
     <>
       {/* Header bar */}
-      <div className="flex items-center gap-4 border-b border-hairline px-4 py-4.5 min-[900px]:px-6">
+      <div className="flex flex-wrap items-center gap-4 border-b border-hairline px-4 py-4.5 min-[900px]:px-6">
         <div className="flex flex-col">
           <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Overview</h1>
           <span className="text-meta text-body">
             {projects.length} project{projects.length === 1 ? "" : "s"} · {context.orgName}
           </span>
         </div>
-        {canManage && (
-          <div className="ml-auto">
-            <DashboardActionBar projects={expenseProjects} />
-          </div>
-        )}
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-2.5">
+          {/* Not gated on canManage — every member can look at what the
+              community sees, they just can't change it. */}
+          {context.orgSlug && (
+            <Link
+              href={`/${context.orgSlug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={`Opens ${context.orgName}'s public page in a new tab`}
+              className={buttonClasses({ variant: "secondary" })}
+            >
+              <ExternalLinkIcon />
+              View live page
+            </Link>
+          )}
+          {canManage && <DashboardActionBar projects={expenseProjects} />}
+        </div>
       </div>
 
       <div className="flex flex-col gap-5 p-4 min-[900px]:p-6">
@@ -173,7 +186,7 @@ export default async function DashboardOverviewPage() {
                       <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <path
                           d="M1.5 5.2L3.8 7.5L8.5 2.5"
-                          stroke="white"
+                          className="stroke-on-accent"
                           strokeWidth="1.8"
                           strokeLinecap="round"
                           strokeLinejoin="round"

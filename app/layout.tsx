@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Libre_Franklin, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 const libreFranklin = Libre_Franklin({
@@ -33,10 +34,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // suppressHydrationWarning: the script below sets data-theme and
+    // colorScheme on <html> before React hydrates, so the server markup
+    // intentionally differs from what the client finds.
     <html
       lang="en"
       className={`${libreFranklin.variable} ${ibmPlexMono.variable} ${sourceSerif.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Must run synchronously before first paint, otherwise dark-mode
+            users get a flash of the light palette. next/script's
+            beforeInteractive strategy does not guarantee this. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col bg-surface text-ink">
         {children}
       </body>

@@ -11,7 +11,7 @@ type BadgeVariant =
   | "success";
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
-  pending: "bg-white text-pending-text border border-dashed border-pending-border",
+  pending: "bg-surface-raised text-pending-text border border-dashed border-pending-border",
   approved: "bg-accent-wash text-accent border border-transparent",
   success: "bg-success-wash text-success border border-transparent",
   rejected: "bg-danger-wash text-danger border border-transparent",

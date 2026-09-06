@@ -61,7 +61,7 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
         {days.map((day) => (
           <label
             key={day.dayOfWeek}
-            className="flex flex-wrap items-center gap-2 rounded-lg border border-hairline bg-white px-3 py-2.5"
+            className="flex flex-wrap items-center gap-2 rounded-lg border border-hairline bg-surface-raised px-3 py-2.5"
           >
             <input
               type="checkbox"
@@ -74,7 +74,7 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
               value={day.startTime}
               disabled={!day.enabled}
               onChange={(e) => updateDay(day.dayOfWeek, { startTime: e.target.value })}
-              className="rounded-md border border-border bg-white px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
+              className="rounded-md border border-border bg-surface-raised px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
             >
               {TIME_OPTIONS.map((time) => (
                 <option key={`${day.dayOfWeek}-start-${time}`} value={time}>
@@ -87,7 +87,7 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
               value={day.endTime}
               disabled={!day.enabled}
               onChange={(e) => updateDay(day.dayOfWeek, { endTime: e.target.value })}
-              className="rounded-md border border-border bg-white px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
+              className="rounded-md border border-border bg-surface-raised px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
             >
               {TIME_OPTIONS.map((time) => (
                 <option key={`${day.dayOfWeek}-end-${time}`} value={time}>

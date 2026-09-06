@@ -102,7 +102,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 placeholder="Masjid Al-Noor"
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
             <div className="flex flex-col gap-3">
@@ -137,7 +137,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 type="text"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
 
@@ -145,7 +145,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
               {phases.map((phase, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2.5 rounded-lg border border-border bg-white px-3.5 py-3"
+                  className="flex items-center gap-2.5 rounded-lg border border-border bg-surface-raised px-3.5 py-3"
                 >
                   <span className="w-3 shrink-0 font-mono text-xs text-muted">{i + 1}</span>
                   <span className="text-sm font-semibold text-ink">{phase.name}</span>
@@ -210,7 +210,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="flex-1 rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="flex-1 rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
               <Button variant="secondary" size="lg" onClick={addInvite}>
                 Add

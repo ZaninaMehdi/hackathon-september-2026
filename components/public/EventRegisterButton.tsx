@@ -45,7 +45,7 @@ export function EventRegisterButton({ eventId, orgSlug, priceLabel }: EventRegis
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-md bg-accent px-3.5 py-2 text-[13px] font-semibold text-white hover:bg-accent-hover"
+        className="rounded-md bg-accent px-3.5 py-2 text-[13px] font-semibold text-on-accent hover:bg-accent-hover"
       >
         Register — {priceLabel}
       </button>
@@ -59,20 +59,20 @@ export function EventRegisterButton({ eventId, orgSlug, priceLabel }: EventRegis
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Your name"
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email for your receipt"
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <button
         type="button"
         disabled={loading || email.trim().length === 0}
         onClick={handleRegister}
-        className="w-full rounded-md bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
+        className="w-full rounded-md bg-accent py-2.5 text-[13.5px] font-semibold text-on-accent disabled:opacity-50"
       >
         {loading ? "Redirecting…" : `Continue to payment — ${priceLabel}`}
       </button>

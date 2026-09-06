@@ -165,7 +165,7 @@ export default async function ProjectDetailPage({
                       <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden="true">
                         <path
                           d="M1.5 5.2L3.8 7.5L8.5 2.5"
-                          stroke="white"
+                          className="stroke-on-accent"
                           strokeWidth="1.8"
                           strokeLinecap="round"
                           strokeLinejoin="round"

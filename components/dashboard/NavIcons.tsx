@@ -36,6 +36,25 @@ export function EventsIcon({ className }: IconProps) {
   );
 }
 
+export function TasksIcon({ className }: IconProps) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" className={className} aria-hidden="true">
+      <rect x="1.5" y="1.5" width="11" height="11" rx="2" stroke="currentColor" {...STROKE} />
+      <path d="M4.25 7l1.75 1.75L9.75 4.75" stroke="currentColor" {...STROKE} />
+    </svg>
+  );
+}
+
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" className={className} aria-hidden="true">
+      <path d="M6 3.5H2.5V11.5H10.5V8" stroke="currentColor" {...STROKE} />
+      <path d="M8.5 2.5H11.5V5.5" stroke="currentColor" {...STROKE} />
+      <path d="M11.5 2.5L6.75 7.25" stroke="currentColor" {...STROKE} />
+    </svg>
+  );
+}
+
 export function BookingsIcon({ className }: IconProps) {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" className={className} aria-hidden="true">

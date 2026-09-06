@@ -33,6 +33,12 @@
   --color-surface-sunken: #f7f9f8;
   --color-neutral-wash: #f0f2f1;
 
+  /* One step above surface-raised, for things that float over the page.
+     Indistinguishable from raised on white, but in dark mode elevation is
+     conveyed by getting lighter, so a modal needs its own rung — on
+     surface-raised it would read as a hole punched in the page. */
+  --color-surface-overlay: #ffffff;
+
   --color-track: #e9edea;
   --color-track-light: #f5f7f6;
   --color-step-empty: #e0e4e2;
@@ -47,6 +53,12 @@
 
   --color-canvas: #eef0ee;
   --color-avatar-bg: #dfe4e0;
+
+  /* Foreground for text sitting on a filled accent/danger surface. A token
+     rather than `text-white`, because in dark mode the fills lighten and the
+     label has to flip dark to stay legible. */
+  --color-on-accent: #ffffff;
+  --color-on-danger: #ffffff;
 
   --radius-2xs: 2px;
   --radius-xs: 3px;
@@ -78,6 +90,79 @@
   --font-sans: var(--font-libre-franklin);
   --font-mono: var(--font-ibm-plex-mono);
   --font-display: var(--font-source-serif);
+}
+
+/* Declared so browsers with "force dark mode" enabled leave the palette alone
+   instead of auto-inverting it on top of the theming below. */
+:root {
+  color-scheme: light;
+}
+
+/* Dark theme. These re-declare the tokens emitted by @theme above, so every
+   existing utility (bg-surface, text-ink, border-hairline …) follows along
+   without any component needing a `dark:` variant.
+
+   Keyed off data-theme rather than a prefers-color-scheme media query so an
+   explicit in-app choice can override the OS. THEME_INIT_SCRIPT sets the
+   attribute in <head> before first paint, resolving "system" against the
+   media query there instead.
+
+   The accent lightens considerably here: #2f5d3f is legible on white but
+   nearly black against a dark background, so fills and accent text move to a
+   mid green that clears 4.5:1 both as text on the page and as a surface
+   under --color-on-accent. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-accent: #5aa675;
+  --color-accent-hover: #6bb586;
+  --color-accent-bright: #7fc99a;
+  --color-accent-wash: #1a2a20;
+  --color-accent-tint: #141d17;
+
+  --color-success: #5fb083;
+  --color-success-wash: #17271d;
+  --color-warning: #d2a55a;
+  --color-info: #6aa8c8;
+
+  --color-ink: #e9efeb;
+  --color-body: #a9b4ae;
+  --color-muted: #8a948f;
+
+  --color-hairline-soft: #1c231f;
+  --color-hairline: #232b26;
+  --color-border: #303a34;
+  --color-border-strong: #47524b;
+
+  --color-surface: #0f1411;
+  --color-surface-raised: #161c18;
+  --color-surface-sunken: #0b0f0c;
+  --color-neutral-wash: #1b221e;
+  --color-surface-overlay: #1d2521;
+
+  --color-track: #262e29;
+  --color-track-light: #1b221e;
+  --color-step-empty: #2a332d;
+
+  --color-pending-border: #6b5a2e;
+  --color-pending-text: #d8bd82;
+  --color-pending-icon: #c2a052;
+  --color-pending-bg: #1a1610;
+
+  --color-danger: #e07d6d;
+  --color-danger-wash: #2b1a17;
+
+  --color-canvas: #0b0f0c;
+  --color-avatar-bg: #2a332d;
+
+  --color-on-accent: #0c120e;
+  --color-on-danger: #16100f;
+
+  /* Shadows read as almost nothing over a dark surface unless they go
+     darker and wider than their light-mode counterparts. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 1px 3px rgba(0, 0, 0, 0.45), 0 4px 14px -4px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 2px 8px rgba(0, 0, 0, 0.5), 0 16px 32px -8px rgba(0, 0, 0, 0.6);
 }
 
 body {

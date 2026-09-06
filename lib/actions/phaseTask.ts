@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { requireAdminContext } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import type { TaskStatus } from "@/lib/data/tasks";
+
+function revalidateTaskPaths(projectId: string) {
+  revalidatePath(`/dashboard/projects/${projectId}`);
+  revalidatePath("/dashboard/tasks");
+}
 
 async function getOwnedPhase(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -63,19 +69,19 @@ export async function createPhaseTask(phaseId: string, title: string) {
 
   if (error) throw new Error(error.message);
 
-  revalidatePath(`/dashboard/projects/${phase.project_id}`);
+  revalidateTaskPaths(phase.project_id);
 }
 
-export async function setPhaseTaskDone(taskId: string, done: boolean) {
+export async function setPhaseTaskStatus(taskId: string, status: TaskStatus) {
   const context = await requireAdminContext();
   const supabase = await createClient();
 
   const task = await getOwnedTask(supabase, context.orgId, taskId);
 
-  const { error } = await supabase.from("phase_tasks").update({ done }).eq("id", taskId);
+  const { error } = await supabase.from("phase_tasks").update({ status }).eq("id", taskId);
   if (error) throw new Error(error.message);
 
-  revalidatePath(`/dashboard/projects/${task.projectId}`);
+  revalidateTaskPaths(task.projectId);
 }
 
 export async function deletePhaseTask(taskId: string) {
@@ -87,5 +93,5 @@ export async function deletePhaseTask(taskId: string) {
   const { error } = await supabase.from("phase_tasks").delete().eq("id", taskId);
   if (error) throw new Error(error.message);
 
-  revalidatePath(`/dashboard/projects/${task.projectId}`);
+  revalidateTaskPaths(task.projectId);
 }

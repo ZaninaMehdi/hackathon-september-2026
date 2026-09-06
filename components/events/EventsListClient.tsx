@@ -346,21 +346,21 @@ function EventForm({
         placeholder="Event title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <textarea
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
-        className="resize-none rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="resize-none rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <input
         type="text"
         placeholder="Location"
         value={location}
         onChange={(e) => setLocation(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+        className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <label className="flex flex-col gap-1.5">
         <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">Starts</span>
@@ -377,7 +377,7 @@ function EventForm({
               setEndsAt(toDatetimeLocal(next.toISOString()));
             }
           }}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
       <label className="flex flex-col gap-1.5">
@@ -388,7 +388,7 @@ function EventForm({
           value={endsAt}
           min={startsAt || undefined}
           onChange={(e) => setEndsAt(e.target.value)}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
 
@@ -399,7 +399,7 @@ function EventForm({
             type="button"
             onClick={() => setIsFree(true)}
             className={`flex-1 rounded-lg py-3 text-copy font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-              isFree ? "bg-accent-wash text-accent" : "border border-border bg-white text-body"
+              isFree ? "bg-accent-wash text-accent" : "border border-border bg-surface-raised text-body"
             }`}
           >
             Free
@@ -408,7 +408,7 @@ function EventForm({
             type="button"
             onClick={() => setIsFree(false)}
             className={`flex-1 rounded-lg py-3 text-copy font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-              !isFree ? "bg-accent-wash text-accent" : "border border-border bg-white text-body"
+              !isFree ? "bg-accent-wash text-accent" : "border border-border bg-surface-raised text-body"
             }`}
           >
             Paid
@@ -426,7 +426,7 @@ function EventForm({
               placeholder="0.00"
               value={priceText}
               onChange={(e) => setPriceText(e.target.value)}
-              className="w-full rounded-lg border border-border bg-white py-3 pl-7 pr-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="w-full rounded-lg border border-border bg-surface-raised py-3 pl-7 pr-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
         )}
@@ -449,7 +449,7 @@ function EventForm({
                   setRecurrenceUntil(toDateInput(until.toISOString()));
                 }
               }}
-              className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="none">Does not repeat</option>
               <option value="weekly">Weekly</option>
@@ -467,7 +467,7 @@ function EventForm({
                 value={recurrenceUntil}
                 min={startsAt ? toDateInput(startsAt) : undefined}
                 onChange={(e) => setRecurrenceUntil(e.target.value)}
-                className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
               <span className="text-micro text-muted">Creates each occurrence up to this date.</span>
             </label>
@@ -476,7 +476,7 @@ function EventForm({
       )}
 
       {mode === "edit" && isRecurring && (
-        <fieldset className="flex flex-col gap-2 rounded-lg border border-border bg-white p-3">
+        <fieldset className="flex flex-col gap-2 rounded-lg border border-border bg-surface-raised p-3">
           <legend className="px-1 font-mono text-micro uppercase tracking-[0.06em] text-muted">
             Apply changes to
           </legend>
@@ -654,7 +654,7 @@ function CalendarView({
                 <span
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-meta transition-colors ${
                     isSelected
-                      ? "bg-accent font-semibold text-white"
+                      ? "bg-accent font-semibold text-on-accent"
                       : hasEvents
                         ? "bg-accent-wash font-semibold text-accent"
                         : isToday

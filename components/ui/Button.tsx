@@ -14,12 +14,12 @@ const SIZES: Record<ButtonSize, string> = {
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-white shadow-card hover:bg-accent-hover hover:shadow-lift focus-visible:ring-accent",
+    "bg-accent text-on-accent shadow-card hover:bg-accent-hover hover:shadow-lift focus-visible:ring-accent",
   secondary:
     "border border-border bg-surface-raised text-ink hover:border-border-strong hover:bg-surface-sunken focus-visible:ring-accent",
   ghost: "text-body hover:bg-surface-sunken hover:text-ink focus-visible:ring-accent",
   danger:
-    "bg-danger text-white shadow-card hover:brightness-[1.12] hover:shadow-lift focus-visible:ring-danger",
+    "bg-danger text-on-danger shadow-card hover:brightness-[1.12] hover:shadow-lift focus-visible:ring-danger",
   // Destructive, but secondary in the hierarchy — used where a solid red bar
   // would shout over the content it sits next to.
   dangerSoft:

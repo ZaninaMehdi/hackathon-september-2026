@@ -57,40 +57,40 @@ export function GuestServiceForm({ orgId, serviceType, priceLabel }: GuestServic
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Your name"
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <input
         type="tel"
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         placeholder="Phone (optional)"
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <input
         type="date"
         value={preferredDate}
         onChange={(e) => setPreferredDate(e.target.value)}
-        className="w-full rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <textarea
         value={details}
         onChange={(e) => setDetails(e.target.value)}
         rows={2}
         placeholder="Anything else we should know?"
-        className="w-full resize-none rounded-md border border-border bg-white px-3 py-2.5 text-[13.5px] text-ink"
+        className="w-full resize-none rounded-md border border-border bg-surface-raised px-3 py-2.5 text-[13.5px] text-ink"
       />
       <button
         type="button"
         disabled={!canSubmit || submitting}
         onClick={handleSubmit}
-        className="w-full rounded-md bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
+        className="w-full rounded-md bg-accent py-2.5 text-[13.5px] font-semibold text-on-accent disabled:opacity-50"
       >
         {submitting ? "Sending…" : "Request"}
       </button>

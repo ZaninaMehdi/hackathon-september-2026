@@ -69,7 +69,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
             onChange={(e) => setReceiptFile(e.target.files?.[0] ?? null)}
           />
           {receiptFile ? (
-            <div className="flex items-center gap-2.5 rounded-lg border border-hairline bg-white p-3">
+            <div className="flex items-center gap-2.5 rounded-lg border border-hairline bg-surface-raised p-3">
               <ReceiptThumb size={68} radius="rounded-sm" />
               <div className="flex flex-col gap-1">
                 <span className="text-meta font-semibold text-ink">{receiptFile.name}</span>
@@ -87,7 +87,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-2.5 rounded-lg border border-hairline bg-white p-3">
+            <div className="flex items-center gap-2.5 rounded-lg border border-hairline bg-surface-raised p-3">
               {expense.receiptUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -121,7 +121,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
             type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
@@ -131,7 +131,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
             type="text"
             value={vendor}
             onChange={(e) => setVendor(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 
@@ -142,7 +142,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
             inputMode="decimal"
             value={amount}
             onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
-            className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 font-mono text-[15px] text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="w-full rounded-lg border border-border bg-surface-raised px-3.5 py-3.5 font-mono text-[15px] text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </div>
 

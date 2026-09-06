@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { Mark } from "@/components/brand/Mark";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
@@ -63,6 +64,7 @@ export default async function PublicProjectPage({
         >
           Verified books
         </Link>
+        <ThemeToggle className="-mr-1 shrink-0" />
       </header>
 
       {data.project.status !== "active" && (

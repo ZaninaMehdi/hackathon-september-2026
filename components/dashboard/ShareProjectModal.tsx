@@ -65,7 +65,7 @@ export function ShareProjectModal({ publicUrl }: ShareProjectModalProps) {
                   readOnly
                   value={publicUrl}
                   onFocus={(e) => e.target.select()}
-                  className="w-full truncate rounded-lg border border-border bg-white px-3.5 py-3 font-mono text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  className="w-full truncate rounded-lg border border-border bg-surface-raised px-3.5 py-3 font-mono text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
                 />
                 <Button variant="primary" onClick={handleCopy} className="shrink-0">
                   {copied ? "Copied!" : "Copy"}
@@ -78,7 +78,7 @@ export function ShareProjectModal({ publicUrl }: ShareProjectModalProps) {
               )}
             </div>
 
-            <div className="flex flex-col items-center gap-3 rounded-lg border border-hairline bg-white p-4">
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
               {qrDataUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={qrDataUrl} alt="QR code linking to the project page" className="h-40 w-40" />

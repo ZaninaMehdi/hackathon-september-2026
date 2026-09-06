@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { createPhaseTask, setPhaseTaskDone, deletePhaseTask } from "@/lib/actions/phaseTask";
+import { createPhaseTask, setPhaseTaskStatus, deletePhaseTask } from "@/lib/actions/phaseTask";
+import { TASK_STATUS_LABEL, nextTaskStatus } from "@/lib/utils/taskStatus";
 import type { PhaseTask } from "@/lib/data/phases";
 
 type PhaseTaskChecklistProps = {
@@ -30,11 +31,11 @@ export function PhaseTaskChecklist({ phaseId, tasks }: PhaseTaskChecklistProps) 
     }
   }
 
-  async function handleToggle(task: PhaseTask) {
+  async function handleAdvance(task: PhaseTask) {
     setPending(task.id);
     setError(null);
     try {
-      await setPhaseTaskDone(task.id, !task.done);
+      await setPhaseTaskStatus(task.id, nextTaskStatus(task.status));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -66,15 +67,22 @@ export function PhaseTaskChecklist({ phaseId, tasks }: PhaseTaskChecklistProps) 
 
       {tasks.map((task) => (
         <div key={task.id} className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={task.done}
+          <button
+            type="button"
             disabled={pending === task.id}
-            onChange={() => handleToggle(task)}
-            className="h-4 w-4 shrink-0 accent-accent"
-          />
+            onClick={() => handleAdvance(task)}
+            className={`shrink-0 rounded-pill px-2 py-[3px] font-mono text-[10px] font-medium uppercase tracking-[0.04em] disabled:opacity-50 ${
+              task.status === "done"
+                ? "bg-accent-wash text-accent"
+                : task.status === "in_progress"
+                  ? "bg-neutral-wash text-ink"
+                  : "border border-dashed border-border text-muted"
+            }`}
+          >
+            {TASK_STATUS_LABEL[task.status]}
+          </button>
           <span
-            className={`flex-1 text-meta ${task.done ? "text-muted line-through" : "text-ink"}`}
+            className={`flex-1 text-meta ${task.status === "done" ? "text-muted line-through" : "text-ink"}`}
           >
             {task.title}
           </span>
@@ -100,7 +108,7 @@ export function PhaseTaskChecklist({ phaseId, tasks }: PhaseTaskChecklistProps) 
             if (e.key === "Enter") handleAdd();
           }}
           placeholder="Add a task…"
-          className="w-full rounded-md border border-border bg-white px-2.5 py-2 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+          className="w-full rounded-md border border-border bg-surface-raised px-2.5 py-2 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
         <Button
           variant="primary"

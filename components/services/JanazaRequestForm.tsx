@@ -66,7 +66,7 @@ export function JanazaRequestForm({
             type="datetime-local"
             value={neededBy}
             onChange={(e) => setNeededBy(e.target.value)}
-            className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </label>
         <label className="flex flex-col gap-1.5">
@@ -75,10 +75,10 @@ export function JanazaRequestForm({
             value={details}
             onChange={(e) => setDetails(e.target.value)}
             placeholder="Family name, location, and any timing notes"
-            className="min-h-[120px] rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
+            className="min-h-[120px] rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
           />
         </label>
-        <label className="flex items-start gap-2 rounded-lg border border-hairline bg-white px-3.5 py-3">
+        <label className="flex items-start gap-2 rounded-lg border border-hairline bg-surface-raised px-3.5 py-3">
           <input
             type="checkbox"
             checked={broadcastCrossOrg}
@@ -108,7 +108,7 @@ export function JanazaRequestForm({
             <Link
               key={request.id}
               href={`/services/janaza/${request.id}`}
-              className="flex flex-col gap-1 rounded-lg border border-hairline bg-white p-3.5"
+              className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-raised p-3.5"
             >
               <div className="flex items-center gap-2">
                 <Badge variant={request.status}>{request.status}</Badge>

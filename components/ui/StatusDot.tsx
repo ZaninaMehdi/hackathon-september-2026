@@ -21,7 +21,7 @@ export function StatusDot({ status, size = 18 }: StatusDotProps) {
         >
           <path
             d="M1.5 5.2L3.8 7.5L8.5 2.5"
-            stroke="white"
+            className="stroke-on-accent"
             strokeWidth="1.6"
             strokeLinecap="round"
             strokeLinejoin="round"

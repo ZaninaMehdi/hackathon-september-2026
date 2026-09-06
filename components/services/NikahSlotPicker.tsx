@@ -63,14 +63,14 @@ export function NikahSlotPicker({
                 onSelect("");
               }}
               className={`flex min-w-[58px] flex-col items-center rounded-lg px-2.5 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                selected ? "bg-accent text-white" : "border border-border bg-white text-ink"
+                selected ? "bg-accent text-on-accent" : "border border-border bg-surface-raised text-ink"
               }`}
             >
-              <span className={`text-micro uppercase ${selected ? "text-white/80" : "text-muted"}`}>
+              <span className={`text-micro uppercase ${selected ? "text-on-accent/70" : "text-muted"}`}>
                 {day.weekdayLabel}
               </span>
               <span className="text-subhead font-semibold leading-tight">{day.dayNumber}</span>
-              <span className={`font-mono text-micro ${selected ? "text-white/80" : "text-muted"}`}>
+              <span className={`font-mono text-micro ${selected ? "text-on-accent/70" : "text-muted"}`}>
                 {day.slots.length} open
               </span>
             </button>
@@ -91,8 +91,8 @@ export function NikahSlotPicker({
                   onClick={() => onSelect(slot.id)}
                   className={`rounded-pill px-3.5 py-2 font-mono text-meta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     selected
-                      ? "bg-accent font-semibold text-white"
-                      : "border border-border bg-white text-ink"
+                      ? "bg-accent font-semibold text-on-accent"
+                      : "border border-border bg-surface-raised text-ink"
                   }`}
                 >
                   {slot.timeLabel}
