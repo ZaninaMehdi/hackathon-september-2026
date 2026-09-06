@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EventRegisterButton } from "@/components/public/EventRegisterButton";
 import { PublicHeader } from "@/components/public/PublicHeader";
+import { PublicPage } from "@/components/public/PublicPage";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getStaffNav } from "@/lib/auth/session";
 import { getPublicOrgBySlug } from "@/lib/data/project";
@@ -31,7 +32,7 @@ export default async function PublicEventsPage({
   ]);
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface">
+    <PublicPage>
       <PublicHeader
         title={org.name}
         titleHref={`/${orgSlug}`}
@@ -43,22 +44,24 @@ export default async function PublicEventsPage({
         backLabel="Back to organization"
       />
 
-      <section className="flex flex-col gap-1 px-[18px] py-[22px]">
-        <h1 className="font-sans text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink">
+      <section className="flex flex-col gap-1 px-[18px] py-[22px] min-[900px]:px-8 min-[900px]:py-10">
+        <h1 className="font-sans text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink min-[900px]:font-display min-[900px]:text-display">
           Upcoming events
         </h1>
-        <p className="font-sans text-sm leading-[1.6] text-body">
+        <p className="max-w-[62ch] font-sans text-sm leading-[1.6] text-body">
           Free events are open to everyone. Paid events can be registered for below.
         </p>
       </section>
 
-      <section className="flex flex-col gap-3 px-[18px] pb-10">
+      <section className="flex flex-col gap-3 px-[18px] pb-10 min-[720px]:grid min-[720px]:grid-cols-2 min-[720px]:px-8">
         {events.length === 0 && (
-          <EmptyState
-            icon="events"
-            title="No upcoming events"
-            description="Check back soon — classes, fundraisers and gatherings will be listed here."
-          />
+          <div className="min-[720px]:col-span-2">
+            <EmptyState
+              icon="events"
+              title="No upcoming events"
+              description="Check back soon — classes, fundraisers and gatherings will be listed here."
+            />
+          </div>
         )}
 
         {events.map((event) => (
@@ -92,6 +95,6 @@ export default async function PublicEventsPage({
           </div>
         ))}
       </section>
-    </div>
+    </PublicPage>
   );
 }
