@@ -68,6 +68,8 @@ export type PublicProjectSummary = {
   goal: number;
   phaseCount: number;
   isZakatEligible: boolean;
+  activePhaseId: string | null;
+  activePhaseLabel: string;
 };
 
 export type PublicOrgHome = {
@@ -76,6 +78,72 @@ export type PublicOrgHome = {
   totalRaised: number;
   totalGoal: number;
 };
+
+export type PublicOrgDirectoryItem = {
+  id: string;
+  name: string;
+  slug: string;
+  orgType: string | null;
+  activeCampaigns: number;
+  totalRaised: number;
+};
+
+type PhaseProgressInput = {
+  id: string;
+  title: string;
+  budget_target: number;
+};
+
+function resolveActivePhase(
+  phases: PhaseProgressInput[],
+  raisedByPhase: Map<string, number>
+): { id: string; label: string } | null {
+  const computed = phases.map((phase) => {
+    const raised = raisedByPhase.get(phase.id) ?? 0;
+    const target = Number(phase.budget_target);
+    const complete = target > 0 && raised >= target;
+    const status: PhaseStatus = complete ? "complete" : raised > 0 ? "in_progress" : "not_started";
+    return { id: phase.id, label: phase.title, status };
+  });
+
+  return (
+    computed.find((phase) => phase.status === "in_progress") ??
+    computed.find((phase) => phase.status === "not_started") ??
+    null
+  );
+}
+
+export const getPublicOrganizations = cache(async function getPublicOrganizations(): Promise<
+  PublicOrgDirectoryItem[]
+> {
+  const supabase = await createClient();
+
+  const [{ data: orgs }, { data: projects }, { data: donations }] = await Promise.all([
+    supabase.from("organizations").select("id, name, slug, org_type").order("name"),
+    supabase.from("projects").select("org_id, status").neq("status", "archived"),
+    supabase.from("donations").select("org_id, amount"),
+  ]);
+
+  const activeByOrg = new Map<string, number>();
+  for (const project of projects ?? []) {
+    if (project.status !== "active") continue;
+    activeByOrg.set(project.org_id, (activeByOrg.get(project.org_id) ?? 0) + 1);
+  }
+
+  const raisedByOrg = new Map<string, number>();
+  for (const donation of donations ?? []) {
+    raisedByOrg.set(donation.org_id, (raisedByOrg.get(donation.org_id) ?? 0) + Number(donation.amount));
+  }
+
+  return (orgs ?? []).map((org) => ({
+    id: org.id,
+    name: org.name,
+    slug: org.slug,
+    orgType: org.org_type ?? null,
+    activeCampaigns: activeByOrg.get(org.id) ?? 0,
+    totalRaised: raisedByOrg.get(org.id) ?? 0,
+  }));
+});
 
 export const getPublicOrgHome = cache(async function getPublicOrgHome(
   orgSlug: string
@@ -97,33 +165,59 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
       .eq("org_id", org.id)
       .neq("status", "archived")
       .order("created_at", { ascending: false }),
-    supabase.from("phases").select("project_id, budget_target").eq("org_id", org.id),
-    supabase.from("donations").select("project_id, amount").eq("org_id", org.id),
+    supabase
+      .from("phases")
+      .select("id, project_id, title, budget_target, sort_order")
+      .eq("org_id", org.id)
+      .order("sort_order", { ascending: true }),
+    supabase.from("donations").select("project_id, phase_id, amount").eq("org_id", org.id),
   ]);
 
   const goalByProject = new Map<string, number>();
-  const phaseCountByProject = new Map<string, number>();
-  for (const p of phases ?? []) {
-    goalByProject.set(p.project_id, (goalByProject.get(p.project_id) ?? 0) + Number(p.budget_target));
-    phaseCountByProject.set(p.project_id, (phaseCountByProject.get(p.project_id) ?? 0) + 1);
+  const phasesByProject = new Map<string, PhaseProgressInput[]>();
+  for (const phase of phases ?? []) {
+    goalByProject.set(
+      phase.project_id,
+      (goalByProject.get(phase.project_id) ?? 0) + Number(phase.budget_target)
+    );
+    const list = phasesByProject.get(phase.project_id) ?? [];
+    list.push({ id: phase.id, title: phase.title, budget_target: Number(phase.budget_target) });
+    phasesByProject.set(phase.project_id, list);
   }
 
   const raisedByProject = new Map<string, number>();
-  for (const d of donations ?? []) {
-    raisedByProject.set(d.project_id, (raisedByProject.get(d.project_id) ?? 0) + Number(d.amount));
+  const raisedByPhase = new Map<string, number>();
+  for (const donation of donations ?? []) {
+    raisedByProject.set(
+      donation.project_id,
+      (raisedByProject.get(donation.project_id) ?? 0) + Number(donation.amount)
+    );
+    if (donation.phase_id) {
+      raisedByPhase.set(
+        donation.phase_id,
+        (raisedByPhase.get(donation.phase_id) ?? 0) + Number(donation.amount)
+      );
+    }
   }
 
-  const projectSummaries: PublicProjectSummary[] = (projects ?? []).map((p) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    description: p.description,
-    status: p.status as ProjectStatus,
-    raised: raisedByProject.get(p.id) ?? 0,
-    goal: goalByProject.get(p.id) ?? 0,
-    phaseCount: phaseCountByProject.get(p.id) ?? 0,
-    isZakatEligible: p.is_zakat_eligible,
-  }));
+  const projectSummaries: PublicProjectSummary[] = (projects ?? []).map((project) => {
+    const projectPhases = phasesByProject.get(project.id) ?? [];
+    const activePhase = resolveActivePhase(projectPhases, raisedByPhase);
+
+    return {
+      id: project.id,
+      slug: project.slug,
+      title: project.title,
+      description: project.description,
+      status: project.status as ProjectStatus,
+      raised: raisedByProject.get(project.id) ?? 0,
+      goal: goalByProject.get(project.id) ?? 0,
+      phaseCount: projectPhases.length,
+      isZakatEligible: project.is_zakat_eligible,
+      activePhaseId: activePhase?.id ?? null,
+      activePhaseLabel: activePhase?.label ?? "",
+    };
+  });
 
   return {
     org: { id: org.id, name: org.name, slug: org.slug },

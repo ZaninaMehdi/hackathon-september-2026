@@ -1,8 +1,8 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { Mark } from "@/components/brand/Mark";
 import { EventRegisterButton } from "@/components/public/EventRegisterButton";
+import { PublicHeader } from "@/components/public/PublicHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { getStaffNav } from "@/lib/auth/session";
 import { getPublicOrgBySlug } from "@/lib/data/project";
 import { getPublicUpcomingEvents } from "@/lib/data/events";
 
@@ -25,22 +25,22 @@ export default async function PublicEventsPage({
 }) {
   const { orgSlug } = await params;
   const org = await getPublicOrgBySlug(orgSlug);
-  const events = await getPublicUpcomingEvents(org.id);
+  const [events, staff] = await Promise.all([
+    getPublicUpcomingEvents(org.id),
+    getStaffNav(),
+  ]);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface">
-      <header className="flex items-center gap-2.5 border-b border-hairline px-[18px] py-3.5">
-        <Mark size={26} />
-        <span className="font-display text-[15px] font-semibold tracking-[0.01em] text-ink">
-          {org.name}
-        </span>
-        <Link
-          href={`/${orgSlug}`}
-          className="ml-auto text-[12.5px] font-semibold text-accent"
-        >
-          ← Projects
-        </Link>
-      </header>
+      <PublicHeader
+        title={org.name}
+        titleHref={`/${orgSlug}`}
+        staffHref={staff.href}
+        staffLabel={staff.label}
+        showVerified
+        backHref={`/${orgSlug}`}
+        backLabel="Back to organization"
+      />
 
       <section className="flex flex-col gap-1 px-[18px] py-[22px]">
         <h1 className="font-sans text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink">

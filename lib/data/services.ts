@@ -83,6 +83,17 @@ export type ClaimableJanazaTask = JanazaTask & {
   requesterName: string;
 };
 
+export type GuestServiceInquiry = {
+  id: string;
+  serviceType: ServiceType;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string | null;
+  preferredDate: string | null;
+  details: string | null;
+  createdAt: string;
+};
+
 export type OfficiantInbox = {
   officiant: OfficiantSummary;
   recurring: RecurringWindow[];
@@ -540,6 +551,30 @@ export async function getClaimableJanazaTasks(
   return result;
 }
 
+export async function getGuestServiceInquiries(orgId: string): Promise<GuestServiceInquiry[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("guest_service_inquiries")
+    .select("id, service_type, guest_name, guest_email, guest_phone, preferred_date, details, created_at")
+    .eq("org_id", orgId)
+    .eq("status", "new")
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  if (error) return [];
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    serviceType: row.service_type as ServiceType,
+    guestName: row.guest_name,
+    guestEmail: row.guest_email,
+    guestPhone: row.guest_phone,
+    preferredDate: row.preferred_date,
+    details: row.details,
+    createdAt: row.created_at,
+  }));
+}
+
 export async function getOfficiantPendingCount(memberId: string): Promise<number> {
   try {
     const supabase = await createClient();
@@ -557,7 +592,16 @@ export async function getOfficiantPendingCount(memberId: string): Promise<number
 
     const claimable = await getClaimableJanazaTasks(memberId, skills, member?.org_id ?? officiant?.orgId);
     const openTasks = claimable.filter((task) => task.status === "open").length;
-    return nikahCount + openTasks;
+    let inquiryCount = 0;
+    if (member?.org_id) {
+      const { count } = await supabase
+        .from("guest_service_inquiries")
+        .select("id", { count: "exact", head: true })
+        .eq("org_id", member.org_id)
+        .eq("status", "new");
+      inquiryCount = count ?? 0;
+    }
+    return nikahCount + openTasks + inquiryCount;
   } catch {
     return 0;
   }

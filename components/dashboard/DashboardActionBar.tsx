@@ -17,7 +17,7 @@ export function DashboardActionBar({ projects }: DashboardActionBarProps) {
         Invite
       </Link>
       <NewProjectButton className={buttonClasses({ variant: "secondary" })}>
-        New project
+        New campaign
       </NewProjectButton>
       <AddExpenseButton projects={projects} />
     </div>

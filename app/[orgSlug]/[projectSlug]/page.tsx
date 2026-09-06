@@ -1,13 +1,14 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Mark } from "@/components/brand/Mark";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ReceiptThumb } from "@/components/ui/ReceiptThumb";
 import { DonateFooter } from "@/components/public/DonateFooter";
+import { PublicHeader } from "@/components/public/PublicHeader";
 import { formatUsd } from "@/lib/mock/project";
+import { getStaffNav } from "@/lib/auth/session";
 import { getPublicProject, getPublicProjectSafe } from "@/lib/data/project";
 
 type ProjectPageParams = { orgSlug: string; projectSlug: string };
@@ -21,7 +22,7 @@ export async function generateMetadata({
   const data = await getPublicProjectSafe(orgSlug, projectSlug);
 
   if (!data) {
-    return { title: "Project not found — Amanah" };
+    return { title: "Campaign not found — Amanah" };
   }
 
   const percent = data.goal > 0 ? Math.round((data.raised / data.goal) * 100) : 0;
@@ -42,32 +43,29 @@ export default async function PublicProjectPage({
   params: Promise<{ orgSlug: string; projectSlug: string }>;
 }) {
   const { orgSlug, projectSlug } = await params;
-  const data = await getPublicProject(orgSlug, projectSlug);
+  const [data, staff] = await Promise.all([
+    getPublicProject(orgSlug, projectSlug),
+    getStaffNav(),
+  ]);
 
   const reassurance = `${data.phases.length} phase${data.phases.length === 1 ? "" : "s"}. Every approved expense is posted here with its receipt.`;
   const isAcceptingDonations = data.project.status === "active";
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface pb-[110px] min-[900px]:max-w-[980px] min-[900px]:pb-10">
-      {/* Org header */}
-      <header className="flex items-center gap-2.5 border-b border-hairline px-[18px] py-3.5 min-[900px]:px-8 min-[900px]:py-4">
-        <Mark size={26} />
-        <div className="flex flex-col">
-          <span className="font-display text-[15px] font-semibold tracking-[0.01em] text-ink">
-            {data.org.name}
-          </span>
-        </div>
-        <Link
-          href="/verified"
-          className="ml-auto inline-flex items-center rounded-pill bg-accent-wash px-2 py-[5px] font-mono text-[10px] font-medium uppercase tracking-[0.06em] text-accent"
-        >
-          Verified books
-        </Link>
-      </header>
+      <PublicHeader
+        title={data.org.name}
+        titleHref={`/${orgSlug}`}
+        staffHref={staff.href}
+        staffLabel={staff.label}
+        showVerified
+        backHref={`/${orgSlug}`}
+        backLabel="All campaigns"
+      />
 
       {data.project.status !== "active" && (
         <div className="border-b border-hairline bg-neutral-wash px-[18px] py-2.5 text-center font-mono text-[11px] font-medium uppercase tracking-[0.04em] text-body">
-          {data.project.status === "closed" ? "Project closed" : "Project archived"}
+          {data.project.status === "closed" ? "Campaign closed" : "Campaign archived"}
         </div>
       )}
 
@@ -113,7 +111,7 @@ export default async function PublicProjectPage({
           <EmptyState
             icon="phases"
             title="No phases yet"
-            description="This project hasn't been broken into funding phases yet. Check back soon."
+            description="This campaign hasn't been broken into funding phases yet. Check back soon."
             compact
           />
         )}
@@ -161,14 +159,12 @@ export default async function PublicProjectPage({
           <span className="font-sans text-xs font-semibold uppercase tracking-[0.04em] text-muted">
             Approved expenses
           </span>
-          {data.expensesTotal > 4 && (
-            <Link
-              href={`/${orgSlug}/${projectSlug}/expenses`}
-              className="ml-auto font-sans text-[12.5px] font-semibold text-accent"
-            >
-              See all {data.expensesTotal}
-            </Link>
-          )}
+          <Link
+            href={`/${orgSlug}/${projectSlug}/expenses`}
+            className="ml-auto font-sans text-[12.5px] font-semibold text-accent"
+          >
+            {data.expensesTotal > 0 ? `See all ${data.expensesTotal}` : "See all"}
+          </Link>
         </div>
 
         {data.expenses.length === 0 && (

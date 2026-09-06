@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { formatUsd } from "@/lib/mock/project";
 import { requireMemberContext } from "@/lib/auth/session";
-import { getOrgOverview } from "@/lib/data/dashboard";
+import { formatPercentOfGoal, getOrgOverview } from "@/lib/data/dashboard";
 import { getPhaseOptionsForOrg } from "@/lib/data/phases";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
 import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
@@ -19,53 +19,80 @@ export default async function DashboardOverviewPage() {
 
   return (
     <>
-      {/* Header bar */}
-      <div className="flex items-center gap-4 border-b border-hairline px-4 py-4.5 min-[900px]:px-6">
-        <div className="flex flex-col">
-          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Overview</h1>
-          <span className="text-meta text-body">
-            {projects.length} project{projects.length === 1 ? "" : "s"} · {context.orgName}
-          </span>
+      <div className="flex flex-col gap-3 border-b border-hairline px-4 py-5 min-[900px]:flex-row min-[900px]:items-start min-[900px]:justify-between min-[900px]:px-6">
+        <div className="min-w-0">
+          <p className="font-mono text-micro font-medium uppercase tracking-[0.08em] text-muted">
+            Overview
+          </p>
+          <h1 className="mt-1 font-display text-display font-bold tracking-[-0.03em] text-ink">
+            {context.orgName}
+          </h1>
+          <p className="mt-1 text-meta text-body">
+            {projects.length} campaign{projects.length === 1 ? "" : "s"}
+          </p>
         </div>
         {canManage && (
-          <div className="ml-auto">
+          <div className="shrink-0 min-[900px]:pt-1">
             <DashboardActionBar projects={expenseProjects} />
           </div>
         )}
       </div>
 
       <div className="flex flex-col gap-5 p-4 min-[900px]:p-6">
-        {/* Org-wide stat row */}
-        <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 min-[900px]:grid-cols-3">
           <StatCard
             eyebrow="Raised"
             figure={formatUsd(stats.raised.amount)}
             caption={stats.raised.caption}
             percent={stats.raised.percent}
           />
-          <StatCard eyebrow="Spent" figure={formatUsd(stats.spent.amount)} caption={stats.spent.caption} />
-          <StatCard eyebrow="On hand" figure={formatUsd(stats.onHand.amount)} caption={stats.onHand.caption} />
+          <StatCard
+            eyebrow="Still to raise"
+            figure={formatUsd(stats.remaining.amount)}
+            caption={stats.remaining.caption}
+          />
+          <StatCard
+            eyebrow="On hand"
+            figure={formatUsd(stats.onHand.amount)}
+            caption={stats.onHand.caption}
+          />
+          <StatCard
+            eyebrow="Last 30 days"
+            figure={formatUsd(stats.thisMonth.amount)}
+            caption={stats.thisMonth.caption}
+            trend={stats.thisMonth.trend}
+          />
+          <StatCard
+            eyebrow="Donors"
+            figure={stats.donors.amount.toLocaleString("en-US")}
+            caption={stats.donors.caption}
+          />
+          <StatCard
+            eyebrow="Spent & documented"
+            figure={formatUsd(stats.spent.amount)}
+            caption={stats.spent.caption}
+          />
         </div>
 
         {/* Projects grid */}
         <div>
           <div className="mb-2.5 flex items-baseline gap-3">
-            <h2 className="text-subhead font-semibold text-ink">Projects</h2>
+            <h2 className="text-subhead font-semibold text-ink">Campaigns</h2>
             {canManage && (
               <NewProjectButton className={buttonClasses({ variant: "ghost", size: "sm", className: "ml-auto text-accent" })}>
-                New project
+                New campaign
               </NewProjectButton>
             )}
           </div>
           {projects.length === 0 ? (
             <EmptyState
               icon="projects"
-              title="No projects yet"
-              description="Create your first project and break it into phases to start tracking donations and expenses."
+              title="No campaigns yet"
+              description="Create your first campaign and break it into phases to start tracking donations and expenses."
               action={
                 canManage ? (
                   <NewProjectButton className={buttonClasses({ size: "lg" })}>
-                    Create a project
+                    Create a campaign
                   </NewProjectButton>
                 ) : null
               }
@@ -203,26 +230,37 @@ function StatCard({
   figure,
   caption,
   percent,
+  trend,
 }: {
   eyebrow: string;
   figure: string;
   caption: string;
   percent?: number | null;
+  trend?: { label: string; up: boolean } | null;
 }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg border border-hairline bg-surface-raised p-4 shadow-card">
-      <span className="font-mono text-micro font-medium uppercase tracking-[0.07em] text-muted">
+    <div className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-raised px-3 py-2.5 shadow-card">
+      <span className="font-mono text-[10px] font-medium uppercase tracking-[0.07em] text-muted">
         {eyebrow}
       </span>
-      <div className="flex flex-wrap items-baseline gap-2">
-        <span className="font-mono text-[26px] font-medium tracking-[-0.01em] text-ink">{figure}</span>
+      <div className="flex flex-wrap items-baseline gap-1.5">
+        <span className="font-mono text-[20px] font-medium tracking-[-0.01em] text-ink">{figure}</span>
         {percent != null && (
           <span className="rounded-pill bg-accent-wash px-2 py-[3px] font-mono text-[10px] font-semibold text-accent">
-            {percent}% of goal
+            {formatPercentOfGoal(percent)}
+          </span>
+        )}
+        {trend && (
+          <span
+            className={`rounded-pill px-2 py-[3px] font-mono text-[10px] font-semibold ${
+              trend.up ? "bg-success-wash text-success" : "bg-danger-wash text-danger"
+            }`}
+          >
+            {trend.label}
           </span>
         )}
       </div>
-      <span className="text-meta text-body">{caption}</span>
+      <span className="text-micro text-body">{caption}</span>
     </div>
   );
 }

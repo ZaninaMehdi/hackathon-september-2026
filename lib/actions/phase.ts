@@ -40,7 +40,7 @@ export async function createPhase(input: CreatePhaseInput) {
     .maybeSingle();
 
   if (!project || project.org_id !== context.orgId) {
-    throw new Error("Project not found.");
+    throw new Error("Campaign not found.");
   }
 
   const { count } = await supabase

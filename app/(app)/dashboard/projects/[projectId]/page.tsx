@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { formatUsd } from "@/lib/mock/project";
 import { requireMemberContext } from "@/lib/auth/session";
-import { getDashboardData, getLatestOrgProject } from "@/lib/data/dashboard";
+import { formatPercentOfGoal, getDashboardData, getLatestOrgProject } from "@/lib/data/dashboard";
 import { getProjectPhaseDetails, type ProjectWithPhases } from "@/lib/data/phases";
 import { AddExpenseButton } from "@/components/dashboard/AddExpenseButton";
 import { ShareProjectModal } from "@/components/dashboard/ShareProjectModal";
@@ -205,7 +205,7 @@ function StatCard({
         <span className="font-mono text-[21px] font-medium text-ink">{figure}</span>
         {percent != null && (
           <span className="rounded-pill bg-accent-wash px-2 py-[2px] font-mono text-micro font-semibold text-accent">
-            {percent}% of goal
+            {formatPercentOfGoal(percent)}
           </span>
         )}
       </div>

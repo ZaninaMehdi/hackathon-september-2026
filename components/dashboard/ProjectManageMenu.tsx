@@ -56,7 +56,7 @@ export function ProjectManageMenu({
   async function handleDelete() {
     if (
       !window.confirm(
-        "Permanently delete this project? This can't be undone. Only allowed because it has no donations or expenses yet."
+        "Permanently delete this campaign? This can't be undone. Only allowed because it has no donations or expenses yet."
       )
     ) {
       return;
@@ -81,7 +81,7 @@ export function ProjectManageMenu({
         size="sm"
         disabled={pending !== null}
         onClick={() => setOpen((v) => !v)}
-        aria-label="Manage project"
+        aria-label="Manage campaign"
         className="w-8 px-0"
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -111,16 +111,16 @@ export function ProjectManageMenu({
                 onClick={() =>
                   handleSetStatus(
                     "closed",
-                    "Close this project? It will stop accepting new donations, but stays fully visible."
+                    "Close this campaign? It will stop accepting new donations, but stays fully visible."
                   )
                 }
               >
-                Close project
+                Close campaign
               </MenuItem>
             )}
 
             {status === "closed" && (
-              <MenuItem onClick={() => handleSetStatus("active")}>Reopen project</MenuItem>
+              <MenuItem onClick={() => handleSetStatus("active")}>Reopen campaign</MenuItem>
             )}
 
             {status === "archived" ? (
@@ -130,15 +130,15 @@ export function ProjectManageMenu({
                 onClick={() =>
                   handleSetStatus(
                     "archived",
-                    "Archive this project? It will disappear from your dashboard lists, but its public page and ledger stay intact."
+                    "Archive this campaign? It will disappear from your dashboard lists, but its public page and ledger stay intact."
                   )
                 }
               >
-                Archive project
+                Archive campaign
               </MenuItem>
             ) : (
               <MenuItem danger onClick={handleDelete}>
-                Delete project
+                Delete campaign
               </MenuItem>
             )}
           </div>

@@ -19,7 +19,7 @@ export function NewProjectButton({ className, children }: NewProjectButtonProps)
       </button>
 
       {open && (
-        <Modal title="New project" onClose={() => setOpen(false)}>
+        <Modal title="New campaign" onClose={() => setOpen(false)}>
           <NewProjectForm />
         </Modal>
       )}

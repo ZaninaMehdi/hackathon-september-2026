@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { GuestBackLink } from "@/components/public/GuestBackLink";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -36,6 +38,7 @@ export default function LoginPage() {
   if (status === "sent") {
     return (
       <main className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center gap-3 px-4 text-center">
+        <GuestBackLink href="/" label="Browse campaigns" preferHistory />
         <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
           Check your email
         </h1>
@@ -49,7 +52,15 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 px-4">
-      <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Sign in</h1>
+      <GuestBackLink href="/" label="Browse campaigns" preferHistory />
+      <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Staff sign in</h1>
+      <p className="text-sm text-body">
+        This is for people who manage an organization. To donate, you don&apos;t need an account —{" "}
+        <Link href="/" className="font-semibold text-accent">
+          browse campaigns as a guest
+        </Link>
+        .
+      </p>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <input
           type="email"

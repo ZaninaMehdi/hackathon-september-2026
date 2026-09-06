@@ -7,7 +7,12 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const pendingCount = await getOfficiantPendingCount(context.memberId);
 
   return (
-    <AppShell email={context.email} roles={context.roles} pendingCount={pendingCount}>
+    <AppShell
+      orgName={context.orgName}
+      email={context.email}
+      roles={context.roles}
+      pendingCount={pendingCount}
+    >
       {children}
     </AppShell>
   );

@@ -77,6 +77,16 @@ export function EventRegisterButton({ eventId, orgSlug, priceLabel }: EventRegis
         {loading ? "Redirecting…" : `Continue to payment — ${priceLabel}`}
       </button>
       {error && <p className="text-[12px] text-danger">{error}</p>}
+      <button
+        type="button"
+        onClick={() => {
+          setOpen(false);
+          setError(null);
+        }}
+        className="self-start font-sans text-[12.5px] font-semibold text-accent"
+      >
+        ← Cancel
+      </button>
     </div>
   );
 }
