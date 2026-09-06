@@ -49,7 +49,7 @@ export function NewProjectForm() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <label className="mb-1.5 block text-meta font-semibold text-ink">Project title</label>
+        <label className="mb-1.5 block text-meta font-semibold text-ink">Campaign title</label>
         <input
           type="text"
           value={title}
@@ -123,7 +123,7 @@ export function NewProjectForm() {
         onClick={handleSubmit}
         className="mt-2"
       >
-        {submitting ? "Creating…" : "Create project"}
+        {submitting ? "Creating…" : "Create campaign"}
       </Button>
     </div>
   );

@@ -1,27 +1,38 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import { Badge } from "@/components/ui/Badge";
+import { useState, useSyncExternalStore } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { EventRegisterButton } from "@/components/public/EventRegisterButton";
 import { GuestServiceForm } from "@/components/public/GuestServiceForm";
-import { formatUsd } from "@/lib/mock/project";
-import type { PublicProjectSummary } from "@/lib/data/project";
 import type { OrgEvent } from "@/lib/data/events";
+import type { OfficiantSummary, OpenSlot } from "@/lib/data/services";
 
-type SectionKey = "projects" | "events" | "services";
+type SectionKey = "events" | "services";
 
 type OrgSectionsProps = {
   orgId: string;
   orgSlug: string;
-  projects: PublicProjectSummary[];
-  totalRaised: number;
-  totalGoal: number;
   events: OrgEvent[];
   nikahPrice: number | null;
+  officiants: OfficiantSummary[];
+  slotsByOfficiant: Record<string, OpenSlot[]>;
 };
+
+/* The URL hash is external state, so it's read through a store subscription
+   rather than synced into component state from an effect. getServerSnapshot
+   returns null so the server and the first client render agree. */
+function subscribeToHash(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+
+function getHashSection(): SectionKey | null {
+  return window.location.hash === "#services" ? "services" : null;
+}
+
+function getServerHashSection(): SectionKey | null {
+  return null;
+}
 
 function formatPrice(price: number | null): string {
   if (!price || price <= 0) return "Free";
@@ -35,101 +46,28 @@ function formatPrice(price: number | null): string {
 export function OrgSections({
   orgId,
   orgSlug,
-  projects,
-  totalRaised,
-  totalGoal,
   events,
   nikahPrice,
+  officiants,
+  slotsByOfficiant,
 }: OrgSectionsProps) {
-  const [openSection, setOpenSection] = useState<SectionKey | null>("projects");
-  const percent = totalGoal > 0 ? Math.min(100, Math.round((totalRaised / totalGoal) * 100)) : 0;
+  const hashSection = useSyncExternalStore(
+    subscribeToHash,
+    getHashSection,
+    getServerHashSection,
+  );
+  // undefined means "untouched", so the hash still decides. Any click pins the
+  // section open or closed from then on.
+  const [choice, setChoice] = useState<SectionKey | null | undefined>(undefined);
+  const openSection = choice === undefined ? hashSection : choice;
   const nikahPriceLabel = formatPrice(nikahPrice);
 
   function toggle(section: SectionKey) {
-    setOpenSection((current) => (current === section ? null : section));
+    setChoice(openSection === section ? null : section);
   }
 
   return (
     <div className="flex flex-col gap-3 px-[18px] pb-10">
-      {/* Projects */}
-      <div className="rounded-lg border border-hairline bg-surface-raised">
-        <button
-          type="button"
-          onClick={() => toggle("projects")}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-left transition-colors outline-none hover:bg-surface-sunken focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          <div className="flex flex-col">
-            <span className="font-sans text-subhead font-semibold text-ink">Projects</span>
-            <span className="font-mono text-micro text-muted">
-              {formatUsd(totalRaised)} raised of {formatUsd(totalGoal)} · {percent}%
-            </span>
-          </div>
-          <span className="ml-auto text-body">{openSection === "projects" ? "▲" : "▼"}</span>
-        </button>
-
-        {openSection === "projects" && (
-          <div className="flex flex-col gap-2.5 border-t border-hairline-soft px-4 pb-4 pt-3.5">
-            {projects.length === 0 && (
-              <EmptyState
-                icon="projects"
-                title="No projects published yet"
-                description="Fundraising projects will appear here once they go live."
-                compact
-              />
-            )}
-            {projects.map((project) => {
-              const projectPercent =
-                project.goal > 0 ? Math.round((project.raised / project.goal) * 100) : 0;
-
-              return (
-                <Link
-                  key={project.id}
-                  href={`/${orgSlug}/${project.slug}`}
-                  className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface p-3.5 shadow-card transition-shadow hover:shadow-lift"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="truncate font-sans text-copy font-semibold text-ink">
-                      {project.title}
-                    </span>
-                    {project.status === "closed" && (
-                      <Badge variant="draft" compact className="shrink-0">
-                        closed
-                      </Badge>
-                    )}
-                    {projectPercent > 100 && (
-                      <Badge variant="success" compact className="shrink-0">
-                        Over goal
-                      </Badge>
-                    )}
-                    {project.isZakatEligible && (
-                      <Badge variant="confirmed" compact className="shrink-0">
-                        Zakat-eligible
-                      </Badge>
-                    )}
-                  </div>
-                  {project.description && (
-                    <p className="line-clamp-2 text-meta leading-[1.55] text-body">
-                      {project.description}
-                    </p>
-                  )}
-                  <ProgressBar
-                    raised={project.raised}
-                    target={project.goal}
-                    label={`${formatUsd(project.raised)} of ${formatUsd(project.goal)}, ${projectPercent} percent`}
-                  />
-                  <div className="flex items-center justify-between font-mono text-micro text-muted">
-                    <span>
-                      {formatUsd(project.raised)} of {formatUsd(project.goal)} · {projectPercent}%
-                    </span>
-                    <span>{project.phaseCount} phases</span>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
       {/* Events */}
       <div className="rounded-lg border border-hairline bg-surface-raised">
         <button
@@ -195,7 +133,7 @@ export function OrgSections({
       </div>
 
       {/* Services */}
-      <div className="rounded-lg border border-hairline bg-surface-raised">
+      <div id="services" className="rounded-lg border border-hairline bg-surface-raised">
         <button
           type="button"
           onClick={() => toggle("services")}
@@ -218,10 +156,16 @@ export function OrgSections({
                 </span>
               </div>
               <p className="text-meta leading-[1.55] text-body">
-                Tell us a bit about your ceremony and preferred date — our officiants will follow
-                up to confirm availability.
+                Pick an officiant and a slot if one is open — no account needed. We&apos;ll confirm
+                by email.
               </p>
-              <GuestServiceForm orgId={orgId} serviceType="nikah" priceLabel={nikahPriceLabel} />
+              <GuestServiceForm
+                orgId={orgId}
+                serviceType="nikah"
+                priceLabel={nikahPriceLabel}
+                officiants={officiants}
+                slotsByOfficiant={slotsByOfficiant}
+              />
             </div>
 
             <div className="flex flex-col gap-2 rounded-lg border border-hairline bg-surface p-3.5 shadow-card">

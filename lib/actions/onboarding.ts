@@ -91,7 +91,7 @@ export async function createOrgAndProject(input: CreateOrgAndProjectInput) {
     .single();
 
   if (projectError || !project) {
-    throw new Error(projectError?.message ?? "Failed to create project.");
+    throw new Error(projectError?.message ?? "Failed to create campaign.");
   }
 
   if (input.phases.length > 0) {

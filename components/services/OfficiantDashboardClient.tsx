@@ -1,31 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { designateOfficiant, registerAsOfficiant, updateOfficiantServices } from "@/lib/actions/officiant";
 import { claimJanazaTask, confirmJanazaTask } from "@/lib/actions/janaza";
 import { confirmNikahRequest, declineNikahRequest } from "@/lib/actions/nikah";
 import type {
   ClaimableJanazaTask,
-  JanazaSkill,
+  GuestServiceInquiry,
   OfficiantInbox,
-  OfficiantSummary,
-  OrgMemberOption,
-  RecurringWindow,
   ServiceRequestItem,
-  ServiceType,
 } from "@/lib/data/services";
-import { AvailabilityGrid } from "@/components/services/AvailabilityGrid";
-import { MemberSkillsForm } from "@/components/services/MemberSkillsForm";
-import { NikahPriceForm } from "@/components/services/NikahPriceForm";
 import { PendingCountBadge } from "@/components/services/PendingCountBadge";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClasses } from "@/components/ui/Button";
 import Link from "next/link";
-
-const SERVICE_OPTIONS: { id: ServiceType; label: string }[] = [
-  { id: "nikah", label: "Nikah" },
-  { id: "janaza", label: "Janaza" },
-];
 
 function formatNeededBy(value: string | null) {
   if (!value) return "Time not set";
@@ -49,118 +36,6 @@ function formatSlot(request: ServiceRequestItem) {
     minute: "2-digit",
     timeZone: "UTC",
   });
-}
-
-function ServiceChecks({
-  value,
-  onChange,
-}: {
-  value: ServiceType[];
-  onChange: (next: ServiceType[]) => void;
-}) {
-  return (
-    <div className="flex gap-3">
-      {SERVICE_OPTIONS.map((option) => {
-        const checked = value.includes(option.id);
-        return (
-          <label key={option.id} className="flex items-center gap-2 text-meta text-ink">
-            <input
-              type="checkbox"
-              checked={checked}
-              onChange={() => {
-                onChange(checked ? value.filter((item) => item !== option.id) : [...value, option.id]);
-              }}
-              className="h-4 w-4 accent-[var(--color-accent)]"
-            />
-            {option.label}
-          </label>
-        );
-      })}
-    </div>
-  );
-}
-
-function RegisterPanel({ title, submitLabel, onSubmit }: { title: string; submitLabel: string; onSubmit: (services: ServiceType[]) => Promise<void> }) {
-  const [services, setServices] = useState<ServiceType[]>(["nikah", "janaza"]);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  return (
-    <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
-      <h2 className="text-sm font-bold text-ink">{title}</h2>
-      <ServiceChecks value={services} onChange={setServices} />
-      {error && <p className="text-meta text-danger">{error}</p>}
-      <Button
-        size="lg"
-        disabled={submitting || services.length === 0}
-        onClick={async () => {
-          setSubmitting(true);
-          setError(null);
-          try {
-            await onSubmit(services);
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Could not save officiant.");
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {submitting ? "Saving…" : submitLabel}
-      </Button>
-    </div>
-  );
-}
-
-function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
-  const eligible = members.filter((member) => !member.isOfficiant);
-  const [memberId, setMemberId] = useState(eligible[0]?.id ?? "");
-  const [services, setServices] = useState<ServiceType[]>(["nikah", "janaza"]);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  if (eligible.length === 0) {
-    return <p className="text-meta text-body">Every member in this organization is already an officiant.</p>;
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      <select
-        value={memberId}
-        onChange={(e) => setMemberId(e.target.value)}
-        className="rounded-lg border border-border bg-surface-raised px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
-      >
-        {eligible.map((member) => (
-          <option key={member.id} value={member.id}>
-            {member.name}
-          </option>
-        ))}
-      </select>
-      <ServiceChecks value={services} onChange={setServices} />
-      {message && <p className="text-meta text-accent">{message}</p>}
-      {error && <p className="text-meta text-danger">{error}</p>}
-      <Button
-        variant="secondary"
-        size="lg"
-        disabled={submitting || !memberId}
-        onClick={async () => {
-          setSubmitting(true);
-          setError(null);
-          setMessage(null);
-          try {
-            await designateOfficiant(memberId, services);
-            setMessage("Officiant added.");
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Could not designate officiant.");
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {submitting ? "Adding…" : "Designate officiant"}
-      </Button>
-    </div>
-  );
 }
 
 function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
@@ -305,116 +180,73 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
   );
 }
 
-function OfferedServices({ officiant }: { officiant: OfficiantSummary }) {
-  const [services, setServices] = useState<ServiceType[]>(officiant.services);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+function GuestInbox({ inquiries }: { inquiries: GuestServiceInquiry[] }) {
+  if (inquiries.length === 0) {
+    return <p className="text-meta text-body">No new community requests.</p>;
+  }
 
   return (
-    <div className="flex flex-col gap-3">
-      <ServiceChecks value={services} onChange={setServices} />
-      {message && <p className="text-meta text-accent">{message}</p>}
-      {error && <p className="text-meta text-danger">{error}</p>}
-      <Button
-        variant="secondary"
-        size="lg"
-        disabled={submitting || services.length === 0}
-        onClick={async () => {
-          setSubmitting(true);
-          setError(null);
-          setMessage(null);
-          try {
-            await updateOfficiantServices(services);
-            setMessage("Services updated.");
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Could not update services.");
-          } finally {
-            setSubmitting(false);
-          }
-        }}
-      >
-        {submitting ? "Saving…" : "Update services"}
-      </Button>
+    <div className="flex flex-col gap-2">
+      {inquiries.map((inquiry) => (
+        <div key={inquiry.id} className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-raised p-3.5">
+          <div className="flex items-center gap-2">
+            <Badge variant="pending">{inquiry.serviceType}</Badge>
+            <span className="font-sans text-copy font-semibold text-ink">{inquiry.guestName}</span>
+          </div>
+          <p className="text-meta text-body">{inquiry.guestEmail}</p>
+          {inquiry.guestPhone && <p className="text-meta text-body">{inquiry.guestPhone}</p>}
+          {inquiry.preferredDate && (
+            <p className="font-mono text-micro text-muted">Preferred {inquiry.preferredDate}</p>
+          )}
+          {inquiry.details && <p className="text-meta text-body">{inquiry.details}</p>}
+        </div>
+      ))}
     </div>
   );
 }
 
 export function OfficiantDashboardClient({
   inbox,
-  recurring,
-  canManage,
-  members,
   pendingCount,
-  skills,
   claimableTasks,
   memberId,
-  nikahPrice,
+  guestInquiries,
 }: {
   inbox: OfficiantInbox | null;
-  recurring: RecurringWindow[];
-  canManage: boolean;
-  members: OrgMemberOption[];
   pendingCount: number;
-  skills: JanazaSkill[];
   claimableTasks: ClaimableJanazaTask[];
   memberId: string;
-  nikahPrice: number | null;
+  guestInquiries: GuestServiceInquiry[];
 }) {
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6 p-4 min-[900px]:p-6">
       <header className="flex items-center gap-2">
         <div className="flex flex-col">
-          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Officiant desk</h1>
-          <p className="text-meta text-body">Confirm nikah holds, claim janaza broadcasts, and set weekly hours.</p>
+          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Services</h1>
+          <p className="text-meta text-body">Incoming nikah and janaza bookings.</p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          <Link href="/dashboard/officiant" className="text-meta font-semibold text-body">
+            Settings
+          </Link>
           <PendingCountBadge count={pendingCount} />
         </div>
       </header>
 
-      {!inbox && (
-        <RegisterPanel
-          title="Register as an officiant"
-          submitLabel="Register myself"
-          onSubmit={registerAsOfficiant}
-        />
-      )}
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-bold text-ink">Community requests</h2>
+        <GuestInbox inquiries={guestInquiries} />
+      </section>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-sm font-bold text-ink">Pending nikah</h2>
+        <NikahInbox requests={inbox?.pendingNikah ?? []} />
+      </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-bold text-ink">Janaza tasks</h2>
         <JanazaInbox tasks={claimableTasks} memberId={memberId} />
       </section>
-      <MemberSkillsForm initialSkills={skills} />
-
-      {inbox && (
-        <>
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold text-ink">Pending nikah</h2>
-            <NikahInbox requests={inbox.pendingNikah} />
-          </section>
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold text-ink">Services you offer</h2>
-            <OfferedServices officiant={inbox.officiant} />
-          </section>
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold text-ink">Weekly availability</h2>
-            <AvailabilityGrid recurring={recurring} />
-          </section>
-        </>
-      )}
-
-      {canManage && (
-        <>
-          <section className="flex flex-col gap-2">
-            <NikahPriceForm initialAmount={nikahPrice} />
-          </section>
-          <section className="flex flex-col gap-2">
-            <h2 className="text-sm font-bold text-ink">Designate an officiant</h2>
-            <DesignatePanel members={members} />
-          </section>
-        </>
-      )}
     </div>
   );
 }

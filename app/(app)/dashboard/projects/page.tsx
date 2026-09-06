@@ -15,10 +15,10 @@ export default async function ProjectsListPage() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[600px] flex-col gap-4 bg-surface px-[18px] py-6">
       <div className="flex items-center gap-3">
-        <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Projects</h1>
+        <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Campaigns</h1>
         {canManage && (
           <NewProjectButton className={buttonClasses({ size: "sm", className: "ml-auto" })}>
-            New project
+            New campaign
           </NewProjectButton>
         )}
       </div>
@@ -26,12 +26,12 @@ export default async function ProjectsListPage() {
       {projects.length === 0 ? (
         <EmptyState
           icon="projects"
-          title="No projects yet"
-          description="Create a project and break it into phases to start tracking donations and expenses."
+          title="No campaigns yet"
+          description="Create a campaign and break it into phases to start tracking donations and expenses."
           action={
             canManage ? (
               <NewProjectButton className={buttonClasses({ size: "lg" })}>
-                Create a project
+                Create a campaign
               </NewProjectButton>
             ) : null
           }

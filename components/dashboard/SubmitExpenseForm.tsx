@@ -64,7 +64,7 @@ export function SubmitExpenseForm({ projects }: SubmitExpenseFormProps) {
   }
 
   if (projects.length === 0) {
-    return <p className="text-sm text-body">Create a project before submitting expenses.</p>;
+    return <p className="text-sm text-body">Create a campaign before submitting expenses.</p>;
   }
 
   return (
@@ -72,7 +72,7 @@ export function SubmitExpenseForm({ projects }: SubmitExpenseFormProps) {
       <div className="flex flex-col gap-4">
         {projects.length > 1 && (
           <div>
-            <label className="mb-1.5 block text-meta font-semibold text-ink">Project</label>
+            <label className="mb-1.5 block text-meta font-semibold text-ink">Campaign</label>
             <select
               value={projectId}
               onChange={(e) => handleProjectChange(e.target.value)}
@@ -167,7 +167,7 @@ export function SubmitExpenseForm({ projects }: SubmitExpenseFormProps) {
             Charge to phase
           </label>
           {phases.length === 0 ? (
-            <p className="text-meta text-body">This project has no phases yet.</p>
+            <p className="text-meta text-body">This campaign has no phases yet.</p>
           ) : (
             <div className="flex flex-col gap-1.5">
               {phases.map((phase) => (

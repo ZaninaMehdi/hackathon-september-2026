@@ -165,7 +165,7 @@ export async function getDashboardData(orgId: string, projectId: string): Promis
       raised: {
         amount: totalRaised,
         caption: `${allDonations.length} gifts`,
-        percent: totalGoal > 0 ? Math.round((totalRaised / totalGoal) * 100) : null,
+        percent: percentOfGoal(totalRaised, totalGoal),
       },
       spent: { amount: totalSpent, caption: `${allExpenses.length} expenses` },
       onHand: {
@@ -189,16 +189,48 @@ export type ProjectSummary = {
   isZakatEligible: boolean;
 };
 
+export type OrgOverviewStat = {
+  amount: number;
+  caption: string;
+  percent?: number | null;
+  trend?: { label: string; up: boolean } | null;
+};
+
 export type OrgOverview = {
   stats: {
-    raised: { amount: number; caption: string; percent: number | null };
-    spent: { amount: number; caption: string };
-    onHand: { amount: number; caption: string };
+    raised: OrgOverviewStat;
+    remaining: OrgOverviewStat;
+    onHand: OrgOverviewStat;
+    thisMonth: OrgOverviewStat;
+    donors: OrgOverviewStat;
+    spent: OrgOverviewStat;
   };
   projects: ProjectSummary[];
   recentDonations: DonationRow[];
   approvedExpenses: PostedExpenseRow[];
 };
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export function percentOfGoal(raised: number, goal: number): number | null {
+  if (!(goal > 0)) return null;
+  return (raised / goal) * 100;
+}
+
+export function formatPercentOfGoal(percent: number): string {
+  if (percent > 0 && percent < 1) {
+    return `${percent < 0.1 ? percent.toFixed(2) : percent.toFixed(1)}% of goal`;
+  }
+  return `${Math.round(percent)}% of goal`;
+}
+
+function moneyWindow(donations: { amount: number; created_at: string }[], fromMs: number, toMs: number) {
+  return donations.reduce((sum, donation) => {
+    const created = Date.parse(donation.created_at);
+    if (created >= fromMs && created < toMs) return sum + Number(donation.amount);
+    return sum;
+  }, 0);
+}
 
 export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
   const supabase = await createClient();
@@ -263,7 +295,25 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
 
   const totalRaised = allDonations.reduce((sum, d) => sum + Number(d.amount), 0);
   const totalSpent = allExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
-  const totalGoal = Array.from(goalByProject.values()).reduce((sum, g) => sum + g, 0);
+  const visibleProjectIds = new Set(allProjects.map((project) => project.id));
+  const totalGoal = allPhases.reduce((sum, phase) => {
+    if (!visibleProjectIds.has(phase.project_id)) return sum;
+    return sum + Number(phase.budget_target);
+  }, 0);
+  const remaining = Math.max(0, totalGoal - totalRaised);
+  const uniqueDonors = new Set(
+    allDonations.map((donation) => donation.donor_email?.trim().toLowerCase()).filter(Boolean)
+  ).size;
+  const avgGift = allDonations.length > 0 ? totalRaised / allDonations.length : 0;
+  const spendShare = totalRaised > 0 ? Math.round((totalSpent / totalRaised) * 100) : 0;
+
+  const now = Date.now();
+  const thisMonthRaised = moneyWindow(allDonations, now - 30 * DAY_MS, now + DAY_MS);
+  const priorMonthRaised = moneyWindow(allDonations, now - 60 * DAY_MS, now - 30 * DAY_MS);
+  const monthDelta =
+    priorMonthRaised > 0
+      ? Math.round(((thisMonthRaised - priorMonthRaised) / priorMonthRaised) * 100)
+      : null;
 
   const recentDonations: DonationRow[] = allDonations.slice(0, 6).map((d) => ({
     id: d.id,
@@ -284,13 +334,48 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
     stats: {
       raised: {
         amount: totalRaised,
-        caption: `${allDonations.length} gifts`,
-        percent: totalGoal > 0 ? Math.round((totalRaised / totalGoal) * 100) : null,
+        caption: `${allDonations.length} gift${allDonations.length === 1 ? "" : "s"} across open books`,
+        percent: percentOfGoal(totalRaised, totalGoal),
       },
-      spent: { amount: totalSpent, caption: `${allExpenses.length} expenses` },
+      remaining: {
+        amount: remaining,
+        caption:
+          totalGoal <= 0
+            ? "Set phase goals to track the gap"
+            : remaining === 0
+              ? "Every published goal is met"
+              : `${Math.round((remaining / totalGoal) * 100)}% of the published goal left`,
+      },
       onHand: {
         amount: totalRaised - totalSpent,
-        caption: `across ${allProjects.length} project${allProjects.length === 1 ? "" : "s"}`,
+        caption: `Unspent across ${allProjects.length} campaign${allProjects.length === 1 ? "" : "s"}`,
+      },
+      thisMonth: {
+        amount: thisMonthRaised,
+        caption:
+          monthDelta == null
+            ? priorMonthRaised === 0 && thisMonthRaised === 0
+              ? "No gifts in the last 30 days"
+              : "No gifts in the prior 30 days to compare"
+            : "Last 30 days vs the 30 before",
+        trend:
+          monthDelta == null
+            ? null
+            : { label: `${monthDelta > 0 ? "+" : ""}${monthDelta}%`, up: monthDelta >= 0 },
+      },
+      donors: {
+        amount: uniqueDonors,
+        caption:
+          uniqueDonors === 0
+            ? "No identified donors yet"
+            : `Avg gift ${avgGift.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}`,
+      },
+      spent: {
+        amount: totalSpent,
+        caption:
+          allExpenses.length === 0
+            ? "No posted expenses yet"
+            : `${allExpenses.length} receipt${allExpenses.length === 1 ? "" : "s"} · ${spendShare}% of raised`,
       },
     },
     projects: projectSummaries,

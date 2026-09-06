@@ -151,7 +151,7 @@ export function EditExpenseForm({ expense, phases, onSaved }: EditExpenseFormPro
             Charge to phase
           </label>
           {phases.length === 0 ? (
-            <p className="text-meta text-body">This project has no phases yet.</p>
+            <p className="text-meta text-body">This campaign has no phases yet.</p>
           ) : (
             <div className="flex flex-col gap-1.5">
               {phases.map((phase) => (

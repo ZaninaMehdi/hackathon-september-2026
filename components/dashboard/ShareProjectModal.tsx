@@ -51,10 +51,10 @@ export function ShareProjectModal({ publicUrl }: ShareProjectModalProps) {
       </Button>
 
       {open && (
-        <Modal title="Share this project" onClose={() => setOpen(false)}>
+        <Modal title="Share this campaign" onClose={() => setOpen(false)}>
           <div className="flex flex-col items-center gap-4">
             <p className="text-center text-meta text-body">
-              Anyone with this link can follow the project&apos;s progress and donate — no
+              Anyone with this link can follow the campaign&apos;s progress and donate — no
               account needed.
             </p>
 
@@ -81,7 +81,7 @@ export function ShareProjectModal({ publicUrl }: ShareProjectModalProps) {
             <div className="flex flex-col items-center gap-3 rounded-lg border border-hairline bg-surface-raised p-4">
               {qrDataUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={qrDataUrl} alt="QR code linking to the project page" className="h-40 w-40" />
+                <img src={qrDataUrl} alt="QR code linking to the campaign page" className="h-40 w-40" />
               ) : (
                 <div className="h-40 w-40 animate-pulse rounded-md bg-neutral-wash" />
               )}

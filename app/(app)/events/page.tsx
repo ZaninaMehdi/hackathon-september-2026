@@ -7,5 +7,5 @@ export default async function EventsPage() {
   const events = await getOrgEvents(context.orgId);
   const canManage = context.roles.some((r) => r === "admin" || r === "treasurer");
 
-  return <EventsListClient events={events} canManage={canManage} />;
+  return <EventsListClient events={events} canManage={canManage} orgSlug={context.orgSlug} />;
 }

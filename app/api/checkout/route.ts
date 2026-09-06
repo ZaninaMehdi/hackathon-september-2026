@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Enter an amount of at least $1." }, { status: 400 });
   }
   if (!phaseId || !projectId || !projectSlug || !orgSlug) {
-    return NextResponse.json({ error: "Missing phase or project." }, { status: 400 });
+    return NextResponse.json({ error: "Missing phase or campaign." }, { status: 400 });
   }
 
   const supabase = await createClient();
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   if (!project || project.status !== "active") {
     return NextResponse.json(
-      { error: "This project is not accepting donations right now." },
+      { error: "This campaign is not accepting donations right now." },
       { status: 400 }
     );
   }

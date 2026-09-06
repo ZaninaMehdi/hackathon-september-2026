@@ -20,6 +20,23 @@ export type MemberContext = {
 // silently leave every page open with no login.
 export const AUTH_DISABLED = process.env.DISABLE_AUTH !== "false";
 
+export async function getStaffNav(): Promise<{ href: string; label: string }> {
+  if (AUTH_DISABLED) {
+    return { href: "/dashboard", label: "Dashboard" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (user) {
+    return { href: "/dashboard", label: "Dashboard" };
+  }
+
+  return { href: "/login", label: "Staff sign in" };
+}
+
 async function getDevMemberContext(): Promise<MemberContext | null> {
   const supabase = await createClient();
 

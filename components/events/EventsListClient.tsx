@@ -39,9 +39,11 @@ function eventDateKey(event: OrgEvent) {
 export function EventsListClient({
   events,
   canManage,
+  orgSlug,
 }: {
   events: OrgEvent[];
   canManage: boolean;
+  orgSlug: string;
 }) {
   const [view, setView] = useState<"list" | "calendar">("list");
   const [formMode, setFormMode] = useState<FormMode>({ kind: "closed" });
@@ -175,7 +177,7 @@ export function EventsListClient({
         <footer className="sticky bottom-16 z-10 mt-auto w-full border-t border-hairline bg-surface/95 px-[18px] py-3.5 backdrop-blur-sm min-[900px]:bottom-0">
           <div className="mx-auto flex w-full max-w-[390px] gap-2">
             <Link
-              href="/services"
+              href={`/${orgSlug}#services`}
               className={buttonClasses({ variant: "secondary", size: "lg", className: "flex-1" })}
             >
               Book a service

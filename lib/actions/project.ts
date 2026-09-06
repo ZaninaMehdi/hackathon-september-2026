@@ -41,7 +41,7 @@ export async function createProject(input: CreateProjectInput) {
     .single();
 
   if (projectError || !project) {
-    throw new Error(projectError?.message ?? "Failed to create project.");
+    throw new Error(projectError?.message ?? "Failed to create campaign.");
   }
 
   if (input.phases.length > 0) {
@@ -77,7 +77,7 @@ async function assertOwnsProject(
     .maybeSingle();
 
   if (!project || project.org_id !== orgId) {
-    throw new Error("Project not found.");
+    throw new Error("Campaign not found.");
   }
 }
 
@@ -136,7 +136,7 @@ export async function deleteProject(projectId: string) {
 
   if ((donationCount ?? 0) > 0 || (expenseCount ?? 0) > 0) {
     throw new Error(
-      "This project has donations or expenses recorded — archive it instead of deleting."
+      "This campaign has donations or expenses recorded — archive it instead of deleting."
     );
   }
 
