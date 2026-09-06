@@ -1,29 +1,51 @@
 import { createClient } from "@/lib/supabase/server";
+import type { ProjectStatus } from "@/lib/actions/project";
 
 export type OrgProject = {
   id: string;
   slug: string;
   title: string;
+  status: ProjectStatus;
   totalGoal: number;
   phaseCount: number;
 };
 
 export async function getOrgProjects(
-  orgId: string
-): Promise<{ id: string; slug: string; title: string; totalGoal: number; createdAt: string }[]> {
+  orgId: string,
+  { includeArchived = false }: { includeArchived?: boolean } = {}
+): Promise<
+  { id: string; slug: string; title: string; status: ProjectStatus; totalGoal: number; createdAt: string }[]
+> {
   const supabase = await createClient();
 
-  const { data } = await supabase
+  let query = supabase
     .from("projects")
-    .select("id, slug, title, total_goal, created_at")
-    .eq("org_id", orgId)
-    .order("created_at", { ascending: false });
+    .select("id, slug, title, status, created_at")
+    .eq("org_id", orgId);
 
-  return (data ?? []).map((p) => ({
+  if (!includeArchived) {
+    query = query.neq("status", "archived");
+  }
+
+  const [{ data: projects }, { data: phases }] = await Promise.all([
+    query.order("created_at", { ascending: false }),
+    supabase.from("phases").select("project_id, budget_target").eq("org_id", orgId),
+  ]);
+
+  const goalByProject = new Map<string, number>();
+  for (const phase of phases ?? []) {
+    goalByProject.set(
+      phase.project_id,
+      (goalByProject.get(phase.project_id) ?? 0) + Number(phase.budget_target)
+    );
+  }
+
+  return (projects ?? []).map((p) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
-    totalGoal: Number(p.total_goal),
+    status: p.status as ProjectStatus,
+    totalGoal: goalByProject.get(p.id) ?? 0,
     createdAt: p.created_at,
   }));
 }
@@ -34,7 +56,7 @@ export async function getLatestOrgProject(
 ): Promise<OrgProject | null> {
   const supabase = await createClient();
 
-  const query = supabase.from("projects").select("id, slug, title, total_goal").eq("org_id", orgId);
+  const query = supabase.from("projects").select("id, slug, title, status").eq("org_id", orgId);
 
   const { data: project } = projectId
     ? await query.eq("id", projectId).maybeSingle()
@@ -42,17 +64,18 @@ export async function getLatestOrgProject(
 
   if (!project) return null;
 
-  const { count } = await supabase
+  const { data: phases } = await supabase
     .from("phases")
-    .select("id", { count: "exact", head: true })
+    .select("budget_target")
     .eq("project_id", project.id);
 
   return {
     id: project.id,
     slug: project.slug,
     title: project.title,
-    totalGoal: Number(project.total_goal),
-    phaseCount: count ?? 0,
+    status: project.status as ProjectStatus,
+    totalGoal: (phases ?? []).reduce((sum, p) => sum + Number(p.budget_target), 0),
+    phaseCount: phases?.length ?? 0,
   };
 }
 
@@ -68,7 +91,7 @@ export type PostedExpenseRow = { id: string; title: string; amount: number; proj
 export type DashboardData = {
   project: { id: string; title: string; phaseCount: number };
   stats: {
-    raised: { amount: number; caption: string };
+    raised: { amount: number; caption: string; percent: number | null };
     spent: { amount: number; caption: string };
     onHand: { amount: number; caption: string };
   };
@@ -81,8 +104,8 @@ export async function getDashboardData(orgId: string, projectId: string): Promis
 
   const [{ data: project }, { data: phases }, { data: donations }, { data: expenses }] =
     await Promise.all([
-      supabase.from("projects").select("id, title, total_goal").eq("id", projectId).maybeSingle(),
-      supabase.from("phases").select("id, title").eq("project_id", projectId),
+      supabase.from("projects").select("id, title").eq("id", projectId).maybeSingle(),
+      supabase.from("phases").select("id, title, budget_target").eq("project_id", projectId),
       supabase
         .from("donations")
         .select("id, amount, donor_email, created_at")
@@ -98,6 +121,7 @@ export async function getDashboardData(orgId: string, projectId: string): Promis
 
   const allExpenses = expenses ?? [];
   const allDonations = donations ?? [];
+  const totalGoal = (phases ?? []).reduce((sum, p) => sum + Number(p.budget_target), 0);
 
   const totalRaised = allDonations.reduce((sum, d) => sum + Number(d.amount), 0);
   const totalSpent = allExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
@@ -124,7 +148,11 @@ export async function getDashboardData(orgId: string, projectId: string): Promis
       phaseCount: phases?.length ?? 0,
     },
     stats: {
-      raised: { amount: totalRaised, caption: `${allDonations.length} gifts` },
+      raised: {
+        amount: totalRaised,
+        caption: `${allDonations.length} gifts`,
+        percent: totalGoal > 0 ? Math.round((totalRaised / totalGoal) * 100) : null,
+      },
       spent: { amount: totalSpent, caption: `${allExpenses.length} expenses` },
       onHand: {
         amount: totalRaised - totalSpent,
@@ -139,6 +167,7 @@ export async function getDashboardData(orgId: string, projectId: string): Promis
 export type ProjectSummary = {
   id: string;
   title: string;
+  status: ProjectStatus;
   raised: number;
   goal: number;
   spent: number;
@@ -147,7 +176,7 @@ export type ProjectSummary = {
 
 export type OrgOverview = {
   stats: {
-    raised: { amount: number; caption: string };
+    raised: { amount: number; caption: string; percent: number | null };
     spent: { amount: number; caption: string };
     onHand: { amount: number; caption: string };
   };
@@ -161,8 +190,8 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
 
   const [{ data: projects }, { data: phases }, { data: donations }, { data: expenses }] =
     await Promise.all([
-      supabase.from("projects").select("id, title, total_goal").eq("org_id", orgId),
-      supabase.from("phases").select("id, project_id").eq("org_id", orgId),
+      supabase.from("projects").select("id, title, status").eq("org_id", orgId).neq("status", "archived"),
+      supabase.from("phases").select("id, project_id, budget_target").eq("org_id", orgId),
       supabase
         .from("donations")
         .select("id, project_id, amount, donor_email, created_at")
@@ -183,8 +212,13 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
 
   const projectTitleById = new Map(allProjects.map((p) => [p.id, p.title]));
   const phaseCountByProject = new Map<string, number>();
+  const goalByProject = new Map<string, number>();
   for (const phase of allPhases) {
     phaseCountByProject.set(phase.project_id, (phaseCountByProject.get(phase.project_id) ?? 0) + 1);
+    goalByProject.set(
+      phase.project_id,
+      (goalByProject.get(phase.project_id) ?? 0) + Number(phase.budget_target)
+    );
   }
 
   const donationsByProject = new Map<string, number>();
@@ -200,14 +234,16 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
   const projectSummaries: ProjectSummary[] = allProjects.map((p) => ({
     id: p.id,
     title: p.title,
+    status: p.status as ProjectStatus,
     raised: donationsByProject.get(p.id) ?? 0,
-    goal: Number(p.total_goal),
+    goal: goalByProject.get(p.id) ?? 0,
     spent: spentByProject.get(p.id) ?? 0,
     phaseCount: phaseCountByProject.get(p.id) ?? 0,
   }));
 
   const totalRaised = allDonations.reduce((sum, d) => sum + Number(d.amount), 0);
   const totalSpent = allExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+  const totalGoal = Array.from(goalByProject.values()).reduce((sum, g) => sum + g, 0);
 
   const recentDonations: DonationRow[] = allDonations.slice(0, 6).map((d) => ({
     id: d.id,
@@ -226,7 +262,11 @@ export async function getOrgOverview(orgId: string): Promise<OrgOverview> {
 
   return {
     stats: {
-      raised: { amount: totalRaised, caption: `${allDonations.length} gifts` },
+      raised: {
+        amount: totalRaised,
+        caption: `${allDonations.length} gifts`,
+        percent: totalGoal > 0 ? Math.round((totalRaised / totalGoal) * 100) : null,
+      },
       spent: { amount: totalSpent, caption: `${allExpenses.length} expenses` },
       onHand: {
         amount: totalRaised - totalSpent,

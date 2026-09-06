@@ -16,8 +16,8 @@ export default async function ServicesHubPage() {
   return (
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-5 p-4 min-[900px]:p-6">
       <header className="flex flex-col gap-1">
-        <h1 className="text-[19px] font-bold tracking-[-0.02em] text-ink">Bookings</h1>
-        <p className="text-[13.5px] text-body">
+        <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Bookings</h1>
+        <p className="text-meta text-body">
           Book a nikah or janaza, or jump to community events.
         </p>
       </header>
@@ -27,9 +27,9 @@ export default async function ServicesHubPage() {
           href="/services/nikah"
           className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-4"
         >
-          <span className="text-[15px] font-semibold text-ink">Nikah</span>
+          <span className="text-copy font-semibold text-ink">Nikah</span>
           <NikahFee amount={nikahPrice} compact />
-          <span className="text-[13px] text-body">
+          <span className="text-meta text-body">
             Browse open slots and hold one for confirmation.
           </span>
         </Link>
@@ -37,9 +37,9 @@ export default async function ServicesHubPage() {
           href="/services/janaza"
           className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-4"
         >
-          <span className="text-[15px] font-semibold text-ink">Janaza</span>
+          <span className="text-copy font-semibold text-ink">Janaza</span>
           <ServicePrice price={JANAZA_PRICE} compact />
-          <span className="text-[13px] text-body">
+          <span className="text-meta text-body">
             Send an urgent request. Salat and ghusl are claimed; transport and cemetery are coordinated.
           </span>
         </Link>
@@ -49,8 +49,8 @@ export default async function ServicesHubPage() {
         href="/events"
         className="flex flex-col gap-1 rounded-lg border border-hairline bg-white px-4 py-3.5"
       >
-        <span className="text-[15px] font-semibold text-ink">Events</span>
-        <span className="text-[13px] text-body">
+        <span className="text-copy font-semibold text-ink">Events</span>
+        <span className="text-meta text-body">
           Community calendar — classes, fundraisers, and gatherings.
         </span>
       </Link>
@@ -60,8 +60,8 @@ export default async function ServicesHubPage() {
         className="flex items-center gap-2 rounded-lg border border-hairline bg-white px-4 py-3.5"
       >
         <div className="flex flex-col">
-          <span className="text-[15px] font-semibold text-ink">Officiant desk</span>
-          <span className="text-[13px] text-body">
+          <span className="text-copy font-semibold text-ink">Officiant desk</span>
+          <span className="text-meta text-body">
             {officiant ? "Confirm holds, claim broadcasts, and set weekly hours." : "Register as an officiant."}
           </span>
         </div>

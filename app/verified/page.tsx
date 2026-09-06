@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mark } from "@/components/brand/Mark";
+import { buttonClasses } from "@/components/ui/Button";
 
 export default function VerifiedExplainerPage() {
   return (
@@ -7,7 +8,7 @@ export default function VerifiedExplainerPage() {
       <Mark size={32} />
 
       <div className="flex flex-col gap-3">
-        <h1 className="text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink">
+        <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
           What &quot;Verified books&quot; means
         </h1>
         <p className="text-sm leading-[1.6] text-body">
@@ -32,7 +33,7 @@ export default function VerifiedExplainerPage() {
           </span>
           <div>
             <h2 className="text-sm font-semibold text-ink">Every expense needs a receipt</h2>
-            <p className="text-[13px] leading-[1.6] text-body">
+            <p className="text-meta leading-[1.6] text-body">
               A photo of the receipt is required before anything can be submitted for approval.
             </p>
           </div>
@@ -42,7 +43,7 @@ export default function VerifiedExplainerPage() {
           <span className="mt-0.5 inline-block h-6 w-6 shrink-0 rounded-full border-2 border-dashed border-pending-border" />
           <div>
             <h2 className="text-sm font-semibold text-ink">Larger expenses need two signatures</h2>
-            <p className="text-[13px] leading-[1.6] text-body">
+            <p className="text-meta leading-[1.6] text-body">
               Above the org&apos;s threshold, two board members must independently approve before
               it publishes. Below it, one approval is enough.
             </p>
@@ -63,7 +64,7 @@ export default function VerifiedExplainerPage() {
           </span>
           <div>
             <h2 className="text-sm font-semibold text-ink">Numbers are computed, not entered</h2>
-            <p className="text-[13px] leading-[1.6] text-body">
+            <p className="text-meta leading-[1.6] text-body">
               Raised, spent, and phase progress are derived directly from donation and expense
               records — the public page can never disagree with the ledger.
             </p>
@@ -71,7 +72,14 @@ export default function VerifiedExplainerPage() {
         </div>
       </div>
 
-      <Link href="/" className="text-[13px] font-semibold text-accent">
+      <Link
+        href="/"
+        className={buttonClasses({
+          variant: "ghost",
+          size: "sm",
+          className: "-ml-3 self-start text-accent",
+        })}
+      >
         ← Back
       </Link>
     </div>

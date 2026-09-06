@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { inviteMember } from "@/lib/actions/invite";
 
 export function InviteForm() {
@@ -38,12 +39,12 @@ export function InviteForm() {
           placeholder="email@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
         <select
           value={role}
           onChange={(e) => setRole(e.target.value as typeof role)}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         >
           <option value="treasurer">Treasurer / approver</option>
           <option value="admin">Admin</option>
@@ -51,17 +52,17 @@ export function InviteForm() {
         </select>
       </div>
 
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
 
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="lg"
         disabled={submitting || email.trim().length === 0}
         onClick={handleSubmit}
-        className="rounded-lg bg-accent py-3.5 text-[15px] font-semibold text-white disabled:opacity-50"
       >
         {submitting ? "Sending…" : "Send invite"}
-      </button>
+      </Button>
     </div>
   );
 }

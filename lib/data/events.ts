@@ -52,40 +52,73 @@ function formatPrice(price: number): string {
   });
 }
 
+type EventRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  location: string | null;
+  price: number | null;
+  series_id: string | null;
+  recurrence: string | null;
+};
+
+function mapEventRow(e: EventRow): OrgEvent {
+  const endsAt = e.ends_at ?? e.starts_at;
+  const price = Number(e.price ?? 0);
+  const recurrence = (e.recurrence as RecurrenceFrequency | null) ?? null;
+  return {
+    id: e.id,
+    day: new Date(e.starts_at).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    }),
+    title: e.title,
+    description: e.description ?? "",
+    timePlace: [formatTimeRange(e.starts_at, endsAt), e.location].filter(Boolean).join(" · "),
+    location: e.location ?? "",
+    startsAt: e.starts_at,
+    endsAt,
+    price,
+    isFree: price <= 0,
+    priceLabel: formatPrice(price),
+    seriesId: e.series_id ?? null,
+    recurrence,
+    recurrenceLabel: recurrenceLabel(recurrence),
+    isRecurring: Boolean(e.series_id),
+  };
+}
+
+const EVENT_COLUMNS =
+  "id, title, description, starts_at, ends_at, location, price, series_id, recurrence";
+
 export async function getOrgEvents(orgId: string): Promise<OrgEvent[]> {
   const supabase = await createClient();
 
   const { data } = await supabase
     .from("events")
-    .select("id, title, description, starts_at, ends_at, location, price, series_id, recurrence")
+    .select(EVENT_COLUMNS)
     .eq("org_id", orgId)
     .not("starts_at", "is", null)
     .order("starts_at", { ascending: true });
 
-  return (data ?? []).map((e) => {
-    const endsAt = e.ends_at ?? e.starts_at;
-    const price = Number(e.price ?? 0);
-    const recurrence = (e.recurrence as RecurrenceFrequency | null) ?? null;
-    return {
-      id: e.id,
-      day: new Date(e.starts_at).toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      }),
-      title: e.title,
-      description: e.description ?? "",
-      timePlace: [formatTimeRange(e.starts_at, endsAt), e.location].filter(Boolean).join(" · "),
-      location: e.location ?? "",
-      startsAt: e.starts_at,
-      endsAt,
-      price,
-      isFree: price <= 0,
-      priceLabel: formatPrice(price),
-      seriesId: e.series_id ?? null,
-      recurrence,
-      recurrenceLabel: recurrenceLabel(recurrence),
-      isRecurring: Boolean(e.series_id),
-    };
-  });
+  return (data ?? []).map(mapEventRow);
+}
+
+export async function getPublicUpcomingEvents(orgId: string): Promise<OrgEvent[]> {
+  const supabase = await createClient();
+
+  const { data } = await supabase
+    .from("events")
+    .select(EVENT_COLUMNS)
+    .eq("org_id", orgId)
+    .eq("visibility", "public")
+    .eq("status", "confirmed")
+    .not("starts_at", "is", null)
+    .gte("starts_at", new Date().toISOString())
+    .order("starts_at", { ascending: true });
+
+  return (data ?? []).map(mapEventRow);
 }

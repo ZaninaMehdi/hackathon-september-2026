@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveRecurringAvailability, type DayAvailabilityInput } from "@/lib/actions/officiant";
 import type { RecurringWindow } from "@/lib/data/services";
+import { Button } from "@/components/ui/Button";
 
 const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -53,7 +54,7 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[12.5px] text-body">
+      <p className="text-meta text-body">
         Check the days you can officiate and set a time range. Times are stored as UTC.
       </p>
       <div className="flex flex-col gap-2">
@@ -68,12 +69,12 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
               onChange={(e) => updateDay(day.dayOfWeek, { enabled: e.target.checked })}
               className="h-4 w-4 accent-[var(--color-accent)]"
             />
-            <span className="w-[92px] text-[13.5px] font-medium text-ink">{DAY_LABELS[day.dayOfWeek]}</span>
+            <span className="w-[92px] text-meta font-medium text-ink">{DAY_LABELS[day.dayOfWeek]}</span>
             <select
               value={day.startTime}
               disabled={!day.enabled}
               onChange={(e) => updateDay(day.dayOfWeek, { startTime: e.target.value })}
-              className="rounded-md border border-border bg-white px-2 py-1.5 text-[13px] text-ink disabled:opacity-40"
+              className="rounded-md border border-border bg-white px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
             >
               {TIME_OPTIONS.map((time) => (
                 <option key={`${day.dayOfWeek}-start-${time}`} value={time}>
@@ -81,12 +82,12 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
                 </option>
               ))}
             </select>
-            <span className="text-[12px] text-muted">to</span>
+            <span className="text-meta text-muted">to</span>
             <select
               value={day.endTime}
               disabled={!day.enabled}
               onChange={(e) => updateDay(day.dayOfWeek, { endTime: e.target.value })}
-              className="rounded-md border border-border bg-white px-2 py-1.5 text-[13px] text-ink disabled:opacity-40"
+              className="rounded-md border border-border bg-white px-2 py-1.5 text-meta text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20 disabled:opacity-40"
             >
               {TIME_OPTIONS.map((time) => (
                 <option key={`${day.dayOfWeek}-end-${time}`} value={time}>
@@ -97,16 +98,11 @@ export function AvailabilityGrid({ recurring }: { recurring: RecurringWindow[] }
           </label>
         ))}
       </div>
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
-        disabled={submitting}
-        onClick={handleSave}
-        className="rounded-lg bg-accent py-3 text-[15px] font-semibold text-white disabled:opacity-50"
-      >
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button size="lg" disabled={submitting} onClick={handleSave}>
         {submitting ? "Saving…" : "Save weekly hours"}
-      </button>
+      </Button>
     </div>
   );
 }

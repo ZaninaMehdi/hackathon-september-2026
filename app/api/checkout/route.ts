@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const { amount, phaseId, phaseLabel, projectId, projectSlug, orgSlug } = await request.json();
@@ -10,6 +11,20 @@ export async function POST(request: Request) {
   }
   if (!phaseId || !projectId || !projectSlug || !orgSlug) {
     return NextResponse.json({ error: "Missing phase or project." }, { status: 400 });
+  }
+
+  const supabase = await createClient();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("status")
+    .eq("id", projectId)
+    .maybeSingle();
+
+  if (!project || project.status !== "active") {
+    return NextResponse.json(
+      { error: "This project is not accepting donations right now." },
+      { status: 400 }
+    );
   }
 
   const origin = request.headers.get("origin") ?? new URL(request.url).origin;

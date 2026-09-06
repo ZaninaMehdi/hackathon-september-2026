@@ -69,8 +69,6 @@ export async function createOrgAndProject(input: CreateOrgAndProjectInput) {
     throw new Error(roleError.message);
   }
 
-  const totalGoal = input.phases.reduce((sum, p) => sum + p.budget, 0);
-
   const projectSlug = await generateUniqueSlug(input.projectTitle, async (candidate) => {
     const { data } = await supabase
       .from("projects")
@@ -87,7 +85,6 @@ export async function createOrgAndProject(input: CreateOrgAndProjectInput) {
       org_id: org.id,
       title: input.projectTitle,
       slug: projectSlug,
-      total_goal: totalGoal,
       created_by: member.id,
     })
     .select("id")

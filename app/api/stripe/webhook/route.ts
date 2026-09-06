@@ -22,27 +22,50 @@ export async function POST(request: Request) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const phaseId = session.metadata?.phase_id;
-    const projectId = session.metadata?.project_id;
+    const supabase = createAdminClient();
 
-    if (phaseId && projectId) {
-      const supabase = createAdminClient();
+    if (session.metadata?.kind === "event_registration") {
+      const eventId = session.metadata?.event_id;
 
-      const { data: phase } = await supabase
-        .from("phases")
-        .select("org_id")
-        .eq("id", phaseId)
-        .maybeSingle();
+      if (eventId) {
+        const { data: eventRow } = await supabase
+          .from("events")
+          .select("org_id")
+          .eq("id", eventId)
+          .maybeSingle();
 
-      if (phase) {
-        await supabase.from("donations").insert({
-          phase_id: phaseId,
-          project_id: projectId,
-          org_id: phase.org_id,
-          amount: (session.amount_total ?? 0) / 100,
-          donor_email: session.customer_details?.email ?? null,
-          stripe_payment_id: session.id,
-        });
+        if (eventRow) {
+          await supabase.from("event_registrations").insert({
+            event_id: eventId,
+            org_id: eventRow.org_id,
+            attendee_name: session.metadata?.attendee_name || null,
+            attendee_email: session.customer_details?.email ?? null,
+            amount_paid: (session.amount_total ?? 0) / 100,
+            stripe_payment_id: session.id,
+          });
+        }
+      }
+    } else {
+      const phaseId = session.metadata?.phase_id;
+      const projectId = session.metadata?.project_id;
+
+      if (phaseId && projectId) {
+        const { data: phase } = await supabase
+          .from("phases")
+          .select("org_id")
+          .eq("id", phaseId)
+          .maybeSingle();
+
+        if (phase) {
+          await supabase.from("donations").insert({
+            phase_id: phaseId,
+            project_id: projectId,
+            org_id: phase.org_id,
+            amount: (session.amount_total ?? 0) / 100,
+            donor_email: session.customer_details?.email ?? null,
+            stripe_payment_id: session.id,
+          });
+        }
       }
     }
   }

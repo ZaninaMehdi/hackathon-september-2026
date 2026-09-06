@@ -6,6 +6,8 @@ import { getOrgOverview } from "@/lib/data/dashboard";
 import { getPhaseOptionsForOrg } from "@/lib/data/phases";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
 import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
+import { buttonClasses } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export default async function DashboardOverviewPage() {
   const context = await requireMemberContext();
@@ -19,18 +21,27 @@ export default async function DashboardOverviewPage() {
       {/* Header bar */}
       <div className="flex items-center gap-4 border-b border-hairline px-4 py-4.5 min-[900px]:px-6">
         <div className="flex flex-col">
-          <h1 className="text-[19px] font-bold tracking-[-0.02em] text-ink">Overview</h1>
-          <span className="text-xs text-body">
+          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Overview</h1>
+          <span className="text-meta text-body">
             {projects.length} project{projects.length === 1 ? "" : "s"} · {context.orgName}
           </span>
         </div>
-        {canManage && <DashboardActionBar projects={expenseProjects} />}
+        {canManage && (
+          <div className="ml-auto">
+            <DashboardActionBar projects={expenseProjects} />
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-5 p-4 min-[900px]:p-6">
         {/* Org-wide stat row */}
         <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-3">
-          <StatCard eyebrow="Raised" figure={formatUsd(stats.raised.amount)} caption={stats.raised.caption} />
+          <StatCard
+            eyebrow="Raised"
+            figure={formatUsd(stats.raised.amount)}
+            caption={stats.raised.caption}
+            percent={stats.raised.percent}
+          />
           <StatCard eyebrow="Spent" figure={formatUsd(stats.spent.amount)} caption={stats.spent.caption} />
           <StatCard eyebrow="On hand" figure={formatUsd(stats.onHand.amount)} caption={stats.onHand.caption} />
         </div>
@@ -38,10 +49,10 @@ export default async function DashboardOverviewPage() {
         {/* Projects grid */}
         <div>
           <div className="mb-2.5 flex items-baseline gap-3">
-            <h2 className="text-sm font-bold text-ink">Projects</h2>
+            <h2 className="text-subhead font-semibold text-ink">Projects</h2>
             {canManage && (
-              <NewProjectButton className="ml-auto text-[12.5px] font-semibold text-accent">
-                + New project
+              <NewProjectButton className={buttonClasses({ variant: "ghost", size: "sm", className: "ml-auto text-accent" })}>
+                New project
               </NewProjectButton>
             )}
           </div>
@@ -51,7 +62,7 @@ export default async function DashboardOverviewPage() {
                 Create your first project and phases to start tracking donations and expenses.
               </p>
               {canManage && (
-                <NewProjectButton className="rounded-lg bg-accent px-5 py-3 text-[15px] font-semibold text-white">
+                <NewProjectButton className={buttonClasses({ size: "lg" })}>
                   Create a project
                 </NewProjectButton>
               )}
@@ -62,16 +73,31 @@ export default async function DashboardOverviewPage() {
                 <Link
                   key={project.id}
                   href={`/dashboard/projects/${project.id}`}
-                  className="flex flex-col gap-2.5 rounded-lg border border-hairline p-4 hover:bg-surface-sunken"
+                  className="flex flex-col gap-2.5 rounded-lg border border-hairline bg-surface-raised p-4 shadow-card transition-shadow duration-150 hover:shadow-lift"
                 >
-                  <span className="truncate text-[15px] font-semibold text-ink">{project.title}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-copy font-semibold text-ink">{project.title}</span>
+                    {project.status === "closed" && (
+                      <Badge variant="draft" compact className="shrink-0">
+                        closed
+                      </Badge>
+                    )}
+                    {project.goal > 0 && project.raised > project.goal && (
+                      <Badge variant="success" compact className="shrink-0">
+                        Over goal
+                      </Badge>
+                    )}
+                  </div>
                   <ProgressBar
                     raised={project.raised}
                     target={project.goal}
                     label={`${formatUsd(project.raised)} of ${formatUsd(project.goal)}`}
                   />
                   <div className="flex items-center justify-between font-mono text-[11.5px] text-muted">
-                    <span>{formatUsd(project.raised)} raised</span>
+                    <span>
+                      {formatUsd(project.raised)} raised
+                      {project.goal > 0 && ` · ${Math.round((project.raised / project.goal) * 100)}%`}
+                    </span>
                     <span>{project.phaseCount} phases</span>
                   </div>
                 </Link>
@@ -83,7 +109,7 @@ export default async function DashboardOverviewPage() {
         {/* Two side-by-side lists — stack below 900px */}
         <div className="grid grid-cols-1 gap-4 min-[900px]:grid-cols-2">
           <div>
-            <h2 className="mb-2.5 text-sm font-bold text-ink">Recent donations</h2>
+            <h2 className="mb-2.5 text-subhead font-semibold text-ink">Recent donations</h2>
             {recentDonations.length === 0 ? (
               <p className="rounded-lg border border-hairline p-4 text-sm text-body">
                 No donations yet.
@@ -93,7 +119,7 @@ export default async function DashboardOverviewPage() {
                 {recentDonations.map((donation, i) => (
                   <div
                     key={donation.id}
-                    className={`flex items-center gap-2 px-3.5 py-2.5 text-[13px] ${
+                    className={`flex items-center gap-2 px-3.5 py-3 text-meta ${
                       i !== recentDonations.length - 1 ? "border-b border-hairline-soft" : ""
                     }`}
                   >
@@ -114,7 +140,7 @@ export default async function DashboardOverviewPage() {
           </div>
 
           <div>
-            <h2 className="mb-2.5 text-sm font-bold text-ink">Expenses</h2>
+            <h2 className="mb-2.5 text-subhead font-semibold text-ink">Expenses</h2>
             {approvedExpenses.length === 0 ? (
               <p className="rounded-lg border border-hairline p-4 text-sm text-body">
                 No expenses logged yet.
@@ -125,7 +151,7 @@ export default async function DashboardOverviewPage() {
                   <Link
                     key={expense.id}
                     href={`/dashboard/expenses/${expense.id}`}
-                    className={`flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] hover:bg-surface-sunken ${
+                    className={`flex items-center gap-2.5 px-3.5 py-3 text-meta transition-colors hover:bg-surface-sunken ${
                       i !== approvedExpenses.length - 1 ? "border-b border-hairline-soft" : ""
                     }`}
                   >
@@ -162,16 +188,27 @@ function StatCard({
   eyebrow,
   figure,
   caption,
+  percent,
 }: {
   eyebrow: string;
   figure: string;
   caption: string;
+  percent?: number | null;
 }) {
   return (
-    <div className="flex flex-col gap-[5px] rounded-lg border border-hairline p-3.5">
-      <span className="text-[11.5px] font-semibold uppercase text-muted">{eyebrow}</span>
-      <span className="font-mono text-[21px] font-medium text-ink">{figure}</span>
-      <span className="text-[11.5px] text-body">{caption}</span>
+    <div className="flex flex-col gap-1.5 rounded-lg border border-hairline bg-surface-raised p-4 shadow-card">
+      <span className="font-mono text-micro font-medium uppercase tracking-[0.07em] text-muted">
+        {eyebrow}
+      </span>
+      <div className="flex flex-wrap items-baseline gap-2">
+        <span className="font-mono text-[26px] font-medium tracking-[-0.01em] text-ink">{figure}</span>
+        {percent != null && (
+          <span className="rounded-pill bg-accent-wash px-2 py-[3px] font-mono text-[10px] font-semibold text-accent">
+            {percent}% of goal
+          </span>
+        )}
+      </div>
+      <span className="text-meta text-body">{caption}</span>
     </div>
   );
 }

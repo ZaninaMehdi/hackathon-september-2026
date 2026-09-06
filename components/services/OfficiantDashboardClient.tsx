@@ -19,6 +19,7 @@ import { MemberSkillsForm } from "@/components/services/MemberSkillsForm";
 import { NikahPriceForm } from "@/components/services/NikahPriceForm";
 import { PendingCountBadge } from "@/components/services/PendingCountBadge";
 import { Badge } from "@/components/ui/Badge";
+import { Button, buttonClasses } from "@/components/ui/Button";
 import Link from "next/link";
 
 const SERVICE_OPTIONS: { id: ServiceType; label: string }[] = [
@@ -62,7 +63,7 @@ function ServiceChecks({
       {SERVICE_OPTIONS.map((option) => {
         const checked = value.includes(option.id);
         return (
-          <label key={option.id} className="flex items-center gap-2 text-[13.5px] text-ink">
+          <label key={option.id} className="flex items-center gap-2 text-meta text-ink">
             <input
               type="checkbox"
               checked={checked}
@@ -88,9 +89,9 @@ function RegisterPanel({ title, submitLabel, onSubmit }: { title: string; submit
     <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
       <h2 className="text-sm font-bold text-ink">{title}</h2>
       <ServiceChecks value={services} onChange={setServices} />
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
+        size="lg"
         disabled={submitting || services.length === 0}
         onClick={async () => {
           setSubmitting(true);
@@ -103,10 +104,9 @@ function RegisterPanel({ title, submitLabel, onSubmit }: { title: string; submit
             setSubmitting(false);
           }
         }}
-        className="rounded-lg bg-accent py-3 text-[15px] font-semibold text-white disabled:opacity-50"
       >
         {submitting ? "Saving…" : submitLabel}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -120,7 +120,7 @@ function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
   const [error, setError] = useState<string | null>(null);
 
   if (eligible.length === 0) {
-    return <p className="text-[13.5px] text-body">Every member in this organization is already an officiant.</p>;
+    return <p className="text-meta text-body">Every member in this organization is already an officiant.</p>;
   }
 
   return (
@@ -128,7 +128,7 @@ function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
       <select
         value={memberId}
         onChange={(e) => setMemberId(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       >
         {eligible.map((member) => (
           <option key={member.id} value={member.id}>
@@ -137,10 +137,11 @@ function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
         ))}
       </select>
       <ServiceChecks value={services} onChange={setServices} />
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
+        variant="secondary"
+        size="lg"
         disabled={submitting || !memberId}
         onClick={async () => {
           setSubmitting(true);
@@ -155,10 +156,9 @@ function DesignatePanel({ members }: { members: OrgMemberOption[] }) {
             setSubmitting(false);
           }
         }}
-        className="rounded-lg border border-border bg-white py-3 text-[15px] font-semibold text-ink disabled:opacity-50"
       >
         {submitting ? "Adding…" : "Designate officiant"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -168,7 +168,7 @@ function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
   const [error, setError] = useState<string | null>(null);
 
   if (requests.length === 0) {
-    return <p className="text-[13.5px] text-body">No pending nikah requests.</p>;
+    return <p className="text-meta text-body">No pending nikah requests.</p>;
   }
 
   return (
@@ -177,13 +177,12 @@ function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
         <div key={request.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-3.5">
           <div className="flex items-center gap-2">
             <Badge variant="pending">Pending</Badge>
-            <span className="text-[13.5px] font-medium text-ink">{request.requesterName}</span>
+            <span className="text-meta font-medium text-ink">{request.requesterName}</span>
           </div>
-          <p className="text-[12.5px] text-body">{formatSlot(request)}</p>
-          {request.details && <p className="text-[13px] text-ink">{request.details}</p>}
+          <p className="text-meta text-body">{formatSlot(request)}</p>
+          {request.details && <p className="text-meta text-ink">{request.details}</p>}
           <div className="flex gap-2">
-            <button
-              type="button"
+            <Button
               disabled={busyId === request.id}
               onClick={async () => {
                 setBusyId(request.id);
@@ -196,12 +195,12 @@ function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
                   setBusyId(null);
                 }
               }}
-              className="flex-1 rounded-lg bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
+              className="flex-1"
             >
               Confirm
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="dangerSoft"
               disabled={busyId === request.id}
               onClick={async () => {
                 setBusyId(request.id);
@@ -214,14 +213,14 @@ function NikahInbox({ requests }: { requests: ServiceRequestItem[] }) {
                   setBusyId(null);
                 }
               }}
-              className="flex-1 rounded-lg border border-border bg-white py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-50"
+              className="flex-1"
             >
               Decline
-            </button>
+            </Button>
           </div>
         </div>
       ))}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
     </div>
   );
 }
@@ -231,7 +230,7 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
   const [error, setError] = useState<string | null>(null);
 
   if (tasks.length === 0) {
-    return <p className="text-[13.5px] text-body">No salat or ghusl broadcasts right now.</p>;
+    return <p className="text-meta text-body">No salat or ghusl broadcasts right now.</p>;
   }
 
   return (
@@ -242,21 +241,27 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
           <div key={task.id} className="flex flex-col gap-2 rounded-lg border border-hairline bg-white p-3.5">
             <div className="flex items-center gap-2">
               <Badge variant={task.status === "confirmed" ? "confirmed" : "pending"}>{task.role}</Badge>
-              <span className="text-[13.5px] font-medium text-ink">{task.requesterName}</span>
+              <span className="text-meta font-medium text-ink">{task.requesterName}</span>
             </div>
-            <p className="text-[12.5px] text-body">Needed by {formatNeededBy(task.neededBy)}</p>
-            {task.details && <p className="text-[13px] text-ink">{task.details}</p>}
-            <Link href={`/services/janaza/${task.requestId}`} className="text-[12.5px] font-semibold text-accent">
+            <p className="text-meta text-body">Needed by {formatNeededBy(task.neededBy)}</p>
+            {task.details && <p className="text-meta text-ink">{task.details}</p>}
+            <Link
+              href={`/services/janaza/${task.requestId}`}
+              className={buttonClasses({
+                variant: "ghost",
+                size: "sm",
+                className: "self-start -ml-3 text-accent",
+              })}
+            >
               Open checklist
             </Link>
             {covered ? (
-              <p className="text-[12.5px] font-medium text-accent">
+              <p className="text-meta font-medium text-accent">
                 {task.status === "confirmed" ? "Confirmed" : "Already covered"}
                 {task.claimantName ? ` · ${task.claimantName}` : ""}
               </p>
             ) : (
-              <button
-                type="button"
+              <Button
                 disabled={busyId === task.id}
                 onClick={async () => {
                   setBusyId(task.id);
@@ -269,14 +274,13 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
                     setBusyId(null);
                   }
                 }}
-                className="rounded-lg bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
               >
                 {busyId === task.id ? "Claiming…" : "I’ll do it"}
-              </button>
+              </Button>
             )}
             {task.status === "claimed" && task.claimedBy === memberId && (
-              <button
-                type="button"
+              <Button
+                variant="secondary"
                 disabled={busyId === task.id}
                 onClick={async () => {
                   setBusyId(task.id);
@@ -289,15 +293,14 @@ function JanazaInbox({ tasks, memberId }: { tasks: ClaimableJanazaTask[]; member
                     setBusyId(null);
                   }
                 }}
-                className="rounded-lg border border-border bg-white py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-50"
               >
                 Mark confirmed
-              </button>
+              </Button>
             )}
           </div>
         );
       })}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
     </div>
   );
 }
@@ -311,10 +314,11 @@ function OfferedServices({ officiant }: { officiant: OfficiantSummary }) {
   return (
     <div className="flex flex-col gap-3">
       <ServiceChecks value={services} onChange={setServices} />
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
+        variant="secondary"
+        size="lg"
         disabled={submitting || services.length === 0}
         onClick={async () => {
           setSubmitting(true);
@@ -329,10 +333,9 @@ function OfferedServices({ officiant }: { officiant: OfficiantSummary }) {
             setSubmitting(false);
           }
         }}
-        className="rounded-lg border border-border bg-white py-3 text-[15px] font-semibold text-ink disabled:opacity-50"
       >
         {submitting ? "Saving…" : "Update services"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -362,8 +365,8 @@ export function OfficiantDashboardClient({
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6 p-4 min-[900px]:p-6">
       <header className="flex items-center gap-2">
         <div className="flex flex-col">
-          <h1 className="text-[19px] font-bold tracking-[-0.02em] text-ink">Officiant desk</h1>
-          <p className="text-[13.5px] text-body">Confirm nikah holds, claim janaza broadcasts, and set weekly hours.</p>
+          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Officiant desk</h1>
+          <p className="text-meta text-body">Confirm nikah holds, claim janaza broadcasts, and set weekly hours.</p>
         </div>
         <div className="ml-auto">
           <PendingCountBadge count={pendingCount} />

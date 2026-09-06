@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { OrgEvent } from "@/lib/data/events";
+import { Button, buttonClasses } from "@/components/ui/Button";
 import { createEvent, deleteEvent, updateEvent } from "@/lib/actions/event";
 import type { RecurrenceFrequency, SeriesScope } from "@/lib/events/recurrence";
 
@@ -63,12 +64,12 @@ export function EventsListClient({
       }`}
     >
       <header className="flex items-center border-b border-hairline px-[18px] pb-3 pt-4">
-        <h1 className="text-[19px] font-bold tracking-[-0.025em] text-ink">Events</h1>
+        <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Events</h1>
         <div className="ml-auto flex gap-1">
           <button
             type="button"
             onClick={() => setView("list")}
-            className={`rounded-pill px-[11px] py-[7px] text-[12.5px] font-semibold ${
+            className={`rounded-pill px-[11px] py-[7px] text-meta font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               view === "list" ? "bg-accent-wash text-ink" : "text-body"
             }`}
           >
@@ -77,7 +78,7 @@ export function EventsListClient({
           <button
             type="button"
             onClick={() => setView("calendar")}
-            className={`rounded-pill px-[11px] py-[7px] text-[12.5px] font-semibold ${
+            className={`rounded-pill px-[11px] py-[7px] text-meta font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               view === "calendar" ? "bg-accent-wash text-ink" : "text-body"
             }`}
           >
@@ -146,7 +147,7 @@ export function EventsListClient({
           )}
           {grouped.map(([day, dayEvents]) => (
             <div key={day}>
-              <div className="border-t border-hairline-soft px-[18px] pb-2 pt-4 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+              <div className="border-t border-hairline-soft px-[18px] pb-2 pt-4 font-mono text-micro uppercase tracking-[0.08em] text-muted">
                 {day}
               </div>
               {dayEvents.map((event) => (
@@ -167,18 +168,14 @@ export function EventsListClient({
           <div className="mx-auto flex w-full max-w-[390px] gap-2">
             <Link
               href="/services"
-              className="flex flex-1 items-center justify-center rounded-lg border border-border bg-white py-3.5 text-center text-[15px] font-semibold text-ink"
+              className={buttonClasses({ variant: "secondary", size: "lg", className: "flex-1" })}
             >
               Book a service
             </Link>
             {canManage && (
-              <button
-                type="button"
-                onClick={() => setFormMode({ kind: "create" })}
-                className="flex-1 rounded-lg bg-accent py-3.5 text-center text-[15px] font-semibold text-white transition-colors hover:bg-accent-hover"
-              >
+              <Button size="lg" className="flex-1" onClick={() => setFormMode({ kind: "create" })}>
                 Add event
-              </button>
+              </Button>
             )}
           </div>
         </footer>
@@ -201,17 +198,17 @@ function EventRow({
       <span className="w-[3px] shrink-0 rounded-2xs bg-accent" />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-3">
-          <span className="text-[15px] font-semibold text-ink">{event.title}</span>
+          <span className="text-copy font-semibold text-ink">{event.title}</span>
           <span className="shrink-0 font-mono text-[11.5px] font-medium text-body">
             {event.priceLabel}
           </span>
         </div>
-        <span className="font-mono text-[11.5px] text-body">{event.timePlace}</span>
+        <span className="font-mono text-micro text-body">{event.timePlace}</span>
         {event.description && (
-          <p className="text-[13px] leading-snug text-body">{event.description}</p>
+          <p className="text-meta leading-snug text-body">{event.description}</p>
         )}
         {event.recurrenceLabel && (
-          <span className="text-[11.5px] text-muted">{event.recurrenceLabel}</span>
+          <span className="text-micro text-muted">{event.recurrenceLabel}</span>
         )}
       </div>
     </>
@@ -341,24 +338,24 @@ function EventForm({
         placeholder="Event title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <textarea
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         rows={3}
-        className="resize-none rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+        className="resize-none rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <input
         type="text"
         placeholder="Location"
         value={location}
         onChange={(e) => setLocation(e.target.value)}
-        className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+        className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">Starts</span>
+        <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">Starts</span>
         <input
           type="datetime-local"
           required
@@ -372,28 +369,28 @@ function EventForm({
               setEndsAt(toDatetimeLocal(next.toISOString()));
             }
           }}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">Ends</span>
+        <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">Ends</span>
         <input
           type="datetime-local"
           required
           value={endsAt}
           min={startsAt || undefined}
           onChange={(e) => setEndsAt(e.target.value)}
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
 
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">Price</span>
+        <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">Price</span>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setIsFree(true)}
-            className={`flex-1 rounded-lg py-3 text-[14px] font-semibold ${
+            className={`flex-1 rounded-lg py-3 text-copy font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               isFree ? "bg-accent-wash text-accent" : "border border-border bg-white text-body"
             }`}
           >
@@ -402,7 +399,7 @@ function EventForm({
           <button
             type="button"
             onClick={() => setIsFree(false)}
-            className={`flex-1 rounded-lg py-3 text-[14px] font-semibold ${
+            className={`flex-1 rounded-lg py-3 text-copy font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               !isFree ? "bg-accent-wash text-accent" : "border border-border bg-white text-body"
             }`}
           >
@@ -411,7 +408,7 @@ function EventForm({
         </div>
         {!isFree && (
           <div className="relative">
-            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[15px] text-muted">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-copy text-muted">
               $
             </span>
             <input
@@ -421,7 +418,7 @@ function EventForm({
               placeholder="0.00"
               value={priceText}
               onChange={(e) => setPriceText(e.target.value)}
-              className="w-full rounded-lg border border-border bg-white py-3 pl-7 pr-3.5 text-[15px] text-ink"
+              className="w-full rounded-lg border border-border bg-white py-3 pl-7 pr-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
         )}
@@ -430,7 +427,7 @@ function EventForm({
       {mode === "create" && (
         <div className="flex flex-col gap-2">
           <label className="flex flex-col gap-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+            <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">
               Repeat
             </span>
             <select
@@ -444,7 +441,7 @@ function EventForm({
                   setRecurrenceUntil(toDateInput(until.toISOString()));
                 }
               }}
-              className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+              className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="none">Does not repeat</option>
               <option value="weekly">Weekly</option>
@@ -454,7 +451,7 @@ function EventForm({
           </label>
           {recurrence !== "none" && (
             <label className="flex flex-col gap-1.5">
-              <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+              <span className="font-mono text-micro uppercase tracking-[0.06em] text-muted">
                 Repeat until
               </span>
               <input
@@ -462,9 +459,9 @@ function EventForm({
                 value={recurrenceUntil}
                 min={startsAt ? toDateInput(startsAt) : undefined}
                 onChange={(e) => setRecurrenceUntil(e.target.value)}
-                className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+                className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
-              <span className="text-[11.5px] text-muted">Creates each occurrence up to this date.</span>
+              <span className="text-micro text-muted">Creates each occurrence up to this date.</span>
             </label>
           )}
         </div>
@@ -472,7 +469,7 @@ function EventForm({
 
       {mode === "edit" && isRecurring && (
         <fieldset className="flex flex-col gap-2 rounded-lg border border-border bg-white p-3">
-          <legend className="px-1 font-mono text-[11px] uppercase tracking-[0.06em] text-muted">
+          <legend className="px-1 font-mono text-micro uppercase tracking-[0.06em] text-muted">
             Apply changes to
           </legend>
           {(
@@ -482,7 +479,7 @@ function EventForm({
               ["all", "All events in the series"],
             ] as const
           ).map(([value, label]) => (
-            <label key={value} className="flex items-center gap-2.5 text-[14px] text-ink">
+            <label key={value} className="flex items-center gap-2.5 text-copy text-ink">
               <input
                 type="radio"
                 name="series-scope"
@@ -494,7 +491,7 @@ function EventForm({
             </label>
           ))}
           {scope !== "this" && (
-            <p className="text-[11.5px] leading-snug text-muted">
+            <p className="text-micro leading-snug text-muted">
               Date stays per occurrence; the time of day and details update across the selected
               events.
             </p>
@@ -502,30 +499,22 @@ function EventForm({
         </fieldset>
       )}
 
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 rounded-lg border border-border bg-white py-3.5 text-[15px] font-semibold text-ink"
-        >
+        <Button variant="secondary" size="lg" className="flex-1" onClick={onCancel}>
           Cancel
-        </button>
-        <button
-          type="button"
-          disabled={!canSubmit}
-          onClick={handleSubmit}
-          className="flex-1 rounded-lg bg-accent py-3.5 text-[15px] font-semibold text-white disabled:opacity-50"
-        >
+        </Button>
+        <Button size="lg" className="flex-1" disabled={!canSubmit} onClick={handleSubmit}>
           {submitting ? submittingLabel : submitLabel}
-        </button>
+        </Button>
       </div>
       {onDelete && (
-        <button
-          type="button"
+        <Button
+          variant="dangerSoft"
+          size="lg"
+          fullWidth
           disabled={deleting || submitting}
           onClick={handleDelete}
-          className="rounded-lg border border-danger/30 bg-white py-3.5 text-[15px] font-semibold text-danger disabled:opacity-50"
         >
           {deleting
             ? "Deleting…"
@@ -534,7 +523,7 @@ function EventForm({
               : scope === "following"
                 ? "Delete this & following"
                 : "Delete entire series"}
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -655,7 +644,7 @@ function CalendarView({
                 className="flex h-12 flex-col items-center justify-start pt-0.5"
               >
                 <span
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-[13px] transition-colors ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-meta transition-colors ${
                     isSelected
                       ? "bg-accent font-semibold text-white"
                       : hasEvents
@@ -678,7 +667,7 @@ function CalendarView({
         </div>
       </div>
 
-      <div className="border-t border-hairline-soft px-[18px] pb-2 pt-4 font-mono text-[11px] uppercase tracking-[0.08em] text-muted">
+      <div className="border-t border-hairline-soft px-[18px] pb-2 pt-4 font-mono text-micro uppercase tracking-[0.08em] text-muted">
         {selectedLabel}
       </div>
       {selectedEvents.length === 0 ? (

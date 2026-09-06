@@ -69,15 +69,15 @@ export function NikahSlotPicker({
                 setDateKey(day.dateKey);
                 onSelect("");
               }}
-              className={`flex min-w-[58px] flex-col items-center rounded-lg px-2.5 py-2 ${
+              className={`flex min-w-[58px] flex-col items-center rounded-lg px-2.5 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                 selected ? "bg-accent text-white" : "border border-border bg-white text-ink"
               }`}
             >
-              <span className={`text-[10px] uppercase ${selected ? "text-white/80" : "text-muted"}`}>
+              <span className={`text-micro uppercase ${selected ? "text-white/80" : "text-muted"}`}>
                 {day.weekdayLabel}
               </span>
-              <span className="text-[16px] font-semibold leading-tight">{day.dayNumber}</span>
-              <span className={`font-mono text-[9px] ${selected ? "text-white/80" : "text-muted"}`}>
+              <span className="text-subhead font-semibold leading-tight">{day.dayNumber}</span>
+              <span className={`font-mono text-micro ${selected ? "text-white/80" : "text-muted"}`}>
                 {day.slots.length} open
               </span>
             </button>
@@ -87,7 +87,7 @@ export function NikahSlotPicker({
 
       {selectedDay && (
         <div className="flex flex-col gap-2">
-          <p className="text-[12.5px] text-body">{selectedDay.dateLabel}</p>
+          <p className="text-meta text-body">{selectedDay.dateLabel}</p>
           <div className="flex flex-wrap gap-2">
             {selectedDay.slots.map((slot) => {
               const selected = selectedSlotId === slot.id;
@@ -96,7 +96,7 @@ export function NikahSlotPicker({
                   key={slot.id}
                   type="button"
                   onClick={() => onSelect(slot.id)}
-                  className={`rounded-pill px-3.5 py-2 font-mono text-[13px] ${
+                  className={`rounded-pill px-3.5 py-2 font-mono text-meta focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     selected
                       ? "bg-accent font-semibold text-white"
                       : "border border-border bg-white text-ink"

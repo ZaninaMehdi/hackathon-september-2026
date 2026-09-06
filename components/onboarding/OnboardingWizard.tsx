@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Logo } from "@/components/brand/Logo";
 import { RadioCard } from "@/components/ui/RadioCard";
 import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { createOrgAndProject } from "@/lib/actions/onboarding";
 
 const ORG_TYPES = ["Masjid", "Church", "Temple or synagogue", "Community center"];
@@ -50,7 +51,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
     <div className="mx-auto flex min-h-screen w-full max-w-[390px] flex-col bg-surface">
       <header className="flex items-center gap-3 px-[18px] py-4">
         {step === 1 ? (
-          <Logo markSize={20} textClassName="text-[15px]" />
+          <Logo markSize={20} textClassName="text-copy" />
         ) : (
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setStep((s) => (s === 3 ? 2 : 1))}>
@@ -84,7 +85,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
         {step === 1 && (
           <>
             <div className="flex flex-col gap-1">
-              <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.025em] text-ink">
+              <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
                 What kind of organization is this?
               </h1>
               <p className="text-sm text-body">
@@ -93,7 +94,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
               </p>
             </div>
             <div>
-              <label className="mb-1.5 block text-[12.5px] font-semibold text-ink">
+              <label className="mb-1.5 block text-meta font-semibold text-ink">
                 Organization name
               </label>
               <input
@@ -101,7 +102,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 placeholder="Masjid Al-Noor"
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-[15px] text-ink"
+                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
             <div className="flex flex-col gap-3">
@@ -120,7 +121,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
         {step === 2 && (
           <>
             <div className="flex flex-col gap-1">
-              <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.025em] text-ink">
+              <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
                 Break it into phases
               </h1>
               <p className="text-sm text-body">
@@ -129,14 +130,14 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[12.5px] font-semibold text-ink">
+              <label className="mb-1.5 block text-meta font-semibold text-ink">
                 Project name
               </label>
               <input
                 type="text"
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-[15px] text-ink"
+                className="w-full rounded-lg border border-border bg-white px-3.5 py-3.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
 
@@ -156,7 +157,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
               <button
                 type="button"
                 onClick={addPhase}
-                className="flex items-center rounded-lg border border-dashed border-border-strong px-3.5 py-3 text-sm font-semibold text-accent"
+                className="flex items-center rounded-lg border border-dashed border-border-strong px-3.5 py-3 text-sm font-semibold text-accent transition-colors hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 + Add a phase
                 <span className="ml-auto font-mono text-xs text-muted">
@@ -170,7 +171,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
         {step === 3 && (
           <>
             <div className="flex flex-col gap-1">
-              <h1 className="text-[22px] font-bold leading-[1.25] tracking-[-0.025em] text-ink">
+              <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">
                 Who signs off on spending?
               </h1>
               <p className="text-sm text-body">
@@ -181,10 +182,10 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
             <div className="flex items-center gap-2.5 rounded-lg border border-hairline bg-surface-sunken p-3">
               <Avatar initials={(userEmail ?? "?").slice(0, 2).toUpperCase()} size={30} />
               <div className="flex flex-col">
-                <span className="text-[13.5px] font-semibold text-ink">
+                <span className="text-meta font-semibold text-ink">
                   {userEmail ?? "You"} (you)
                 </span>
-                <span className="text-[11.5px] text-muted">Admin · full access</span>
+                <span className="text-micro text-muted">Admin · full access</span>
               </div>
             </div>
 
@@ -195,8 +196,8 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
               >
                 <Avatar initials="" size={30} dashed />
                 <div className="flex flex-col">
-                  <span className="text-[13.5px] font-semibold text-ink">{email}</span>
-                  <span className="text-[11.5px] text-pending-text">
+                  <span className="text-meta font-semibold text-ink">{email}</span>
+                  <span className="text-micro text-pending-text">
                     Approver · invite sends on next step
                   </span>
                 </div>
@@ -209,23 +210,20 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 placeholder="email@example.com"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="flex-1 rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+                className="flex-1 rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
-              <button
-                type="button"
-                onClick={addInvite}
-                className="rounded-lg border border-border bg-white px-4 py-3 text-sm font-semibold text-ink"
-              >
+              <Button variant="secondary" size="lg" onClick={addInvite}>
                 Add
-              </button>
+              </Button>
             </div>
           </>
         )}
 
         <div className="mt-auto flex flex-col gap-3 pt-4">
-          {error && <p className="text-[12.5px] text-danger">{error}</p>}
-          <button
-            type="button"
+          {error && <p className="text-meta text-danger">{error}</p>}
+          <Button
+            size="lg"
+            fullWidth
             disabled={submitting || (step === 1 && orgName.trim().length === 0)}
             onClick={async () => {
               if (step !== 3) {
@@ -252,18 +250,17 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
                 setSubmitting(false);
               }
             }}
-            className="w-full rounded-lg bg-accent py-4 text-[15px] font-semibold text-white disabled:opacity-50"
           >
             {step === 3
               ? submitting
                 ? "Creating…"
                 : "Send invites & open dashboard"
               : "Continue"}
-          </button>
+          </Button>
           {step === 3 && (
-            <button type="button" className="text-center text-[13px] text-body">
+            <Button variant="ghost" size="sm">
               Skip for now
-            </button>
+            </Button>
           )}
         </div>
       </div>

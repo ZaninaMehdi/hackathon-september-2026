@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveMemberSkills } from "@/lib/actions/janaza";
 import type { JanazaSkill } from "@/lib/data/services";
+import { Button } from "@/components/ui/Button";
 
 const SKILL_OPTIONS: { id: JanazaSkill; label: string; hint: string }[] = [
   { id: "salat", label: "Salat", hint: "Lead or join the funeral prayer" },
@@ -19,7 +20,7 @@ export function MemberSkillsForm({ initialSkills }: { initialSkills: JanazaSkill
     <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
       <div>
         <h2 className="text-sm font-bold text-ink">Your janaza skills</h2>
-        <p className="text-[12.5px] text-body">
+        <p className="text-meta text-body">
           Salat and ghusl broadcasts go to members who list the matching skill.
         </p>
       </div>
@@ -27,7 +28,7 @@ export function MemberSkillsForm({ initialSkills }: { initialSkills: JanazaSkill
         {SKILL_OPTIONS.map((option) => {
           const checked = skills.includes(option.id);
           return (
-            <label key={option.id} className="flex items-start gap-2 text-[13.5px] text-ink">
+            <label key={option.id} className="flex items-start gap-2 text-meta text-ink">
               <input
                 type="checkbox"
                 checked={checked}
@@ -40,16 +41,16 @@ export function MemberSkillsForm({ initialSkills }: { initialSkills: JanazaSkill
               />
               <span>
                 <span className="font-medium">{option.label}</span>
-                <span className="block text-[12px] text-body">{option.hint}</span>
+                <span className="block text-meta text-body">{option.hint}</span>
               </span>
             </label>
           );
         })}
       </div>
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
+        variant="secondary"
         disabled={submitting}
         onClick={async () => {
           setSubmitting(true);
@@ -64,10 +65,9 @@ export function MemberSkillsForm({ initialSkills }: { initialSkills: JanazaSkill
             setSubmitting(false);
           }
         }}
-        className="rounded-lg border border-border bg-white py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-50"
       >
         {submitting ? "Saving…" : "Save skills"}
-      </button>
+      </Button>
     </div>
   );
 }

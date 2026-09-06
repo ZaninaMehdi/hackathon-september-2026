@@ -1,10 +1,19 @@
 import type { ReactNode } from "react";
 
-type BadgeVariant = "pending" | "approved" | "rejected" | "draft" | "confirmed" | "expired" | "declined";
+type BadgeVariant =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "draft"
+  | "confirmed"
+  | "expired"
+  | "declined"
+  | "success";
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   pending: "bg-white text-pending-text border border-dashed border-pending-border",
   approved: "bg-accent-wash text-accent border border-transparent",
+  success: "bg-success-wash text-success border border-transparent",
   rejected: "bg-danger-wash text-danger border border-transparent",
   draft: "bg-neutral-wash text-body border border-transparent",
   confirmed: "bg-accent-wash text-accent border border-transparent",

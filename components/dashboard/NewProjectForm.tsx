@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { createProject } from "@/lib/actions/project";
 
 type Phase = { name: string; budget: number };
@@ -42,36 +43,36 @@ export function NewProjectForm() {
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <label className="mb-1.5 block text-[12.5px] font-semibold text-ink">Project title</label>
+        <label className="mb-1.5 block text-meta font-semibold text-ink">Project title</label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
       <div>
-        <label className="mb-1.5 block text-[12.5px] font-semibold text-ink">
+        <label className="mb-1.5 block text-meta font-semibold text-ink">
           Description (optional)
         </label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-[12.5px] font-semibold text-ink">Phases</label>
+        <label className="text-meta font-semibold text-ink">Phases</label>
         {phases.map((phase, i) => (
           <div key={i} className="flex gap-2">
             <input
               type="text"
               value={phase.name}
               onChange={(e) => updatePhase(i, "name", e.target.value)}
-              className="flex-1 rounded-lg border border-border bg-white px-3 py-2.5 text-sm text-ink"
+              className="flex-1 rounded-lg border border-border bg-white px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
             <input
               type="text"
@@ -79,33 +80,35 @@ export function NewProjectForm() {
               value={phase.budget || ""}
               placeholder="Budget"
               onChange={(e) => updatePhase(i, "budget", e.target.value.replace(/[^0-9]/g, ""))}
-              className="w-32 rounded-lg border border-border bg-white px-3 py-2.5 font-mono text-sm text-ink"
+              className="w-32 rounded-lg border border-border bg-white px-3 py-2.5 font-mono text-sm text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
         ))}
-        <button
-          type="button"
+        <Button
+          variant="secondary"
           onClick={addPhase}
-          className="flex items-center rounded-lg border border-dashed border-border-strong px-3.5 py-3 text-sm font-semibold text-accent"
+          className="border-dashed border-border-strong text-accent"
         >
           + Add a phase
           <span className="ml-auto font-mono text-xs text-muted">
             total{" "}
             {total.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 })}
           </span>
-        </button>
+        </Button>
       </div>
 
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
 
-      <button
-        type="button"
+      <Button
+        variant="primary"
+        size="lg"
+        fullWidth
         disabled={submitting || title.trim().length === 0}
         onClick={handleSubmit}
-        className="mt-2 w-full rounded-lg bg-accent py-3.5 text-[15px] font-semibold text-white disabled:opacity-50"
+        className="mt-2"
       >
         {submitting ? "Creating…" : "Create project"}
-      </button>
+      </Button>
     </div>
   );
 }

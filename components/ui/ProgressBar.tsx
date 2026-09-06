@@ -9,7 +9,9 @@ type ProgressBarProps = {
 };
 
 export function ProgressBar({ raised, target, label }: ProgressBarProps) {
-  const percent = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+  const rawPercent = target > 0 ? Math.round((raised / target) * 100) : 0;
+  const percent = Math.min(100, rawPercent);
+  const overGoal = rawPercent > 100;
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
@@ -20,15 +22,17 @@ export function ProgressBar({ raised, target, label }: ProgressBarProps) {
   return (
     <div
       role="progressbar"
-      aria-valuenow={percent}
+      aria-valuenow={rawPercent}
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuetext={label}
-      className="h-2 w-full overflow-hidden rounded-pill bg-track"
+      className="h-2.5 w-full overflow-hidden rounded-pill bg-track"
     >
       {width > 0 && (
         <div
-          className="h-full rounded-pill bg-accent transition-[width] duration-[400ms] ease-out"
+          className={`h-full rounded-pill bg-gradient-to-r transition-[width] duration-500 ease-out ${
+            overGoal ? "from-accent to-success" : "from-accent to-accent-bright"
+          }`}
           style={{ width: `${width}%` }}
         />
       )}

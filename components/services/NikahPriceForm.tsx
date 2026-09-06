@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { saveOrgNikahPrice } from "@/lib/actions/nikah";
 import { formatNikahFee } from "@/lib/data/service-prices";
+import { Button } from "@/components/ui/Button";
 
 export function NikahPriceForm({ initialAmount }: { initialAmount: number | null }) {
   const [value, setValue] = useState(initialAmount != null ? String(initialAmount) : "");
@@ -14,12 +15,12 @@ export function NikahPriceForm({ initialAmount }: { initialAmount: number | null
     <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-white p-4">
       <div>
         <h2 className="text-sm font-bold text-ink">Nikah fee</h2>
-        <p className="text-[12.5px] text-body">
+        <p className="text-meta text-body">
           Shown to members when they book. Current: {formatNikahFee(initialAmount)}.
         </p>
       </div>
       <label className="flex flex-col gap-1.5">
-        <span className="text-[12.5px] font-medium text-ink">Amount (USD)</span>
+        <span className="text-meta font-medium text-ink">Amount (USD)</span>
         <input
           type="number"
           min="0"
@@ -27,13 +28,13 @@ export function NikahPriceForm({ initialAmount }: { initialAmount: number | null
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="300"
-          className="rounded-lg border border-border bg-white px-3.5 py-3 text-[15px] text-ink"
+          className="rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </label>
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
+        size="lg"
         disabled={submitting || value.trim().length === 0}
         onClick={async () => {
           setSubmitting(true);
@@ -48,10 +49,9 @@ export function NikahPriceForm({ initialAmount }: { initialAmount: number | null
             setSubmitting(false);
           }
         }}
-        className="rounded-lg bg-accent py-3 text-[15px] font-semibold text-white disabled:opacity-50"
       >
         {submitting ? "Saving…" : "Save nikah fee"}
-      </button>
+      </Button>
     </div>
   );
 }

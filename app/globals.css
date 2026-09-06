@@ -2,12 +2,18 @@
 
 @theme {
   --color-accent: #2f5d3f;
-  --color-accent-hover: #2a5439;
+  --color-accent-hover: #264d34;
+  --color-accent-bright: #3d8055;
   --color-accent-wash: #e6efe9;
   --color-accent-tint: #f3f6f4;
 
-  --color-ink: #16211a;
-  --color-body: #4d5651;
+  --color-success: #2f7d55;
+  --color-success-wash: #e7f2ec;
+  --color-warning: #b0812e;
+  --color-info: #2c5f7a;
+
+  --color-ink: #14201a;
+  --color-body: #48524d;
   --color-muted: #5c6660;
 
   --color-hairline-soft: #eef1ef;
@@ -29,7 +35,7 @@
   --color-pending-icon: #b08a2e;
   --color-pending-bg: #fffdf8;
 
-  --color-danger: #8c3226;
+  --color-danger: #a3382a;
   --color-danger-wash: #f9ebe9;
 
   --color-canvas: #eef0ee;
@@ -43,8 +49,28 @@
   --radius-xl: 12px;
   --radius-pill: 20px;
 
+  /* Six-step type scale. Names avoid the --color-* namespace so `text-*`
+     utilities stay unambiguous (e.g. text-copy vs text-body). */
+  --text-micro: 11px;
+  --text-micro--line-height: 1.45;
+  --text-meta: 13px;
+  --text-meta--line-height: 1.55;
+  --text-copy: 15px;
+  --text-copy--line-height: 1.6;
+  --text-subhead: 17px;
+  --text-subhead--line-height: 1.35;
+  --text-head: 22px;
+  --text-head--line-height: 1.25;
+  --text-display: 30px;
+  --text-display--line-height: 1.15;
+
+  --shadow-card: 0 1px 2px rgba(20, 32, 26, 0.05);
+  --shadow-lift: 0 1px 3px rgba(20, 32, 26, 0.07), 0 4px 12px -4px rgba(20, 32, 26, 0.06);
+  --shadow-modal: 0 2px 6px rgba(20, 32, 26, 0.08), 0 12px 28px -8px rgba(20, 32, 26, 0.1);
+
   --font-sans: var(--font-libre-franklin);
   --font-mono: var(--font-ibm-plex-mono);
+  --font-display: var(--font-source-serif);
 }
 
 body {

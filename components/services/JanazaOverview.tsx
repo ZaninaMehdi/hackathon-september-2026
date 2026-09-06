@@ -5,6 +5,7 @@ import { claimJanazaTask, confirmJanazaTask, updateJanazaCoordination } from "@/
 import type { JanazaOverview, JanazaSkill, JanazaTask, JanazaTaskStatus } from "@/lib/data/services";
 import { JANAZA_PRICE, JANAZA_TASK_PRICES } from "@/lib/data/service-prices";
 import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ServicePrice } from "@/components/services/ServicePrice";
 
@@ -47,9 +48,8 @@ function ClaimableTaskActions({
   if (task.status === "open" && canClaim) {
     return (
       <div className="flex flex-col gap-2">
-        {error && <p className="text-[12.5px] text-danger">{error}</p>}
-        <button
-          type="button"
+        {error && <p className="text-meta text-danger">{error}</p>}
+        <Button
           disabled={busy}
           onClick={async () => {
             setBusy(true);
@@ -62,10 +62,9 @@ function ClaimableTaskActions({
               setBusy(false);
             }
           }}
-          className="rounded-lg bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
         >
           {busy ? "Claiming…" : "I’ll do it"}
-        </button>
+        </Button>
       </div>
     );
   }
@@ -73,9 +72,9 @@ function ClaimableTaskActions({
   if (task.status === "claimed" && canConfirm) {
     return (
       <div className="flex flex-col gap-2">
-        {error && <p className="text-[12.5px] text-danger">{error}</p>}
-        <button
-          type="button"
+        {error && <p className="text-meta text-danger">{error}</p>}
+        <Button
+          variant="secondary"
           disabled={busy}
           onClick={async () => {
             setBusy(true);
@@ -88,24 +87,23 @@ function ClaimableTaskActions({
               setBusy(false);
             }
           }}
-          className="rounded-lg border border-border bg-white py-2.5 text-[13.5px] font-semibold text-ink disabled:opacity-50"
         >
           {busy ? "Confirming…" : "Mark confirmed"}
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (task.status !== "open") {
     return (
-      <p className="text-[12.5px] font-medium text-accent">
+      <p className="text-meta font-medium text-accent">
         {task.status === "confirmed" ? "Confirmed" : "Already covered"}
         {task.claimantName ? ` · ${task.claimantName}` : ""}
       </p>
     );
   }
 
-  return <p className="text-[12.5px] text-body">Waiting for a volunteer with this skill.</p>;
+  return <p className="text-meta text-body">Waiting for a volunteer with this skill.</p>;
 }
 
 function CoordinationFields({ task }: { task: JanazaTask }) {
@@ -124,34 +122,33 @@ function CoordinationFields({ task }: { task: JanazaTask }) {
         value={contactName}
         onChange={(e) => setContactName(e.target.value)}
         placeholder="Contact name"
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-[14px] text-ink"
+        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <input
         type="tel"
         value={contactPhone}
         onChange={(e) => setContactPhone(e.target.value)}
         placeholder="Contact phone"
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-[14px] text-ink"
+        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Notes from the call"
-        className="min-h-[72px] rounded-lg border border-border bg-white px-3 py-2.5 text-[14px] text-ink"
+        className="min-h-[72px] rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       />
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value as JanazaTaskStatus)}
-        className="rounded-lg border border-border bg-white px-3 py-2.5 text-[14px] text-ink"
+        className="rounded-lg border border-border bg-white px-3 py-2.5 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
       >
         <option value="open">Open</option>
         <option value="claimed">Claimed</option>
         <option value="confirmed">Confirmed</option>
       </select>
-      {message && <p className="text-[12.5px] text-accent">{message}</p>}
-      {error && <p className="text-[12.5px] text-danger">{error}</p>}
-      <button
-        type="button"
+      {message && <p className="text-meta text-accent">{message}</p>}
+      {error && <p className="text-meta text-danger">{error}</p>}
+      <Button
         disabled={busy}
         onClick={async () => {
           setBusy(true);
@@ -172,21 +169,20 @@ function CoordinationFields({ task }: { task: JanazaTask }) {
             setBusy(false);
           }
         }}
-        className="rounded-lg bg-accent py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-50"
       >
         {busy ? "Saving…" : "Save contact"}
-      </button>
+      </Button>
     </div>
   );
 }
 
 function ManualTaskReadout({ task }: { task: JanazaTask }) {
   if (!task.contactName && !task.contactPhone && !task.notes) {
-    return <p className="text-[12.5px] text-body">No contact recorded yet.</p>;
+    return <p className="text-meta text-body">No contact recorded yet.</p>;
   }
 
   return (
-    <div className="flex flex-col gap-0.5 text-[12.5px] text-body">
+    <div className="flex flex-col gap-0.5 text-meta text-body">
       {task.contactName && <span>{task.contactName}</span>}
       {task.contactPhone && <span>{task.contactPhone}</span>}
       {task.notes && <span>{task.notes}</span>}
@@ -211,13 +207,13 @@ export function JanazaOverviewClient({
     <div className="mx-auto flex w-full max-w-[720px] flex-col gap-6 p-4 min-[900px]:p-6">
       <header className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <h1 className="text-[19px] font-bold tracking-[-0.02em] text-ink">Janaza checklist</h1>
+          <h1 className="font-display text-head font-bold tracking-[-0.02em] text-ink">Janaza checklist</h1>
           <Badge variant={request.status}>{request.status}</Badge>
         </div>
-        <p className="text-[13.5px] text-body">
+        <p className="text-meta text-body">
           Requested by {request.requesterName ?? "a member"} · needed by {formatNeededBy(request.neededBy)}
         </p>
-        {request.details && <p className="text-[14px] text-ink">{request.details}</p>}
+        {request.details && <p className="text-copy text-ink">{request.details}</p>}
         <ServicePrice price={JANAZA_PRICE} />
       </header>
 
@@ -231,10 +227,10 @@ export function JanazaOverviewClient({
                 <StatusDot status={taskDotStatus(task.status)} />
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-[15px] font-semibold text-ink">{copy.title}</span>
+                    <span className="text-copy font-semibold text-ink">{copy.title}</span>
                     <Badge variant={task.status === "confirmed" ? "confirmed" : "pending"}>{task.status}</Badge>
                   </div>
-                  <p className="text-[12.5px] text-body">{copy.blurb}</p>
+                  <p className="text-meta text-body">{copy.blurb}</p>
                   <ServicePrice price={JANAZA_TASK_PRICES[task.role]} compact />
                 </div>
               </div>
