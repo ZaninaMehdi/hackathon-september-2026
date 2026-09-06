@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Mark } from "@/components/brand/Mark";
 import { EventRegisterButton } from "@/components/public/EventRegisterButton";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { getPublicOrgBySlug } from "@/lib/data/project";
 import { getPublicUpcomingEvents } from "@/lib/data/events";
 
@@ -30,7 +31,9 @@ export default async function PublicEventsPage({
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface">
       <header className="flex items-center gap-2.5 border-b border-hairline px-[18px] py-3.5">
         <Mark size={26} />
-        <span className="font-sans text-[14px] font-semibold text-ink">{org.name}</span>
+        <span className="font-display text-[15px] font-semibold tracking-[0.01em] text-ink">
+          {org.name}
+        </span>
         <Link
           href={`/${orgSlug}`}
           className="ml-auto text-[12.5px] font-semibold text-accent"
@@ -50,7 +53,11 @@ export default async function PublicEventsPage({
 
       <section className="flex flex-col gap-3 px-[18px] pb-10">
         {events.length === 0 && (
-          <p className="text-sm text-body">No upcoming events right now — check back soon.</p>
+          <EmptyState
+            icon="events"
+            title="No upcoming events"
+            description="Check back soon — classes, fundraisers and gatherings will be listed here."
+          />
         )}
 
         {events.map((event) => (

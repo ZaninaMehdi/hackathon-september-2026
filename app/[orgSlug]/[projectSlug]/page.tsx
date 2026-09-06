@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Mark } from "@/components/brand/Mark";
 import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusDot } from "@/components/ui/StatusDot";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ReceiptThumb } from "@/components/ui/ReceiptThumb";
@@ -52,7 +53,9 @@ export default async function PublicProjectPage({
       <header className="flex items-center gap-2.5 border-b border-hairline px-[18px] py-3.5 min-[900px]:px-8 min-[900px]:py-4">
         <Mark size={26} />
         <div className="flex flex-col">
-          <span className="font-sans text-[14px] font-semibold text-ink">{data.org.name}</span>
+          <span className="font-display text-[15px] font-semibold tracking-[0.01em] text-ink">
+            {data.org.name}
+          </span>
         </div>
         <Link
           href="/verified"
@@ -72,9 +75,16 @@ export default async function PublicProjectPage({
         <div className="min-w-0">
       {/* Title block */}
       <section className="flex flex-col gap-4 px-[18px] py-[22px] min-[900px]:px-0">
-        <h1 className="font-display text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink min-[900px]:text-display">
-          {data.project.title}
-        </h1>
+        <div className="flex items-center gap-2">
+          <h1 className="font-display text-2xl font-bold leading-[1.2] tracking-[-0.025em] text-ink min-[900px]:text-display">
+            {data.project.title}
+          </h1>
+          {data.project.isZakatEligible && (
+            <Badge variant="confirmed" compact className="shrink-0">
+              Zakat-eligible
+            </Badge>
+          )}
+        </div>
         <p className="font-sans text-copy leading-[1.65] text-body">
           {data.project.description || reassurance}
         </p>
@@ -100,7 +110,12 @@ export default async function PublicProjectPage({
           Phases
         </span>
         {data.phases.length === 0 && (
-          <p className="text-sm text-body">No phases have been set up for this project yet.</p>
+          <EmptyState
+            icon="phases"
+            title="No phases yet"
+            description="This project hasn't been broken into funding phases yet. Check back soon."
+            compact
+          />
         )}
         {data.phases.map((phase) => {
           const rawPercent =
@@ -157,9 +172,12 @@ export default async function PublicProjectPage({
         </div>
 
         {data.expenses.length === 0 && (
-          <p className="text-sm text-body">
-            No expenses posted yet. The first recorded expense appears here.
-          </p>
+          <EmptyState
+            icon="expenses"
+            title="No expenses posted yet"
+            description="Every approved expense shows up here with its receipt attached."
+            compact
+          />
         )}
 
         {data.expenses.map((expense) => (

@@ -43,7 +43,9 @@ export default async function OrgHomePage({
       <header className="flex items-center gap-2.5 border-b border-hairline px-[18px] py-3.5">
         <Mark size={26} />
         <div className="flex flex-col">
-          <span className="font-sans text-copy font-semibold text-ink">{data.org.name}</span>
+          <span className="font-display text-[15px] font-semibold tracking-[0.01em] text-ink">
+            {data.org.name}
+          </span>
         </div>
         <Link
           href="/verified"

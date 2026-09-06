@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { OpenSlot } from "@/lib/data/services";
 
 type DayGroup = {
@@ -40,19 +40,12 @@ export function NikahSlotPicker({
   onSelect: (slotId: string) => void;
 }) {
   const days = useMemo(() => groupSlotsByDay(slots), [slots]);
-  const [dateKey, setDateKey] = useState(days[0]?.dateKey ?? "");
+  const [pickedDateKey, setPickedDateKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (days.length === 0) {
-      setDateKey("");
-      return;
-    }
-    if (!days.some((day) => day.dateKey === dateKey)) {
-      setDateKey(days[0].dateKey);
-    }
-  }, [dateKey, days]);
-
-  const selectedDay = days.find((day) => day.dateKey === dateKey) ?? days[0];
+  // Derived during render rather than synced through an effect: when the slot
+  // list refreshes and the picked day is gone (fully booked, or out of range),
+  // this falls back to the first open day instead of holding a stale key.
+  const selectedDay = days.find((day) => day.dateKey === pickedDateKey) ?? days[0];
 
   if (days.length === 0) return null;
 
@@ -66,7 +59,7 @@ export function NikahSlotPicker({
               key={day.dateKey}
               type="button"
               onClick={() => {
-                setDateKey(day.dateKey);
+                setPickedDateKey(day.dateKey);
                 onSelect("");
               }}
               className={`flex min-w-[58px] flex-col items-center rounded-lg px-2.5 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${

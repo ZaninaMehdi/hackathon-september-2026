@@ -5,6 +5,7 @@ import { formatUsd } from "@/lib/mock/project";
 import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClasses } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function ProjectsListPage() {
   const context = await requireMemberContext();
@@ -23,7 +24,18 @@ export default async function ProjectsListPage() {
       </div>
 
       {projects.length === 0 ? (
-        <p className="text-sm text-body">No projects yet.</p>
+        <EmptyState
+          icon="projects"
+          title="No projects yet"
+          description="Create a project and break it into phases to start tracking donations and expenses."
+          action={
+            canManage ? (
+              <NewProjectButton className={buttonClasses({ size: "lg" })}>
+                Create a project
+              </NewProjectButton>
+            ) : null
+          }
+        />
       ) : (
         <div className="flex flex-col gap-2">
           {projects.map((project) => (
@@ -38,6 +50,11 @@ export default async function ProjectsListPage() {
                   {project.status === "closed" && (
                     <Badge variant="draft" compact className="shrink-0">
                       closed
+                    </Badge>
+                  )}
+                  {project.isZakatEligible && (
+                    <Badge variant="confirmed" compact className="shrink-0">
+                      Zakat-eligible
                     </Badge>
                   )}
                 </div>

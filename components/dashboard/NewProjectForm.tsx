@@ -9,6 +9,7 @@ type Phase = { name: string; budget: number };
 export function NewProjectForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isZakatEligible, setIsZakatEligible] = useState(false);
   const [phases, setPhases] = useState<Phase[]>([{ name: "Phase 1", budget: 0 }]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,12 @@ export function NewProjectForm() {
     setSubmitting(true);
     setError(null);
     try {
-      await createProject({ title: title.trim(), description: description.trim(), phases });
+      await createProject({
+        title: title.trim(),
+        description: description.trim(),
+        phases,
+        isZakatEligible,
+      });
     } catch (err) {
       const digest = (err as { digest?: string })?.digest;
       if (typeof digest === "string" && digest.startsWith("NEXT_REDIRECT")) throw err;
@@ -63,6 +69,16 @@ export function NewProjectForm() {
           className="w-full rounded-lg border border-border bg-white px-3.5 py-3 text-copy text-ink outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/20"
         />
       </div>
+
+      <label className="flex items-center gap-2.5 rounded-lg border border-hairline bg-white px-3.5 py-3">
+        <input
+          type="checkbox"
+          checked={isZakatEligible}
+          onChange={(e) => setIsZakatEligible(e.target.checked)}
+          className="h-4 w-4 accent-accent"
+        />
+        <span className="text-copy text-ink">Zakat-eligible</span>
+      </label>
 
       <div className="flex flex-col gap-2">
         <label className="text-meta font-semibold text-ink">Phases</label>

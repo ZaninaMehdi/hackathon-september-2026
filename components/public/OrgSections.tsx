@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { EventRegisterButton } from "@/components/public/EventRegisterButton";
 import { GuestServiceForm } from "@/components/public/GuestServiceForm";
 import { formatUsd } from "@/lib/mock/project";
@@ -69,7 +70,12 @@ export function OrgSections({
         {openSection === "projects" && (
           <div className="flex flex-col gap-2.5 border-t border-hairline-soft px-4 pb-4 pt-3.5">
             {projects.length === 0 && (
-              <p className="text-sm text-body">No projects have been published yet.</p>
+              <EmptyState
+                icon="projects"
+                title="No projects published yet"
+                description="Fundraising projects will appear here once they go live."
+                compact
+              />
             )}
             {projects.map((project) => {
               const projectPercent =
@@ -93,6 +99,11 @@ export function OrgSections({
                     {projectPercent > 100 && (
                       <Badge variant="success" compact className="shrink-0">
                         Over goal
+                      </Badge>
+                    )}
+                    {project.isZakatEligible && (
+                      <Badge variant="confirmed" compact className="shrink-0">
+                        Zakat-eligible
                       </Badge>
                     )}
                   </div>
@@ -138,7 +149,12 @@ export function OrgSections({
         {openSection === "events" && (
           <div className="flex flex-col gap-2.5 border-t border-hairline-soft px-4 pb-4 pt-3.5">
             {events.length === 0 && (
-              <p className="text-sm text-body">No upcoming events right now.</p>
+              <EmptyState
+                icon="events"
+                title="No upcoming events"
+                description="Classes, fundraisers and gatherings will be listed here."
+                compact
+              />
             )}
             {events.map((event) => (
               <div

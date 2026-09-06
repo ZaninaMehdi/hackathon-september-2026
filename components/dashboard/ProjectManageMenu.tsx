@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { setProjectStatus, deleteProject, type ProjectStatus } from "@/lib/actions/project";
+import {
+  setProjectStatus,
+  setProjectZakatEligible,
+  deleteProject,
+  type ProjectStatus,
+} from "@/lib/actions/project";
 
 type ProjectManageMenuProps = {
   projectId: string;
   status: ProjectStatus;
   hasFinancialActivity: boolean;
+  isZakatEligible: boolean;
 };
 
-export function ProjectManageMenu({ projectId, status, hasFinancialActivity }: ProjectManageMenuProps) {
+export function ProjectManageMenu({
+  projectId,
+  status,
+  hasFinancialActivity,
+  isZakatEligible,
+}: ProjectManageMenuProps) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -22,6 +33,19 @@ export function ProjectManageMenu({ projectId, status, hasFinancialActivity }: P
     setOpen(false);
     try {
       await setProjectStatus(projectId, next);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function handleToggleZakat() {
+    setPending("zakat");
+    setError(null);
+    setOpen(false);
+    try {
+      await setProjectZakatEligible(projectId, !isZakatEligible);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -76,6 +100,11 @@ export function ProjectManageMenu({ projectId, status, hasFinancialActivity }: P
             className="fixed inset-0 z-40 cursor-default"
           />
           <div className="absolute right-0 top-[calc(100%+6px)] z-50 flex w-[220px] flex-col overflow-hidden rounded-lg border border-hairline bg-surface shadow-lg">
+            <MenuItem onClick={handleToggleZakat}>
+              {isZakatEligible ? "Unmark Zakat-eligible" : "Mark Zakat-eligible"}
+            </MenuItem>
+            <div className="border-t border-hairline-soft" />
+
             {status === "active" && (
               <MenuItem
                 danger

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { OrgEvent } from "@/lib/data/events";
 import { Button, buttonClasses } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { createEvent, deleteEvent, updateEvent } from "@/lib/actions/event";
 import type { RecurrenceFrequency, SeriesScope } from "@/lib/events/recurrence";
 
@@ -143,7 +144,14 @@ export function EventsListClient({
       ) : (
         <div className="flex flex-col">
           {grouped.length === 0 && (
-            <p className="px-[18px] py-6 text-sm text-body">No events yet.</p>
+            <div className="px-[18px] py-6">
+              <EmptyState
+                icon="events"
+                title="No events yet"
+                description="Add your first event to start building the community calendar."
+                compact
+              />
+            </div>
           )}
           {grouped.map(([day, dayEvents]) => (
             <div key={day}>

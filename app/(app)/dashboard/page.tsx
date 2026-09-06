@@ -8,6 +8,7 @@ import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
 import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 import { buttonClasses } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function DashboardOverviewPage() {
   const context = await requireMemberContext();
@@ -57,16 +58,18 @@ export default async function DashboardOverviewPage() {
             )}
           </div>
           {projects.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-lg border border-hairline p-8 text-center">
-              <p className="text-sm text-body">
-                Create your first project and phases to start tracking donations and expenses.
-              </p>
-              {canManage && (
-                <NewProjectButton className={buttonClasses({ size: "lg" })}>
-                  Create a project
-                </NewProjectButton>
-              )}
-            </div>
+            <EmptyState
+              icon="projects"
+              title="No projects yet"
+              description="Create your first project and break it into phases to start tracking donations and expenses."
+              action={
+                canManage ? (
+                  <NewProjectButton className={buttonClasses({ size: "lg" })}>
+                    Create a project
+                  </NewProjectButton>
+                ) : null
+              }
+            />
           ) : (
             <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-2 min-[1200px]:grid-cols-3">
               {projects.map((project) => (
@@ -85,6 +88,11 @@ export default async function DashboardOverviewPage() {
                     {project.goal > 0 && project.raised > project.goal && (
                       <Badge variant="success" compact className="shrink-0">
                         Over goal
+                      </Badge>
+                    )}
+                    {project.isZakatEligible && (
+                      <Badge variant="confirmed" compact className="shrink-0">
+                        Zakat-eligible
                       </Badge>
                     )}
                   </div>
@@ -111,9 +119,12 @@ export default async function DashboardOverviewPage() {
           <div>
             <h2 className="mb-2.5 text-subhead font-semibold text-ink">Recent donations</h2>
             {recentDonations.length === 0 ? (
-              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
-                No donations yet.
-              </p>
+              <EmptyState
+                icon="donations"
+                title="No donations yet"
+                description="Share a project's public page and gifts will appear here as they come in."
+                compact
+              />
             ) : (
               <div className="rounded-lg border border-hairline">
                 {recentDonations.map((donation, i) => (
@@ -142,9 +153,12 @@ export default async function DashboardOverviewPage() {
           <div>
             <h2 className="mb-2.5 text-subhead font-semibold text-ink">Expenses</h2>
             {approvedExpenses.length === 0 ? (
-              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
-                No expenses logged yet.
-              </p>
+              <EmptyState
+                icon="expenses"
+                title="No expenses logged yet"
+                description="Every expense you log is published with its receipt on the public page."
+                compact
+              />
             ) : (
               <div className="rounded-lg border border-hairline">
                 {approvedExpenses.map((expense, i) => (

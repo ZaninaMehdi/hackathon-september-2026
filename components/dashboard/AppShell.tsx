@@ -45,7 +45,7 @@ export function AppShell({ email, roles, pendingCount = 0, children }: AppShellP
             <Mark size={22} />
           </div>
           <div className="hidden min-[1200px]:block">
-            <Logo markSize={22} textClassName="text-[15px]" />
+            <Logo size="sm" />
           </div>
         </div>
 

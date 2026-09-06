@@ -51,7 +51,7 @@ export function OnboardingWizard({ userEmail }: { userEmail: string | null }) {
     <div className="mx-auto flex min-h-screen w-full max-w-[390px] flex-col bg-surface">
       <header className="flex items-center gap-3 px-[18px] py-4">
         {step === 1 ? (
-          <Logo markSize={20} textClassName="text-copy" />
+          <Logo size="sm" />
         ) : (
           <div className="flex items-center gap-2">
             <button type="button" onClick={() => setStep((s) => (s === 3 ? 2 : 1))}>

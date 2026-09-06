@@ -46,6 +46,7 @@ export type PublicProjectData = {
     title: string;
     description: string | null;
     status: ProjectStatus;
+    isZakatEligible: boolean;
   };
   raised: number;
   goal: number;
@@ -66,6 +67,7 @@ export type PublicProjectSummary = {
   raised: number;
   goal: number;
   phaseCount: number;
+  isZakatEligible: boolean;
 };
 
 export type PublicOrgHome = {
@@ -91,7 +93,7 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
   const [{ data: projects }, { data: phases }, { data: donations }] = await Promise.all([
     supabase
       .from("projects")
-      .select("id, slug, title, description, status")
+      .select("id, slug, title, description, status, is_zakat_eligible")
       .eq("org_id", org.id)
       .neq("status", "archived")
       .order("created_at", { ascending: false }),
@@ -120,6 +122,7 @@ export const getPublicOrgHome = cache(async function getPublicOrgHome(
     raised: raisedByProject.get(p.id) ?? 0,
     goal: goalByProject.get(p.id) ?? 0,
     phaseCount: phaseCountByProject.get(p.id) ?? 0,
+    isZakatEligible: p.is_zakat_eligible,
   }));
 
   return {
@@ -146,7 +149,7 @@ export const getPublicProject = cache(async function getPublicProject(
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, slug, title, description, status, org_id")
+    .select("id, slug, title, description, status, org_id, is_zakat_eligible")
     .eq("slug", projectSlug)
     .eq("org_id", org.id)
     .maybeSingle();
@@ -231,6 +234,7 @@ export const getPublicProject = cache(async function getPublicProject(
       title: project.title,
       description: project.description,
       status: project.status as ProjectStatus,
+      isZakatEligible: project.is_zakat_eligible,
     },
     raised: totalRaised,
     goal: totalGoal,

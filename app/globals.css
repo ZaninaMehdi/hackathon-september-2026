@@ -16,9 +16,16 @@
   --color-body: #48524d;
   --color-muted: #5c6660;
 
-  --color-hairline-soft: #eef1ef;
-  --color-hairline: #e7eae8;
-  --color-border: #dfe4e0;
+  /* Four steps that each do a distinct job, spaced far enough apart to tell
+     apart in context. Previously these spanned #eef1ef–#dfe4e0, which read as
+     one colour and got picked at random.
+       hairline-soft — dividers *inside* a card or list
+       hairline      — the edge of a card or panel
+       border        — form controls, which need to read as inputs
+       border-strong — emphasis and dashed placeholder states */
+  --color-hairline-soft: #edf0ee;
+  --color-hairline: #e2e7e4;
+  --color-border: #d4dbd7;
   --color-border-strong: #b9c2bc;
 
   --color-surface: #fcfdfc;

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PhaseFormModal } from "@/components/dashboard/PhaseFormModal";
 import { PhaseTaskChecklist } from "@/components/dashboard/PhaseTaskChecklist";
 import { formatUsd } from "@/lib/mock/project";
@@ -36,9 +37,16 @@ export function PhaseManager({ projectId, phases, canManage }: PhaseManagerProps
       </div>
 
       {phases.length === 0 ? (
-        <p className="rounded-lg border border-hairline p-4 text-sm text-body">
-          No phases yet. {canManage && "Add one to start tracking a budget."}
-        </p>
+        <EmptyState
+          icon="phases"
+          title="No phases yet"
+          description={
+            canManage
+              ? "Break this project into phases so donors can fund one milestone at a time."
+              : "This project hasn't been broken into phases yet."
+          }
+          compact
+        />
       ) : (
         <div className="flex flex-col gap-2.5">
           {phases.map((phase, i) => (

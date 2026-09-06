@@ -11,6 +11,7 @@ import { ProjectManageMenu } from "@/components/dashboard/ProjectManageMenu";
 import { PhaseManager } from "@/components/dashboard/PhaseManager";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClasses } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function ProjectDetailPage({
   params,
@@ -73,6 +74,11 @@ export default async function ProjectDetailPage({
                 {project.status}
               </Badge>
             )}
+            {project.isZakatEligible && (
+              <Badge variant="confirmed" compact className="shrink-0">
+                Zakat-eligible
+              </Badge>
+            )}
           </div>
           <span className="text-xs text-body">{project.phaseCount} phases</span>
         </div>
@@ -84,6 +90,7 @@ export default async function ProjectDetailPage({
               projectId={project.id}
               status={project.status}
               hasFinancialActivity={stats.raised.amount > 0 || stats.spent.amount > 0}
+              isZakatEligible={project.isZakatEligible}
             />
           )}
         </div>
@@ -105,11 +112,14 @@ export default async function ProjectDetailPage({
 
         <div className="grid grid-cols-1 gap-4 min-[900px]:grid-cols-2">
           <div>
-            <h2 className="mb-2.5 text-sm font-bold text-ink">Recent donations</h2>
+            <h2 className="mb-2.5 text-subhead font-semibold text-ink">Recent donations</h2>
             {recentDonations.length === 0 ? (
-              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
-                No donations yet.
-              </p>
+              <EmptyState
+                icon="donations"
+                title="No donations yet"
+                description="Share this project's public page and gifts will appear here."
+                compact
+              />
             ) : (
               <div className="rounded-lg border border-hairline">
                 {recentDonations.map((donation, i) => (
@@ -133,11 +143,14 @@ export default async function ProjectDetailPage({
           </div>
 
           <div>
-            <h2 className="mb-2.5 text-sm font-bold text-ink">Expenses</h2>
+            <h2 className="mb-2.5 text-subhead font-semibold text-ink">Expenses</h2>
             {approvedExpenses.length === 0 ? (
-              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
-                No expenses logged yet.
-              </p>
+              <EmptyState
+                icon="expenses"
+                title="No expenses logged yet"
+                description="Logged expenses are published here with their receipts."
+                compact
+              />
             ) : (
               <div className="rounded-lg border border-hairline">
                 {approvedExpenses.map((expense, i) => (

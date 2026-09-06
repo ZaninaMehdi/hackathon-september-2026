@@ -10,6 +10,7 @@ export type CreateProjectInput = {
   title: string;
   description: string;
   phases: { name: string; budget: number }[];
+  isZakatEligible: boolean;
 };
 
 export async function createProject(input: CreateProjectInput) {
@@ -34,6 +35,7 @@ export async function createProject(input: CreateProjectInput) {
       slug,
       description: input.description || null,
       created_by: context.memberId,
+      is_zakat_eligible: input.isZakatEligible,
     })
     .select("id")
     .single();
@@ -86,6 +88,23 @@ export async function setProjectStatus(projectId: string, status: ProjectStatus)
   await assertOwnsProject(supabase, context.orgId, projectId);
 
   const { error } = await supabase.from("projects").update({ status }).eq("id", projectId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/dashboard/projects/${projectId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/projects");
+}
+
+export async function setProjectZakatEligible(projectId: string, isZakatEligible: boolean) {
+  const context = await requireAdminContext();
+  const supabase = await createClient();
+
+  await assertOwnsProject(supabase, context.orgId, projectId);
+
+  const { error } = await supabase
+    .from("projects")
+    .update({ is_zakat_eligible: isZakatEligible })
+    .eq("id", projectId);
   if (error) throw new Error(error.message);
 
   revalidatePath(`/dashboard/projects/${projectId}`);
