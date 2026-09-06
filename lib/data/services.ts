@@ -172,12 +172,11 @@ export async function getOfficiantsForService(
 
 export async function getOpenSlots(officiantId: string): Promise<OpenSlot[]> {
   const supabase = await createClient();
+  await supabase.rpc("reclaim_stale_nikah_holds");
   const { data } = await supabase
-    .from("availability_slots")
+    .from("available_slots")
     .select("id, officiant_id, starts_at, ends_at")
     .eq("officiant_id", officiantId)
-    .eq("status", "open")
-    .gt("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: true });
 
   return (data ?? []).map((slot) => {
@@ -210,8 +209,22 @@ export async function getOrgNikahPrice(orgId: string): Promise<number | null> {
   return Number.isFinite(amount) ? amount : null;
 }
 
+const NIKAH_HOLD_MS = 24 * 60 * 60 * 1000;
+
+function resolveRequestStatus(serviceType: string, status: string, createdAt: string): RequestStatus {
+  if (
+    serviceType === "nikah" &&
+    status === "pending" &&
+    Date.parse(createdAt) < Date.now() - NIKAH_HOLD_MS
+  ) {
+    return "expired";
+  }
+  return status as RequestStatus;
+}
+
 export async function getRequesterRequests(memberId: string): Promise<ServiceRequestItem[]> {
   const supabase = await createClient();
+  await supabase.rpc("reclaim_stale_nikah_holds");
   const { data } = await supabase
     .from("service_requests")
     .select("id, org_id, service_type, status, details, needed_by, officiant_id, created_at, availability_slots(starts_at, ends_at)")
@@ -240,7 +253,7 @@ export async function getRequesterRequests(memberId: string): Promise<ServiceReq
       id: row.id,
       orgId: row.org_id,
       serviceType: row.service_type as ServiceType,
-      status: row.status as RequestStatus,
+      status: resolveRequestStatus(row.service_type, row.status, row.created_at),
       details: row.details,
       neededBy: row.needed_by,
       slotStartsAt: slot?.starts_at ?? null,
@@ -301,7 +314,7 @@ function mapInboxRequest(row: InboxRequestRow, requesterName: string | null): Se
     id: row.id,
     orgId: row.org_id,
     serviceType: row.service_type as ServiceType,
-    status: row.status as RequestStatus,
+    status: resolveRequestStatus(row.service_type, row.status, row.created_at),
     details: row.details,
     neededBy: row.needed_by,
     slotStartsAt: slot?.starts_at ?? null,
@@ -315,6 +328,7 @@ function mapInboxRequest(row: InboxRequestRow, requesterName: string | null): Se
 
 export async function getOfficiantInbox(officiant: OfficiantSummary): Promise<OfficiantInbox> {
   const supabase = await createClient();
+  await supabase.rpc("reclaim_stale_nikah_holds");
   const offersJanaza = officiant.services.includes("janaza");
 
   const [recurring, pendingNikahResult, orgJanazaResult, notifiedIdsResult] = await Promise.all([
