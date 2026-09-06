@@ -109,6 +109,12 @@ export type PublicOrgDirectoryItem = {
   name: string;
   slug: string;
   orgType: string | null;
+  description: string | null;
+  logoUrl: string | null;
+  /** The org's own cover if it has one, otherwise its newest campaign photo.
+   *  Falling back keeps a card from looking empty just because nobody has
+   *  uploaded an org-level image yet. */
+  coverImageUrl: string | null;
   activeCampaigns: number;
   totalRaised: number;
 };
@@ -144,15 +150,28 @@ export const getPublicOrganizations = cache(async function getPublicOrganization
   const supabase = await createClient();
 
   const [{ data: orgs }, { data: projects }, { data: donations }] = await Promise.all([
-    supabase.from("organizations").select("id, name, slug, org_type").order("name"),
-    supabase.from("projects").select("org_id, status").neq("status", "archived"),
+    supabase
+      .from("organizations")
+      .select("id, name, slug, org_type, description, logo_url, cover_image_url")
+      .order("name"),
+    supabase
+      .from("projects")
+      .select("org_id, status, cover_image_url")
+      .neq("status", "archived")
+      .order("created_at", { ascending: false }),
     supabase.from("donations").select("org_id, amount"),
   ]);
 
   const activeByOrg = new Map<string, number>();
+  const campaignPhotoByOrg = new Map<string, string>();
   for (const project of projects ?? []) {
-    if (project.status !== "active") continue;
-    activeByOrg.set(project.org_id, (activeByOrg.get(project.org_id) ?? 0) + 1);
+    if (project.status === "active") {
+      activeByOrg.set(project.org_id, (activeByOrg.get(project.org_id) ?? 0) + 1);
+    }
+    // Ordered newest-first above, so the first photo seen per org is the newest.
+    if (project.cover_image_url && !campaignPhotoByOrg.has(project.org_id)) {
+      campaignPhotoByOrg.set(project.org_id, project.cover_image_url);
+    }
   }
 
   const raisedByOrg = new Map<string, number>();
@@ -165,6 +184,9 @@ export const getPublicOrganizations = cache(async function getPublicOrganization
     name: org.name,
     slug: org.slug,
     orgType: org.org_type ?? null,
+    description: org.description ?? null,
+    logoUrl: org.logo_url ?? null,
+    coverImageUrl: org.cover_image_url ?? campaignPhotoByOrg.get(org.id) ?? null,
     activeCampaigns: activeByOrg.get(org.id) ?? 0,
     totalRaised: raisedByOrg.get(org.id) ?? 0,
   }));
