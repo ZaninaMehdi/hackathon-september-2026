@@ -7,11 +7,15 @@ import { getPublicOrganizations } from "@/lib/data/project";
 
 export const metadata: Metadata = {
   title: "Amanah — Donate without an account",
-  description: "Find an organization, pick a campaign, and give. No signup required.",
+  description:
+    "Find an organization, pick a campaign, and give. No signup required.",
 };
 
 export default async function Home() {
-  const [orgs, staff] = await Promise.all([getPublicOrganizations(), getStaffNav()]);
+  const [orgs, staff] = await Promise.all([
+    getPublicOrganizations(),
+    getStaffNav(),
+  ]);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-surface min-[900px]:max-w-[560px]">
@@ -25,8 +29,9 @@ export default async function Home() {
           Donate in two taps. No account.
         </h1>
         <p className="font-sans text-copy leading-[1.65] text-body">
-          Open an organization&apos;s public page, choose the campaign you want to support, and
-          check out. Stripe emails you a receipt. Staff sign in separately to keep the books.
+          Open an organization&apos;s public page, choose the campaign you want
+          to support, and check out. Stripe emails you a receipt. Staff sign in
+          separately to keep the books.
         </p>
       </section>
 
