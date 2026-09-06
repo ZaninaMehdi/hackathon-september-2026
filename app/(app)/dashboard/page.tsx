@@ -1,0 +1,182 @@
+import Link from "next/link";
+import { ProgressBar } from "@/components/ui/ProgressBar";
+import { formatUsd } from "@/lib/mock/project";
+import { requireMemberContext } from "@/lib/auth/session";
+import { getOrgOverview } from "@/lib/data/dashboard";
+import { getPhaseOptionsForOrg } from "@/lib/data/phases";
+import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
+
+export default async function DashboardOverviewPage() {
+  const context = await requireMemberContext();
+  const { stats, projects, recentDonations, approvedExpenses } = await getOrgOverview(context.orgId);
+
+  const canManage = context.roles.some((r) => r === "admin" || r === "treasurer");
+  const expenseProjects = canManage ? await getPhaseOptionsForOrg(context.orgId) : [];
+
+  return (
+    <>
+      {/* Header bar */}
+      <div className="flex items-center gap-4 border-b border-hairline px-4 py-4.5 min-[900px]:px-6">
+        <div className="flex flex-col">
+          <h1 className="text-[19px] font-bold tracking-[-0.02em] text-ink">Overview</h1>
+          <span className="text-xs text-body">
+            {projects.length} project{projects.length === 1 ? "" : "s"} · {context.orgName}
+          </span>
+        </div>
+        {canManage && <DashboardActionBar projects={expenseProjects} />}
+      </div>
+
+      <div className="flex flex-col gap-5 p-4 min-[900px]:p-6">
+        {/* Org-wide stat row */}
+        <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-3">
+          <StatCard eyebrow="Raised" figure={formatUsd(stats.raised.amount)} caption={stats.raised.caption} />
+          <StatCard eyebrow="Spent" figure={formatUsd(stats.spent.amount)} caption={stats.spent.caption} />
+          <StatCard eyebrow="On hand" figure={formatUsd(stats.onHand.amount)} caption={stats.onHand.caption} />
+        </div>
+
+        {/* Projects grid */}
+        <div>
+          <div className="mb-2.5 flex items-baseline gap-3">
+            <h2 className="text-sm font-bold text-ink">Projects</h2>
+            {canManage && (
+              <Link
+                href="/dashboard/projects/new"
+                className="ml-auto text-[12.5px] font-semibold text-accent"
+              >
+                + New project
+              </Link>
+            )}
+          </div>
+          {projects.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-hairline p-8 text-center">
+              <p className="text-sm text-body">
+                Create your first project and phases to start tracking donations and expenses.
+              </p>
+              {canManage && (
+                <Link
+                  href="/dashboard/projects/new"
+                  className="rounded-lg bg-accent px-5 py-3 text-[15px] font-semibold text-white"
+                >
+                  Create a project
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-2 min-[1200px]:grid-cols-3">
+              {projects.map((project) => (
+                <Link
+                  key={project.id}
+                  href={`/dashboard/projects/${project.id}`}
+                  className="flex flex-col gap-2.5 rounded-lg border border-hairline p-4 hover:bg-surface-sunken"
+                >
+                  <span className="truncate text-[15px] font-semibold text-ink">{project.title}</span>
+                  <ProgressBar
+                    raised={project.raised}
+                    target={project.goal}
+                    label={`${formatUsd(project.raised)} of ${formatUsd(project.goal)}`}
+                  />
+                  <div className="flex items-center justify-between font-mono text-[11.5px] text-muted">
+                    <span>{formatUsd(project.raised)} raised</span>
+                    <span>{project.phaseCount} phases</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Two side-by-side lists — stack below 900px */}
+        <div className="grid grid-cols-1 gap-4 min-[900px]:grid-cols-2">
+          <div>
+            <h2 className="mb-2.5 text-sm font-bold text-ink">Recent donations</h2>
+            {recentDonations.length === 0 ? (
+              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
+                No donations yet.
+              </p>
+            ) : (
+              <div className="rounded-lg border border-hairline">
+                {recentDonations.map((donation, i) => (
+                  <div
+                    key={donation.id}
+                    className={`flex items-center gap-2 px-3.5 py-2.5 text-[13px] ${
+                      i !== recentDonations.length - 1 ? "border-b border-hairline-soft" : ""
+                    }`}
+                  >
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate font-semibold text-ink">{donation.donor}</span>
+                      <span className="truncate text-[11px] text-muted">{donation.projectTitle}</span>
+                    </div>
+                    <span className="ml-auto whitespace-nowrap font-mono text-ink">
+                      {formatUsd(donation.amount)}
+                    </span>
+                    <span className="w-[52px] shrink-0 text-right font-mono text-[11px] text-muted">
+                      {donation.date}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h2 className="mb-2.5 text-sm font-bold text-ink">Expenses</h2>
+            {approvedExpenses.length === 0 ? (
+              <p className="rounded-lg border border-hairline p-4 text-sm text-body">
+                No expenses logged yet.
+              </p>
+            ) : (
+              <div className="rounded-lg border border-hairline">
+                {approvedExpenses.map((expense, i) => (
+                  <Link
+                    key={expense.id}
+                    href={`/dashboard/expenses/${expense.id}`}
+                    className={`flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] hover:bg-surface-sunken ${
+                      i !== approvedExpenses.length - 1 ? "border-b border-hairline-soft" : ""
+                    }`}
+                  >
+                    <span className="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-accent">
+                      <svg width="7" height="7" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                        <path
+                          d="M1.5 5.2L3.8 7.5L8.5 2.5"
+                          stroke="white"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <div className="flex min-w-0 flex-col">
+                      <span className="truncate text-ink">{expense.title}</span>
+                      <span className="truncate text-[11px] text-muted">{expense.projectTitle}</span>
+                    </div>
+                    <span className="ml-auto whitespace-nowrap font-mono text-ink">
+                      {formatUsd(expense.amount)}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function StatCard({
+  eyebrow,
+  figure,
+  caption,
+}: {
+  eyebrow: string;
+  figure: string;
+  caption: string;
+}) {
+  return (
+    <div className="flex flex-col gap-[5px] rounded-lg border border-hairline p-3.5">
+      <span className="text-[11.5px] font-semibold uppercase text-muted">{eyebrow}</span>
+      <span className="font-mono text-[21px] font-medium text-ink">{figure}</span>
+      <span className="text-[11.5px] text-body">{caption}</span>
+    </div>
+  );
+}

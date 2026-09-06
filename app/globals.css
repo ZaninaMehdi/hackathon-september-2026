@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-accent: #2f5d3f;
+  --color-accent-hover: #2a5439;
+  --color-accent-wash: #e6efe9;
+  --color-accent-tint: #f3f6f4;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-ink: #16211a;
+  --color-body: #4d5651;
+  --color-muted: #5c6660;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-hairline-soft: #eef1ef;
+  --color-hairline: #e7eae8;
+  --color-border: #dfe4e0;
+  --color-border-strong: #b9c2bc;
+
+  --color-surface: #fcfdfc;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #f7f9f8;
+  --color-neutral-wash: #f0f2f1;
+
+  --color-track: #e9edea;
+  --color-track-light: #f5f7f6;
+  --color-step-empty: #e0e4e2;
+
+  --color-pending-border: #d8bd82;
+  --color-pending-text: #7a5a17;
+  --color-pending-icon: #b08a2e;
+  --color-pending-bg: #fffdf8;
+
+  --color-danger: #8c3226;
+  --color-danger-wash: #f9ebe9;
+
+  --color-canvas: #eef0ee;
+  --color-avatar-bg: #dfe4e0;
+
+  --radius-2xs: 2px;
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-pill: 20px;
+
+  --font-sans: var(--font-libre-franklin);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Receipt / image placeholder stripe (small) */
+.stripe-placeholder {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--color-track) 0 4px,
+    var(--color-track-light) 4px 8px
+  );
+}
+
+/* Receipt / image placeholder stripe (large) */
+.stripe-placeholder-lg {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--color-track) 0 5px,
+    var(--color-track-light) 5px 10px
+  );
 }
