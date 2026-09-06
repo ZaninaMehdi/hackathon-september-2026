@@ -5,6 +5,7 @@ import { requireMemberContext } from "@/lib/auth/session";
 import { getOrgOverview } from "@/lib/data/dashboard";
 import { getPhaseOptionsForOrg } from "@/lib/data/phases";
 import { DashboardActionBar } from "@/components/dashboard/DashboardActionBar";
+import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 
 export default async function DashboardOverviewPage() {
   const context = await requireMemberContext();
@@ -39,12 +40,9 @@ export default async function DashboardOverviewPage() {
           <div className="mb-2.5 flex items-baseline gap-3">
             <h2 className="text-sm font-bold text-ink">Projects</h2>
             {canManage && (
-              <Link
-                href="/dashboard/projects/new"
-                className="ml-auto text-[12.5px] font-semibold text-accent"
-              >
+              <NewProjectButton className="ml-auto text-[12.5px] font-semibold text-accent">
                 + New project
-              </Link>
+              </NewProjectButton>
             )}
           </div>
           {projects.length === 0 ? (
@@ -53,12 +51,9 @@ export default async function DashboardOverviewPage() {
                 Create your first project and phases to start tracking donations and expenses.
               </p>
               {canManage && (
-                <Link
-                  href="/dashboard/projects/new"
-                  className="rounded-lg bg-accent px-5 py-3 text-[15px] font-semibold text-white"
-                >
+                <NewProjectButton className="rounded-lg bg-accent px-5 py-3 text-[15px] font-semibold text-white">
                   Create a project
-                </Link>
+                </NewProjectButton>
               )}
             </div>
           ) : (

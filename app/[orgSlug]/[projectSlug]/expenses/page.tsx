@@ -7,16 +7,16 @@ import { getProjectLedger } from "@/lib/data/project";
 export default async function ProjectLedgerPage({
   params,
 }: {
-  params: Promise<{ orgSlug: string; projectId: string }>;
+  params: Promise<{ orgSlug: string; projectSlug: string }>;
 }) {
-  const { orgSlug, projectId } = await params;
-  const { org, project, entries } = await getProjectLedger(orgSlug, projectId);
+  const { orgSlug, projectSlug } = await params;
+  const { org, project, entries } = await getProjectLedger(orgSlug, projectSlug);
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col gap-4 bg-surface px-[18px] py-6">
       <div className="flex flex-col gap-1">
         <Link
-          href={`/${orgSlug}/${projectId}`}
+          href={`/${orgSlug}/${projectSlug}`}
           className="text-[12.5px] font-semibold text-accent"
         >
           ← Back to {project.title}

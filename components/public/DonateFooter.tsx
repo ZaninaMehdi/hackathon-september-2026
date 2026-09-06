@@ -5,11 +5,18 @@ import { useState } from "react";
 type DonateFooterProps = {
   orgSlug: string;
   projectId: string;
+  projectSlug: string;
   phaseId: string | null;
   phaseLabel: string;
 };
 
-export function DonateFooter({ orgSlug, projectId, phaseId, phaseLabel }: DonateFooterProps) {
+export function DonateFooter({
+  orgSlug,
+  projectId,
+  projectSlug,
+  phaseId,
+  phaseLabel,
+}: DonateFooterProps) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("50");
   const [loading, setLoading] = useState(false);
@@ -24,7 +31,7 @@ export function DonateFooter({ orgSlug, projectId, phaseId, phaseLabel }: Donate
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, phaseId, phaseLabel, projectId, orgSlug }),
+        body: JSON.stringify({ amount, phaseId, phaseLabel, projectId, projectSlug, orgSlug }),
       });
       const data = await res.json();
 

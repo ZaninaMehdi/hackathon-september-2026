@@ -23,7 +23,7 @@ export type PublicExpense = {
 
 export type PublicProjectData = {
   org: { id: string; name: string; slug: string };
-  project: { id: string; title: string; description: string | null };
+  project: { id: string; slug: string; title: string; description: string | null };
   raised: number;
   goal: number;
   spent: number;
@@ -36,7 +36,7 @@ export type PublicProjectData = {
 
 export async function getPublicProject(
   orgSlug: string,
-  projectId: string
+  projectSlug: string
 ): Promise<PublicProjectData> {
   const supabase = await createClient();
 
@@ -50,8 +50,8 @@ export async function getPublicProject(
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, title, description, total_goal, org_id")
-    .eq("id", projectId)
+    .select("id, slug, title, description, total_goal, org_id")
+    .eq("slug", projectSlug)
     .eq("org_id", org.id)
     .maybeSingle();
 
@@ -127,7 +127,12 @@ export async function getPublicProject(
 
   return {
     org: { id: org.id, name: org.name, slug: org.slug },
-    project: { id: project.id, title: project.title, description: project.description },
+    project: {
+      id: project.id,
+      slug: project.slug,
+      title: project.title,
+      description: project.description,
+    },
     raised: totalRaised,
     goal: Number(project.total_goal),
     spent: totalSpent,
@@ -143,7 +148,7 @@ export type LedgerEntry = { id: string; title: string; phaseLabel: string; date:
 
 export async function getProjectLedger(
   orgSlug: string,
-  projectId: string
+  projectSlug: string
 ): Promise<{ org: { name: string }; project: { title: string }; entries: LedgerEntry[] }> {
   const supabase = await createClient();
 
@@ -158,7 +163,7 @@ export async function getProjectLedger(
   const { data: project } = await supabase
     .from("projects")
     .select("id, title")
-    .eq("id", projectId)
+    .eq("slug", projectSlug)
     .eq("org_id", org.id)
     .maybeSingle();
 

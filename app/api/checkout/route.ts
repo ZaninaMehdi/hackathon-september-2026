@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 
 export async function POST(request: Request) {
-  const { amount, phaseId, phaseLabel, projectId, orgSlug } = await request.json();
+  const { amount, phaseId, phaseLabel, projectId, projectSlug, orgSlug } = await request.json();
 
   const cents = Math.round(Number(amount) * 100);
   if (!Number.isFinite(cents) || cents < 100) {
     return NextResponse.json({ error: "Enter an amount of at least $1." }, { status: 400 });
   }
-  if (!phaseId || !projectId || !orgSlug) {
+  if (!phaseId || !projectId || !projectSlug || !orgSlug) {
     return NextResponse.json({ error: "Missing phase or project." }, { status: 400 });
   }
 
@@ -27,8 +27,8 @@ export async function POST(request: Request) {
       },
     ],
     metadata: { phase_id: phaseId, project_id: projectId },
-    success_url: `${origin}/${orgSlug}/${projectId}?donated=1`,
-    cancel_url: `${origin}/${orgSlug}/${projectId}`,
+    success_url: `${origin}/${orgSlug}/${projectSlug}?donated=1`,
+    cancel_url: `${origin}/${orgSlug}/${projectSlug}`,
   });
 
   return NextResponse.json({ url: session.url });

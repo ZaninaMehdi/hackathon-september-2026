@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Modal } from "@/components/dashboard/Modal";
-import { NewProjectForm } from "@/components/dashboard/NewProjectForm";
+import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 import { SubmitExpenseForm } from "@/components/dashboard/SubmitExpenseForm";
 import type { ProjectWithPhases } from "@/lib/data/phases";
 
@@ -12,7 +12,7 @@ type DashboardActionBarProps = {
 };
 
 export function DashboardActionBar({ projects }: DashboardActionBarProps) {
-  const [openModal, setOpenModal] = useState<"project" | "expense" | null>(null);
+  const [expenseModalOpen, setExpenseModalOpen] = useState(false);
 
   return (
     <>
@@ -23,30 +23,20 @@ export function DashboardActionBar({ projects }: DashboardActionBarProps) {
         >
           Invite
         </Link>
-        <button
-          type="button"
-          onClick={() => setOpenModal("project")}
-          className="rounded-md border border-border bg-white px-3.5 py-[9px] text-[13px] font-semibold text-ink"
-        >
+        <NewProjectButton className="rounded-md border border-border bg-white px-3.5 py-[9px] text-[13px] font-semibold text-ink">
           New project
-        </button>
+        </NewProjectButton>
         <button
           type="button"
-          onClick={() => setOpenModal("expense")}
+          onClick={() => setExpenseModalOpen(true)}
           className="rounded-md bg-accent px-3.5 py-[9px] text-[13px] font-semibold text-white hover:bg-accent-hover"
         >
           Add expense
         </button>
       </div>
 
-      {openModal === "project" && (
-        <Modal title="New project" onClose={() => setOpenModal(null)}>
-          <NewProjectForm />
-        </Modal>
-      )}
-
-      {openModal === "expense" && (
-        <Modal title="Log an expense" onClose={() => setOpenModal(null)}>
+      {expenseModalOpen && (
+        <Modal title="Log an expense" onClose={() => setExpenseModalOpen(false)}>
           <SubmitExpenseForm projects={projects} />
         </Modal>
       )}

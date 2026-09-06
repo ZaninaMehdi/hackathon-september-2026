@@ -11,10 +11,10 @@ import { getPublicProject } from "@/lib/data/project";
 export default async function PublicProjectPage({
   params,
 }: {
-  params: Promise<{ orgSlug: string; projectId: string }>;
+  params: Promise<{ orgSlug: string; projectSlug: string }>;
 }) {
-  const { orgSlug, projectId } = await params;
-  const data = await getPublicProject(orgSlug, projectId);
+  const { orgSlug, projectSlug } = await params;
+  const data = await getPublicProject(orgSlug, projectSlug);
 
   const reassurance = `${data.phases.length} phase${data.phases.length === 1 ? "" : "s"}. Every approved expense is posted here with its receipt.`;
 
@@ -101,7 +101,7 @@ export default async function PublicProjectPage({
           </span>
           {data.expensesTotal > 4 && (
             <Link
-              href={`/${orgSlug}/${projectId}/expenses`}
+              href={`/${orgSlug}/${projectSlug}/expenses`}
               className="ml-auto font-sans text-[12.5px] font-semibold text-accent"
             >
               See all {data.expensesTotal}
@@ -142,6 +142,7 @@ export default async function PublicProjectPage({
       <DonateFooter
         orgSlug={data.org.slug}
         projectId={data.project.id}
+        projectSlug={data.project.slug}
         phaseId={data.activePhaseId}
         phaseLabel={data.activePhaseLabel}
       />

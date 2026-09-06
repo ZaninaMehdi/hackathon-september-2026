@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { generateUniqueSlug } from "@/lib/utils/slug";
 
 export type OnboardingPhaseInput = { name: string; budget: number };
 
@@ -70,11 +71,22 @@ export async function createOrgAndProject(input: CreateOrgAndProjectInput) {
 
   const totalGoal = input.phases.reduce((sum, p) => sum + p.budget, 0);
 
+  const projectSlug = await generateUniqueSlug(input.projectTitle, async (candidate) => {
+    const { data } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("org_id", org.id)
+      .eq("slug", candidate)
+      .maybeSingle();
+    return Boolean(data);
+  });
+
   const { data: project, error: projectError } = await supabase
     .from("projects")
     .insert({
       org_id: org.id,
       title: input.projectTitle,
+      slug: projectSlug,
       total_goal: totalGoal,
       created_by: member.id,
     })

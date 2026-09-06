@@ -2,6 +2,7 @@ import Link from "next/link";
 import { requireMemberContext } from "@/lib/auth/session";
 import { getOrgProjects } from "@/lib/data/dashboard";
 import { formatUsd } from "@/lib/mock/project";
+import { NewProjectButton } from "@/components/dashboard/NewProjectButton";
 
 export default async function ProjectsListPage() {
   const context = await requireMemberContext();
@@ -13,12 +14,9 @@ export default async function ProjectsListPage() {
       <div className="flex items-center gap-3">
         <h1 className="text-xl font-bold tracking-[-0.02em] text-ink">Projects</h1>
         {canManage && (
-          <Link
-            href="/dashboard/projects/new"
-            className="ml-auto rounded-md bg-accent px-3.5 py-[9px] text-[13px] font-semibold text-white"
-          >
+          <NewProjectButton className="ml-auto rounded-md bg-accent px-3.5 py-[9px] text-[13px] font-semibold text-white">
             New project
-          </Link>
+          </NewProjectButton>
         )}
       </div>
 

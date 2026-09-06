@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { requireAdminContext } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { generateUniqueSlug } from "@/lib/utils/slug";
 
 export type CreateProjectInput = {
   title: string;
@@ -16,11 +17,22 @@ export async function createProject(input: CreateProjectInput) {
 
   const totalGoal = input.phases.reduce((sum, p) => sum + p.budget, 0);
 
+  const slug = await generateUniqueSlug(input.title, async (candidate) => {
+    const { data } = await supabase
+      .from("projects")
+      .select("id")
+      .eq("org_id", context.orgId)
+      .eq("slug", candidate)
+      .maybeSingle();
+    return Boolean(data);
+  });
+
   const { data: project, error: projectError } = await supabase
     .from("projects")
     .insert({
       org_id: context.orgId,
       title: input.title,
+      slug,
       description: input.description || null,
       total_goal: totalGoal,
       created_by: context.memberId,

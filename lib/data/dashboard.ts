@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export type OrgProject = {
   id: string;
+  slug: string;
   title: string;
   totalGoal: number;
   phaseCount: number;
@@ -9,17 +10,18 @@ export type OrgProject = {
 
 export async function getOrgProjects(
   orgId: string
-): Promise<{ id: string; title: string; totalGoal: number; createdAt: string }[]> {
+): Promise<{ id: string; slug: string; title: string; totalGoal: number; createdAt: string }[]> {
   const supabase = await createClient();
 
   const { data } = await supabase
     .from("projects")
-    .select("id, title, total_goal, created_at")
+    .select("id, slug, title, total_goal, created_at")
     .eq("org_id", orgId)
     .order("created_at", { ascending: false });
 
   return (data ?? []).map((p) => ({
     id: p.id,
+    slug: p.slug,
     title: p.title,
     totalGoal: Number(p.total_goal),
     createdAt: p.created_at,
@@ -32,7 +34,7 @@ export async function getLatestOrgProject(
 ): Promise<OrgProject | null> {
   const supabase = await createClient();
 
-  const query = supabase.from("projects").select("id, title, total_goal").eq("org_id", orgId);
+  const query = supabase.from("projects").select("id, slug, title, total_goal").eq("org_id", orgId);
 
   const { data: project } = projectId
     ? await query.eq("id", projectId).maybeSingle()
@@ -47,6 +49,7 @@ export async function getLatestOrgProject(
 
   return {
     id: project.id,
+    slug: project.slug,
     title: project.title,
     totalGoal: Number(project.total_goal),
     phaseCount: count ?? 0,
